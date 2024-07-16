@@ -1,0 +1,45 @@
+#name of the workflow
+name: Build and Test
+#controls what will trigger the workflow
+on:
+  #a new push to the "dev1"branch
+  push:
+    branches:
+      - dev1
+      #a new pull request to the "main"branch
+  pull_request:
+    branches:
+      - main
+  #allows to trigger the workflow from github interfaces    
+    #workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    #steps for a successful run
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: 'stable'
+
+    - name: Install dependencies
+      run: flutter pub get
+
+    - name: Analyze code
+      run: flutter analyze
+
+    - name: Run tests
+      run: flutter test
+
+    - name: Build APK
+      run: flutter build apk --release
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v2
+      with:
+        name: apk
+        path: build/app/outputs/flutter-apk/app-release.apk
