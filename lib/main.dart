@@ -1,3 +1,4 @@
+import 'package:devotion/features/auth/screen/welcome.dart';
 import 'package:devotion/firebase_options.dart';
 import 'package:devotion/theme/pallete.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Devotion',
       theme: Pallete.darkModeAppTheme,
-      home: const SizedBox(),
+      home: const WelcomeScreen(),
     );
   }
 }
