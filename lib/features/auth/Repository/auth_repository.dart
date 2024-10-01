@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:devotion/core/constants/firebase_constants.dart';
 import 'package:devotion/core/providers/firebase_providers.dart';
+import 'package:devotion/models/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -25,6 +27,9 @@ class AuthRepository {
         _firestore = firestore,
         _googleSignIn = googleSignIn;
 
+  CollectionReference get _users =>
+      _firestore.collection(FirebaseConstants.usersCollection);
+
   void signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
@@ -38,8 +43,20 @@ class AuthRepository {
 
       UserCredential userCredential =
           await _auth.signInWithCredential(credential);
+      UserModel userModel;
+      if(userCredential.additionalUserInfo!.isNewUser){
+        userModel=UserModel(
+        uid: userCredential.user!.uid,
+        isAuthenticated: true,
+        name: userCredential.user!.displayName ?? 'No name',
+      );
 
-      print(userCredential.user?.email);
+      await _users.doc(userCredential.user!.uid).set(userModel.toMap());
+
+      }
+      
+
+      //print(userCredential.user?.email);
     } catch (e) {
       print(e);
     }
