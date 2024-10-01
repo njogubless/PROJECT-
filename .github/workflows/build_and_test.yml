@@ -1,45 +1,23 @@
-# #name of the workflow
-# name: Build and Test
-# #controls what will trigger the workflow
-# on:
-#   #a new push to the "dev1"branch
-#   push:
-#     branches:
-#       - main
-#       #a new pull request to the "main"branch
-#   pull_request:
-#     branches:
-#       - main
-#   #allows to trigger the workflow from github interfaces    
-#     #workflow_dispatch:
+name: Dart CI
 
-# jobs:
-#   build:
-#     runs-on: ubuntu-latest
-#     #steps for a successful run
-#     steps:
-#     - name: Checkout code
-#       uses: actions/checkout@v2
+on: [push]
 
-#     - name: Set up Flutter
-#       uses: subosito/flutter-action@v2
-#       with:
-#         flutter-version: 'stable'
+jobs:
+  test:
+    runs-on: ubuntu-latest
 
-#     - name: Install dependencies
-#       run: flutter pub get
+    steps:
+    - uses: actions/checkout@v4
+    - uses: dart-lang/setup-dart@v1
+    
+    - name: Install dependencies
+      run: dart pub get
 
-#     - name: Analyze code
-#       run: flutter analyze
+    - name: Verify formatting
+      run: dart format --output=none --set-exit-if-changed .
 
-#     - name: Run tests
-#       run: flutter test
+    - name: Analyze project source
+      run: dart analyze --fatal-infos --fatal-warnings
 
-#     - name: Build APK
-#       run: flutter build apk --release
-
-#     - name: Upload APK
-#       uses: actions/upload-artifact@v3
-#       with:
-#         name: apk
-#         path: build/app/outputs/flutter-apk/app-release.apk
+    - name: Run tests
+      run: dart test
