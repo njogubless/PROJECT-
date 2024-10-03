@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:devotion/core/constants/firebase_constants.dart';
 import 'package:devotion/core/providers/firebase_providers.dart';
-import 'package:devotion/models/user_model.dart';
+import 'package:devotion/features/auth/data/models/user_models.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
