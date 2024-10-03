@@ -1,4 +1,4 @@
-import 'package:devotion/features/auth/screen/sign_up.dart';
+import 'package:devotion/features/auth/presentation/screen/sign_up.dart';
 import 'package:flutter/material.dart';
 
 class WelcomeButton extends StatelessWidget {

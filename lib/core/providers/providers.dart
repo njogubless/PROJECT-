@@ -1,9 +1,10 @@
 // lib/features/audio/presentation/screens/audio_screen.dart
 
+import 'package:devotion/features/audio/presentation/providers/audio_repository_provider.dart';
+import 'package:devotion/features/audio/presentation/widgets/audio_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/audio_provider.dart';
-import '../widgets/audio_tile.dart';
+
 
 class AudioScreen extends ConsumerWidget {
   @override
@@ -11,11 +12,11 @@ class AudioScreen extends ConsumerWidget {
     final audioState = ref.watch(audioProvider);
 
     return Scaffold(
-      appBar: AppBar(title: Text('Audio Files')),
+      appBar: AppBar(title: const Text('Audio Files')),
       body: audioState.when(
         data: (audioFiles) {
           if (audioFiles.isEmpty) {
-            return Center(child: Text('No audio files found.'));
+            return const Center(child: Text('No audio files found.'));
           }
           return RefreshIndicator(
             onRefresh: () => ref.read(audioProvider.notifier).refresh(),
@@ -28,7 +29,7 @@ class AudioScreen extends ConsumerWidget {
             ),
           );
         },
-        loading: () => Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Error: $e')),
       ),
     );

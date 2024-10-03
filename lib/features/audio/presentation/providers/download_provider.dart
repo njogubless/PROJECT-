@@ -1,8 +1,8 @@
 // lib/features/audio/presentation/providers/download_provider.dart
 
 import 'package:devotion/features/audio/domain/usecases/download_audio._file.dart';
-import 'package:riverpod/riverpod.dart';
-import '../../domain/usecases/download_audio_file.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 
 enum DownloadStatus { initial, downloading, success, failure }
 

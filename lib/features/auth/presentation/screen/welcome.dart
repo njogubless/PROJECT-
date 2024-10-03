@@ -1,5 +1,5 @@
-import 'package:devotion/features/auth/screen/sign_in.dart';
-import 'package:devotion/features/auth/screen/sign_up.dart';
+import 'package:devotion/features/auth/presentation/screen/sign_in.dart';
+import 'package:devotion/features/auth/presentation/screen/sign_up.dart';
 import 'package:devotion/widget/custom_scaffold.dart';
 import 'package:devotion/widget/welcome_button.dart';
 import 'package:flutter/material.dart';

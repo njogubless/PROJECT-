@@ -1,11 +1,11 @@
 // lib/features/audio/presentation/widgets/audio_tile.dart
 
+import 'package:devotion/features/audio/domain/entities/audio_file.dart';
+import 'package:devotion/features/audio/presentation/providers/audio_player_provider.dart';
+import 'package:devotion/features/audio/presentation/providers/download_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../domain/entities/audio_file.dart';
-import '../providers/audio_player_provider.dart';
-import '../providers/download_provider.dart';
-import 'package:just_audio/just_audio.dart';
+
 
 class AudioTile extends ConsumerWidget {
   final AudioFile audioFile;
@@ -24,7 +24,7 @@ class AudioTile extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           IconButton(
-            icon: Icon(Icons.play_arrow),
+            icon:const Icon(Icons.play_arrow),
             onPressed: () async {
               try {
                 await audioPlayer.setUrl(audioFile.url);
@@ -37,7 +37,7 @@ class AudioTile extends ConsumerWidget {
             },
           ),
           IconButton(
-            icon: Icon(Icons.download),
+            icon:const Icon(Icons.download),
             onPressed: downloadState.status == DownloadStatus.downloading
                 ? null
                 : () {
@@ -45,15 +45,15 @@ class AudioTile extends ConsumerWidget {
                   },
           ),
           if (downloadState.status == DownloadStatus.downloading)
-            SizedBox(
+            const SizedBox(
               width: 24,
               height: 24,
               child: CircularProgressIndicator(strokeWidth: 2),
             ),
           if (downloadState.status == DownloadStatus.success)
-            Icon(Icons.check, color: Colors.green),
+            const Icon(Icons.check, color: Colors.green),
           if (downloadState.status == DownloadStatus.failure)
-            Icon(Icons.error, color: Colors.red),
+            const Icon(Icons.error, color: Colors.red),
         ],
       ),
     );

@@ -1,9 +1,9 @@
 // lib/features/audio/presentation/providers/audio_provider.dart
 
+import 'package:devotion/features/audio/domain/entities/audio_file.dart';
 import 'package:devotion/features/audio/domain/usecases/fetch_audio_file.dart';
-import 'package:riverpod/riverpod.dart';
-import '../../domain/entities/audio_file.dart';
-import '../../domain/usecases/fetch_audio_files.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 
 final audioProvider = StateNotifierProvider<AudioNotifier, AsyncValue<List<AudioFile>>>((ref) {
   final fetchAudioFiles = ref.read(fetchAudioFilesProvider);

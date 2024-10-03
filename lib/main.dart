@@ -1,4 +1,4 @@
-import 'package:devotion/features/auth/screen/welcome.dart';
+import 'package:devotion/features/auth/presentation/screen/welcome.dart';
 import 'package:devotion/firebase_options.dart';
 import 'package:devotion/theme/pallete.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Devotion',
+      title: 'Reflections of Faith',
       theme: Pallete.darkModeAppTheme,
       home: const WelcomeScreen(),
     );
