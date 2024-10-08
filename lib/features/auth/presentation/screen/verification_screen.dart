@@ -10,7 +10,7 @@ class VerificationScreen extends ConsumerWidget {
   const VerificationScreen({super.key, required this.verificationType});
 
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(title: Text('Verify $verificationType')),
       body: Padding(

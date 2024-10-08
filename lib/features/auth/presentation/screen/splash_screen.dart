@@ -10,7 +10,7 @@ class SplashScreen extends ConsumerWidget {
   const SplashScreen({super.key});
 
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
+  Widget build(BuildContext context, WidgetRef ref) {
     Future.delayed(const Duration(seconds: 3), () {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
@@ -30,7 +30,7 @@ class SplashScreen extends ConsumerWidget {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset('assets/images/splash_image.png', fit: BoxFit.cover),
+          Image.asset('assets/images/wheat.jpg', fit: BoxFit.cover),
           const Center(
             child: Text(
               'Reflections of Faith',

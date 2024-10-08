@@ -58,7 +58,7 @@ class AuthRepository {
         }
       }
     } catch (e) {
-      debugPrint(e);
+      debugPrint(e as String?);
       // Handle errors
     }
   }

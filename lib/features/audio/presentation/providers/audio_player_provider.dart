@@ -1,5 +1,3 @@
-// presentation/providers/audio_player_provider.dart
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:audioplayers/audioplayers.dart';
 
@@ -18,24 +16,31 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState> {
       await _audioPlayer.stop();  // Stop any currently playing audio
       _currentUrl = url;
     }
-    
-    final result = await _audioPlayer.play(url);
-    if (result == 1) {
+
+    try {
+      await _audioPlayer.play(UrlSource(url));  // Play using UrlSource
       state = AudioPlayerState.playing();
+    } catch (e) {
+      // Handle the error
+      state = AudioPlayerState.initial();
     }
   }
 
   Future<void> pause() async {
-    final result = await _audioPlayer.pause();
-    if (result == 1) {
+    try {
+      await _audioPlayer.pause();  // Pause returns Future<void>
       state = AudioPlayerState.paused();
+    } catch (e) {
+      // Handle error
     }
   }
 
   Future<void> stop() async {
-    final result = await _audioPlayer.stop();
-    if (result == 1) {
+    try {
+      await _audioPlayer.stop();  // Stop returns Future<void>
       state = AudioPlayerState.stopped();
+    } catch (e) {
+      // Handle error
     }
   }
 

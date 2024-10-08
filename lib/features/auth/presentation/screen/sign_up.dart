@@ -3,12 +3,15 @@ import 'package:devotion/features/auth/controller/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-
 class SignUpScreen extends ConsumerWidget {
   const SignUpScreen({super.key});
 
+  void signInWithGoogle(WidgetRef ref, context) {
+    ref.read(authControllerProvider).signInWithGoogle(context);
+  }
+
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(title: const Text('Sign Up')),
       body: Padding(
@@ -31,8 +34,8 @@ class SignUpScreen extends ConsumerWidget {
             ElevatedButton(
               onPressed: () {
                 // Trigger phone/email sign-up logic here
-                context.read(authControllerProvider).signUpWithPhoneNumber(
-                  'phone_number', context);  // Example for phone number
+                ref.read(authControllerProvider).signUpWithPhoneNumber(
+                    'phone_number', context); // Example for phone number
               },
               child: const Text('Sign Up with Phone'),
             ),
@@ -43,9 +46,7 @@ class SignUpScreen extends ConsumerWidget {
               child: const Text('Sign Up with Email'),
             ),
             ElevatedButton(
-              onPressed: () {
-                context.read(authControllerProvider).signInWithGoogle();
-              },
+              onPressed: () => signInWithGoogle(ref, context),
               child: const Text('Sign Up with Google'),
             ),
           ],

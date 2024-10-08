@@ -4,30 +4,31 @@ import 'package:devotion/features/audio/domain/entities/audio_file.dart';
 import 'package:devotion/features/audio/domain/usecases/fetch_audio_file.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-
+// The provider responsible for fetching the audio files
 final audioProvider = StateNotifierProvider<AudioNotifier, AsyncValue<List<AudioFile>>>((ref) {
-  final fetchAudioFiles = ref.read(fetchAudioFilesProvider);
+  final fetchAudioFiles = ref.watch(fetchAudioFilesProvider);  // Using the fetchAudioFilesProvider here
   return AudioNotifier(fetchAudioFiles);
 });
 
+// The StateNotifier responsible for managing the state of the audio files
 class AudioNotifier extends StateNotifier<AsyncValue<List<AudioFile>>> {
   final FetchAudioFiles fetchAudioFiles;
 
   AudioNotifier(this.fetchAudioFiles) : super(const AsyncLoading()) {
-    _fetchAudioFiles();
+    _fetchAudioFiles();  // Automatically fetch audio files on initialization
   }
 
   Future<void> _fetchAudioFiles() async {
     try {
-      final audioFiles = await fetchAudioFiles();
+      final audioFiles = await fetchAudioFiles();  // Fetch the list of audio files
       state = AsyncValue.data(audioFiles);
     } catch (e) {
-      state = AsyncValue.error(e);
+      state = AsyncValue.error(e);  // Handle error if fetching fails
     }
   }
 
   Future<void> refresh() async {
-    state = const AsyncLoading();
+    state = const AsyncLoading();  // Show loading while refreshing
     await _fetchAudioFiles();
   }
 }

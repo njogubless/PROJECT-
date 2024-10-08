@@ -4,12 +4,16 @@ import 'package:devotion/features/auth/presentation/screen/sign_up.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-
 class SignInScreen extends ConsumerWidget {
   const SignInScreen({super.key});
 
+  void signInWithGoogle(WidgetRef ref, BuildContext context) {
+    //pass context to the signInWithGoogle method
+    ref.read(authControllerProvider).signInWithGoogle(context);
+  }
+
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(title: const Text('Sign In')),
       body: Padding(
@@ -32,9 +36,7 @@ class SignInScreen extends ConsumerWidget {
               child: const Text('Sign In with Email'),
             ),
             ElevatedButton(
-              onPressed: () {
-                context.read(authControllerProvider).signInWithGoogle();
-              },
+              onPressed: () => signInWithGoogle(ref, context),
               child: const Text('Sign In with Google'),
             ),
             ElevatedButton(

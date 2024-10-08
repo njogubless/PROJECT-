@@ -10,7 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AudioTile extends ConsumerWidget {
   final AudioFile audioFile;
 
-  AudioTile({required this.audioFile});
+  const AudioTile({super.key, required this.audioFile});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
