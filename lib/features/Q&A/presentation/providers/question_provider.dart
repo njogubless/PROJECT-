@@ -1,50 +1,71 @@
-// // presentation/providers/question_provider.dart
-// import 'package:flutter/material.dart';
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:devotion/features/Q&A/data/repository/question_repository_impl.dart';
+import 'package:devotion/features/Q&A/domain/entities/question.dart';
+import 'package:devotion/features/Q&A/domain/repository/question_repository.dart';
+import 'package:devotion/features/Q&A/domain/usecases/answer_questions.dart';
+import 'package:devotion/features/Q&A/domain/usecases/get_questions.dart';
+import 'package:devotion/features/Q&A/domain/usecases/submit_question.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pdf/widgets.dart';
 
-// final questionProvider = StateNotifierProvider<QuestionNotifier, AsyncValue<List<Question>>>((ref) {
-//   return QuestionNotifier(ref.read(questionRepositoryProvider));
-// });
+class QuestionNotifier extends StateNotifier<List<Question>> {
+  final SubmitQuestionUseCase submitQuestionUseCase;
+  final GetQuestionsUseCase getQuestionsUseCase;
+  final AnswerQuestionUseCase answerQuestionUseCase;
 
-// class QuestionNotifier extends StateNotifier<AsyncValue<List<Question>>> {
-//   final QuestionRepository repository;
+  QuestionNotifier(
+    this.submitQuestionUseCase,
+    this.getQuestionsUseCase,
+    this.answerQuestionUseCase,
+  ) : super([]);
 
-//   QuestionNotifier(this.repository) : super(const AsyncLoading());
+  Future<void> submitQuestion(Question question) async {
+    await submitQuestionUseCase.execute(question);
+    await fetchQuestions();
+  }
 
-//   Future<void> fetchQuestions() async {
-//     try {
-//       final questions = await repository.fetchQuestions();
-//       state = AsyncValue.data(questions);
-//     } catch (e) {
-//       state = AsyncValue.error(e);
-//     }
-//   }
-// }
+  Future<void> fetchQuestions() async {
+    state = await getQuestionsUseCase.execute();
+  }
 
-// // presentation/screens/question_screen.dart
-// class QuestionScreen extends ConsumerWidget {
-//   @override
-//   Widget build(BuildContext context, ScopedReader watch) {
-//     final questionState = watch(questionProvider);
+  Future<void> answerQuestion(String questionId, String answerText) async {
+    await answerQuestionUseCase.execute(questionId, answerText);
+    await fetchQuestions();
+  }
+}
 
-//     return Scaffold(
-//       appBar: AppBar(title: Text('Questions')),
-//       body: questionState.when(
-//         data: (questions) {
-//           return ListView.builder(
-//             itemCount: questions.length,
-//             itemBuilder: (context, index) {
-//               final question = questions[index];
-//               return ListTile(
-//                 title: Text(question.content),
-//                 subtitle: Text('Asked by: ${question.userId}'),
-//               );
-//             },
-//           );
-//         },
-//         loading: () => CircularProgressIndicator(),
-//         error: (e, _) => Text('Error: $e'),
-//       ),
-//     );
-//   }
-// }
+final questionProvider = StateNotifierProvider<QuestionNotifier, List<Question>>(
+  (ref) => QuestionNotifier(
+    ref.watch(submitQuestionUseCaseProvider),
+    ref.watch(getQuestionsUseCaseProvider),
+    ref.watch(answerQuestionUseCaseProvider),
+  ),
+);
+
+// Provider Definitions
+// Provider Definitions
+final questionRepositoryProvider = Provider<QuestionRepositoryImpl>((ref) {
+  final firestore = FirebaseFirestore.instance; // Ensure you get the Firestore instance
+  return QuestionRepositoryImpl(firestore);
+});
+
+final submitQuestionUseCaseProvider = Provider<SubmitQuestionUseCase>(
+  (ref) {
+    final repository = ref.watch(questionRepositoryProvider);
+    return SubmitQuestionUseCase(repository);
+  },
+);
+
+final getQuestionsUseCaseProvider = Provider<GetQuestionsUseCase>(
+  (ref) {
+    final repository = ref.watch(questionRepositoryProvider);
+    return GetQuestionsUseCase(repository);
+  },
+);
+
+final answerQuestionUseCaseProvider = Provider<AnswerQuestionUseCase>(
+  (ref) {
+    final repository = ref.watch(questionRepositoryProvider);
+    return AnswerQuestionUseCase(repository);
+  },
+);

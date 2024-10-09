@@ -1,8 +1,17 @@
 // lib/features/audio/presentation/providers/audio_provider.dart
 
 import 'package:devotion/features/audio/domain/entities/audio_file.dart';
+import 'package:devotion/features/audio/domain/repository/audio_repository.dart';
 import 'package:devotion/features/audio/domain/usecases/fetch_audio_file.dart';
+import 'package:devotion/features/audio/presentation/providers/fetch_audio_file_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+
+// The provider for the AudioRepository
+final audioRepositoryProvider = Provider<AudioRepository>((ref) {
+  return AudioRepository();  // Return an instance of the repository
+});
+
 
 // The provider responsible for fetching the audio files
 final audioProvider = StateNotifierProvider<AudioNotifier, AsyncValue<List<AudioFile>>>((ref) {
@@ -22,8 +31,8 @@ class AudioNotifier extends StateNotifier<AsyncValue<List<AudioFile>>> {
     try {
       final audioFiles = await fetchAudioFiles();  // Fetch the list of audio files
       state = AsyncValue.data(audioFiles);
-    } catch (e) {
-      state = AsyncValue.error(e);  // Handle error if fetching fails
+    } catch (e,stack ) {
+      state = AsyncValue.error(e,stack);  // Handle error if fetching fails
     }
   }
 
