@@ -1,4 +1,7 @@
 // article_model.dart (Data Layer)
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:devotion/features/articles/domain/repository/article_repository.dart';
+
 class ArticleModel {
   final String id;
   final String title;

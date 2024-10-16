@@ -9,6 +9,8 @@ class ArticleScreen extends ConsumerWidget {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
 
+  ArticleScreen({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final articlesAsync = ref.watch(articleListProvider);

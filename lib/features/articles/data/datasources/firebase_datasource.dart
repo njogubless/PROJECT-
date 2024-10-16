@@ -1,5 +1,8 @@
 // lib/articles/data/datasources/article_remote_datasource.dart
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:devotion/features/articles/data/models/article_model.dart';
+
 abstract class ArticleRemoteDatasource {
   Future<void> createArticle(ArticleModel article);
   Future<List<ArticleModel>> getArticles();

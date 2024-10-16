@@ -1,5 +1,8 @@
 
 // create_article_usecase.dart
+import 'package:devotion/features/articles/domain/entities/article_entity.dart';
+import 'package:devotion/features/articles/domain/repository/article_repository.dart';
+
 class CreateArticle {
   final ArticleRepository repository;
 
