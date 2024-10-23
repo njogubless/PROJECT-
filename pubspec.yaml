@@ -14,9 +14,6 @@ dependencies:
     sdk: flutter
   
   flutter_riverpod: ^2.5.1
-
-
-
   cupertino_icons: ^1.0.8
   firebase_core: ^3.1.1
   firebase_storage: ^12.1.0
@@ -33,12 +30,19 @@ dependencies:
   http: ^1.2.2
   audioplayers: ^6.1.0
   just_audio: ^0.9.41
+  flutter_launcher_icons: ^0.14.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-
+  
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/ROF.webp"
+  remove_alpha_ios: true
+  
+  
   flutter_lints: ^4.0.0
 
 flutter:
@@ -47,4 +51,5 @@ flutter:
 assets:
   - assets/images/wheat.jpg
 
+  
  
