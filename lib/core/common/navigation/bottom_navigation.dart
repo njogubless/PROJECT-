@@ -1,3 +1,5 @@
+import 'package:devotion/features/Q&A/presentation/screens/question_page.dart';
+import 'package:devotion/features/articles/presentation/screens/article_screen.dart';
 import 'package:devotion/features/audio/presentation/screens/audio_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -13,9 +15,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
   final List<Widget> _screens = [
     HomeScreen(),
     const AudioScreen(),
-    ArticlesScreen(),
+    ArticleScreen(),
     BooksScreen(),
-    QAScreen(),
+    const QuestionPage(),
   ];
 
   void _onItemTapped(int index) {

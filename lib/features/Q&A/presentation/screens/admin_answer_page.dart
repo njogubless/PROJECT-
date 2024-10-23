@@ -7,10 +7,10 @@ class AdminAnswerForm extends ConsumerWidget {
   final String currentAnswerText; // Existing answer text (if any)
 
   AdminAnswerForm({
-    Key? key,
+    super.key,
     required this.questionId,
     required this.currentAnswerText,
-  }) : super(key: key);
+  });
 
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _answerController = TextEditingController();

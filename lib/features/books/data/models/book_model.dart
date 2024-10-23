@@ -1,22 +1,13 @@
 
 
-import 'package:devotion/features/books/domain/entities/book.dart';
-
 class BookModel extends Book {
   BookModel({
     required String id,
-    required String title,
+    required String title, 
     required String author,
     required String description,
     required String fileUrl,
-  }) : super(
-          id: id,
-          title: title,
-          author: author,
-          description: description,
-          fileUrl: fileUrl,
-        );
-
+  });
   factory BookModel.fromMap(Map<String, dynamic> map) {
     return BookModel(
       id: map['id'],

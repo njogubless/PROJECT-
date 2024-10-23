@@ -5,7 +5,7 @@ import 'package:devotion/features/books/domain/usecases/upload_book_usecase.dart
 import 'package:devotion/features/books/presentation/book_upload_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'book_upload_notifier.dart';
+import '../book_upload_notifier.dart';
 
 // Firebase Firestore instance provider
 final firestoreProvider = Provider<FirebaseFirestore>((ref) {

@@ -1,7 +1,7 @@
 import 'package:devotion/features/books/domain/entities/book.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'book_providers.dart';
+import 'providers/book_providers.dart';
 import 'book_upload_state.dart';
 
 class UploadBookPage extends ConsumerWidget {
@@ -10,6 +10,8 @@ class UploadBookPage extends ConsumerWidget {
   final TextEditingController _authorController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _fileUrlController = TextEditingController();
+
+  UploadBookPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

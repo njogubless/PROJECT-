@@ -5,6 +5,8 @@ import '../providers/question_provider.dart';
  // Import the admin answer form
 
 class QuestionPage extends ConsumerWidget {
+  const QuestionPage({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final questions = ref.watch(questionProvider);
