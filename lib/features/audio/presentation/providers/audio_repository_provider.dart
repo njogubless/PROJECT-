@@ -2,6 +2,7 @@
 
 import 'package:devotion/features/audio/domain/entities/audio_file.dart';
 import 'package:devotion/features/audio/domain/repository/audio_repository.dart';
+import 'package:devotion/features/audio/domain/repository/audio_repository_impl.dart';
 import 'package:devotion/features/audio/domain/usecases/fetch_audio_file.dart';
 import 'package:devotion/features/audio/presentation/providers/fetch_audio_file_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,7 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // The provider for the AudioRepository
 final audioRepositoryProvider = Provider<AudioRepository>((ref) {
-  return AudioRepository();  // Return an instance of the repository
+  return AudioRepositoryImpl();  // Return an instance of the repository
 });
 
 

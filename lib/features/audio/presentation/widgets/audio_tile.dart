@@ -6,7 +6,6 @@ import 'package:devotion/features/audio/presentation/providers/download_provider
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-
 class AudioTile extends ConsumerWidget {
   final AudioFile audioFile;
 
@@ -24,11 +23,18 @@ class AudioTile extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           IconButton(
-            icon:const Icon(Icons.play_arrow),
+            icon: const Icon(Icons.play_arrow),
             onPressed: () async {
               try {
-                await audioPlayer.setUrl(audioFile.url);
-                audioPlayer.play();
+                // Ensure the audio file URL is available
+                if (audioFile.url.isNotEmpty) {
+                  await audioPlayer.setUrl(audioFile.url);
+                  audioPlayer.play();
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Audio file URL is unavailable')),
+                  );
+                }
               } catch (e) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Error playing audio: $e')),
@@ -37,7 +43,7 @@ class AudioTile extends ConsumerWidget {
             },
           ),
           IconButton(
-            icon:const Icon(Icons.download),
+            icon: const Icon(Icons.download),
             onPressed: downloadState.status == DownloadStatus.downloading
                 ? null
                 : () {

@@ -13,7 +13,7 @@ import '../book_upload_notifier.dart';
 
 final articlesProvider = FutureProvider<List<BookEntity>>((ref) async {
   final repository = ref.read(bookRepositoryProvider);
-  return await repository.getBooks();
+  return await repository.getBooks(bookRepositoryProvider);
 });
 
 //provider for creating an article
