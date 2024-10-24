@@ -1,6 +1,8 @@
 import 'package:devotion/features/Q&A/presentation/screens/question_page.dart';
 import 'package:devotion/features/articles/presentation/screens/article_screen.dart';
 import 'package:devotion/features/audio/presentation/screens/audio_screen.dart';
+import 'package:devotion/features/auth/presentation/screen/home_screen.dart';
+import 'package:devotion/features/books/presentation/screen/book_screen.dart';
 import 'package:flutter/material.dart';
 
 class BottomNavBar extends StatefulWidget {
@@ -13,10 +15,10 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   // Define navigation destinations
   final List<Widget> _screens = [
-    HomeScreen(),
+    const HomeScreen(),
     const AudioScreen(),
     ArticleScreen(),
-    BooksScreen(),
+    BookScreen(),
     const QuestionPage(),
   ];
 

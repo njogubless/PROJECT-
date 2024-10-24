@@ -1,3 +1,4 @@
+import 'package:devotion/features/books/data/models/book_model.dart';
 import 'package:devotion/features/books/domain/entities/book.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -65,7 +66,7 @@ class UploadBookPage extends ConsumerWidget {
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    final book = Book(
+                    final book = BookModel (
                       id: 'unique_id',  // You can generate using UUID
                       title: _titleController.text,
                       author: _authorController.text,

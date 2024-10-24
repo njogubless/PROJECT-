@@ -8,7 +8,7 @@ class BookUploadNotifier extends StateNotifier<BookUploadState> {
 
   BookUploadNotifier(this.uploadBookUseCase) : super(BookUploadInitial());
 
-  Future<void> uploadBook(Book book) async {
+  Future<void> uploadBook(book) async {
     state = BookUploadLoading();
     try {
       await uploadBookUseCase.execute(book);

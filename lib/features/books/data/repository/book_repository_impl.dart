@@ -10,7 +10,7 @@ class BookRepositoryImpl implements BookRepository {
   BookRepositoryImpl(this.firestore);
 
   @override
-  Future<void> uploadBook(Book book) async {
+  Future<void> uploadBook(book) async {
     final bookModel = BookModel(
       id: book.id,
       title: book.title,

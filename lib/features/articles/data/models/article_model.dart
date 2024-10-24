@@ -59,18 +59,18 @@ class FirebaseArticleDatasource implements ArticleRemoteDatasource {
 }
 
 // article_repository_impl.dart (Data Layer)
-class ArticleRepositoryImpl implements ArticleRepository {
-  final ArticleRemoteDatasource remoteDatasource;
+// class ArticleRepositoryImpl implements ArticleRepository {
+//   final ArticleRemoteDatasource remoteDatasource;
 
-  ArticleRepositoryImpl(this.remoteDatasource);
+//   ArticleRepositoryImpl(this.remoteDatasource);
 
-  @override
-  Future<void> createArticle(ArticleModel article) {
-    return remoteDatasource.createArticle(article);
-  }
+//   @override
+//   Future<void> createArticle(ArticleModel article) {
+//     return remoteDatasource.createArticle(article);
+//   }
 
-  @override
-  Future<List<ArticleModel>> getArticles() {
-    return remoteDatasource.getArticles();
-  }
-}
+//   @override
+//   Future<List<ArticleModel>> getArticles() {
+//     return remoteDatasource.getArticles();
+//   }
+// }

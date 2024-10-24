@@ -1,9 +1,6 @@
-// ignore_for_file: depend_on_referenced_packages
+
 
 import 'package:flutter/material.dart';
-//import 'package:reddit_tutorial/features/feed/feed_screen.dart';
-//import 'package:reddit_tutorial/features/home/screens/home_screen.dart';
-//import 'package:reddit_tutorial/features/post/screens/add_post_screen.dart';
 
 class Constants {
   static const logoPath = 'assets/images/logo.png';

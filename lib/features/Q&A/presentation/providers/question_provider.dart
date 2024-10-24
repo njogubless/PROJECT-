@@ -1,12 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:devotion/features/Q&A/data/repository/question_repository_impl.dart';
 import 'package:devotion/features/Q&A/domain/entities/question.dart';
-import 'package:devotion/features/Q&A/domain/repository/question_repository.dart';
 import 'package:devotion/features/Q&A/domain/usecases/answer_questions.dart';
 import 'package:devotion/features/Q&A/domain/usecases/get_questions.dart';
 import 'package:devotion/features/Q&A/domain/usecases/submit_question.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pdf/widgets.dart';
 
 class QuestionNotifier extends StateNotifier<List<Question>> {
   final SubmitQuestionUseCase submitQuestionUseCase;
@@ -47,7 +45,7 @@ final questionProvider = StateNotifierProvider<QuestionNotifier, List<Question>>
 final questionRepositoryProvider = Provider<QuestionRepositoryImpl>((ref) {
   final firestore = FirebaseFirestore.instance; // Ensure you get the Firestore instance
   return QuestionRepositoryImpl(firestore);
-});
+}); 
 
 final submitQuestionUseCaseProvider = Provider<SubmitQuestionUseCase>(
   (ref) {

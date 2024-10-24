@@ -1,5 +1,6 @@
 // lib/articles/presentation/providers/article_providers.dart
 
+import 'package:devotion/features/articles/data/models/article_model.dart';
 import 'package:devotion/features/articles/data/repository/article_repository_impl.dart';
 import 'package:devotion/features/articles/domain/entities/article_entity.dart';
 import 'package:devotion/features/articles/domain/usecases/article_usecase.dart';

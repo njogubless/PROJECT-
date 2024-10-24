@@ -8,7 +8,7 @@ class UploadBookUseCase {
 
   UploadBookUseCase(this.repository);
 
-  Future<void> execute(Book book) async {
+  Future<void> execute( book) async {
     return await repository.uploadBook(book);
   }
 }
