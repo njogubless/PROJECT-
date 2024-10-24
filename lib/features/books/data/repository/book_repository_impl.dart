@@ -25,7 +25,7 @@ class BookRepositoryImpl implements BookRepository {
     try {
       final snapshot = await firestore.collection('books').get();
       List<BookModel> books = snapshot.docs.map((doc) {
-        return BookModel.fromMap(doc.data() as Map<String, dynamic>, doc.id);
+        return BookModel.fromMap(doc.data());
       }).toList();
       return books; // Return the list of BookModel as dynamic
     } catch (e) {
