@@ -1,6 +1,7 @@
 // presentation/screens/verification_screen.dart
 import 'package:devotion/features/auth/presentation/screen/sign_in.dart';
-import 'package:devotion/features/auth/presentation/screen/sign_up.dart';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -24,12 +25,16 @@ class VerificationScreen extends ConsumerWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                // Handle verification logic here
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => const SignInScreen()),
-                );
+                FirebaseAuth.instance.currentUser?.reload().then((_) {
+                  if (FirebaseAuth.instance.currentUser?.emailVerified ?? false) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => SignInPage()),
+                    );
+                  }
+                });
               },
-              child: const Text('Verify'),
+              child: Text('I have verified'),
             ),
           ],
         ),

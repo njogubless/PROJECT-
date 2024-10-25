@@ -36,7 +36,7 @@ class WelcomeScreen extends StatelessWidget {
                               ))
                         ])))),
               )),
-          const Flexible(
+          Flexible(
               flex: 1,
               child: Align(
                 alignment: Alignment.bottomRight,
@@ -45,12 +45,12 @@ class WelcomeScreen extends StatelessWidget {
                     Expanded(
                         child: WelcomeButton(
                       buttonText: 'Sign in',
-                      onTap: SignInScreen(),
+                      onTap: SignInPage(),
                     )),
                     Expanded(
                         child: WelcomeButton(
                       buttonText: 'Sign up',
-                      onTap: SignUpScreen(),
+                      onTap: SignUpPage(),
                     )),
                   ],
                 ),

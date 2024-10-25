@@ -1,29 +1,39 @@
-
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:devotion/features/Q&A/domain/entities/question.dart';
 import 'package:devotion/features/Q&A/presentation/providers/question_provider.dart';
 import 'package:devotion/features/articles/presentation/providers/article_provider.dart';
 import 'package:devotion/features/audio/presentation/providers/audio_repository_provider.dart';
+import 'package:devotion/widget/app_drawer.dart';
 import 'package:devotion/widget/article_widget.dart';
 import 'package:devotion/widget/question_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final latestAudioProvider = FutureProvider<List<Audio>>((ref) async {
-  return await ref.watch(audioRepositoryProvider).getLatestAudios(); // Multiple audios
+  return await ref.watch(audioRepositoryProvider).fetchAudioFiles(); // Multiple audios
 });
 
 final latestArticleProvider = FutureProvider<Article>((ref) async {
-  return await ref.watch(articleRepositoryProvider).getLatestArticle();
+  return await ref.watch(articleRepositoryProvider).getArticles();
 });
 
 final latestQuestionProvider = FutureProvider<Question>((ref) async {
-  return await ref.watch(questionRepositoryProvider).getLatestQuestion();
+  return await ref.watch(questionRepositoryProvider).getQuestions();
 });
 
 class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
+      // Add the AppDrawer here
+      appBar: AppBar(
+        title: Text('Home'),
+      ),
+      drawer: AppDrawer(
+        userName: 'John Doe', // Replace with actual user data
+        userEmail: 'john.doe@example.com',
+        userAvatarUrl: 'https://via.placeholder.com/150',
+      ),
       body: CustomScrollView(
         slivers: [
           // SliverAppBar with image background

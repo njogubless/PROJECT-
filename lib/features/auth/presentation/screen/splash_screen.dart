@@ -16,12 +16,12 @@ class SplashScreen extends ConsumerWidget {
       if (user != null) {
         // User is signed in, navigate to the main screen
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const SignInScreen()),
+          MaterialPageRoute(builder: (context) => SignInPage()),
         );
       } else {
         // User is not signed in, navigate to sign-up screen
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const SignUpScreen()),
+          MaterialPageRoute(builder: (context) => SignUpPage()),
         );
       }
     });

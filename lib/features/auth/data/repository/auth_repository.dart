@@ -118,7 +118,7 @@ class AuthRepository {
   }
 
   // Sign in with email and password
-  Future<void> signInWithEmail(
+  Future<User?> signInWithEmail(
       String email, String password, BuildContext context) async {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
@@ -134,5 +134,10 @@ class AuthRepository {
     } catch (e) {
       // Handle errors
     }
+  }
+
+   Future<void> signOutUser() async {
+    await _googleSignIn.signOut(); // For Google Sign-Out
+    await _auth.signOut(); // Firebase Auth Sign-Out
   }
 }
