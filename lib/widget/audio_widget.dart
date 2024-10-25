@@ -1,8 +1,9 @@
+import 'package:devotion/features/audio/data/models/audio_model.dart';
 import 'package:flutter/material.dart';
 
 
 class AudioWidget extends StatelessWidget {
-  final Audio audio;
+  final AudioFile audio;
   const AudioWidget({required this.audio});
 
   @override
@@ -21,7 +22,7 @@ class AudioWidget extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: Image.network(
-                audio.coverUrl ?? 'https://via.placeholder.com/100', // Replace with actual audio cover URL
+               audio.coverUrl, // Replace with actual audio cover URL
                 width: 80,
                 height: 80,
                 fit: BoxFit.cover,
@@ -71,7 +72,7 @@ class AudioWidget extends StatelessWidget {
     );
   }
 
-  void _playAudio(Audio audio) {
+  void _playAudio(AudioFile audio) {
     // Handle audio playback functionality here
     print('Playing audio: ${audio.title}');
   }

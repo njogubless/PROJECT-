@@ -15,11 +15,11 @@ class QuestionWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(question.title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            //Text(question.title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             SizedBox(height: 8),
-            Text('Asked by ${question.askedBy}', style: TextStyle(color: Colors.grey)),
+            Text('Asked by ${question.askedAt}', style: TextStyle(color: Colors.grey)),
             SizedBox(height: 12),
-            Text(question.summary), // Assuming a summary field exists
+            Text(question.questionText), // Assuming a summary field exists
             SizedBox(height: 12),
             ElevatedButton(
               onPressed: () {

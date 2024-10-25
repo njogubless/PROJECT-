@@ -1,7 +1,9 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:devotion/features/Q&A/domain/entities/question.dart';
 import 'package:devotion/features/Q&A/presentation/providers/question_provider.dart';
+import 'package:devotion/features/articles/domain/entities/article_entity.dart';
 import 'package:devotion/features/articles/presentation/providers/article_provider.dart';
+import 'package:devotion/features/audio/data/models/audio_model.dart';
 import 'package:devotion/features/audio/presentation/providers/audio_repository_provider.dart';
 import 'package:devotion/widget/app_drawer.dart';
 import 'package:devotion/widget/article_widget.dart';
@@ -9,15 +11,17 @@ import 'package:devotion/widget/question_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final latestAudioProvider = FutureProvider<List<Audio>>((ref) async {
-  return await ref.watch(audioRepositoryProvider).fetchAudioFiles(); // Multiple audios
+final latestAudioProvider = FutureProvider<List<AudioFile>>((ref) async {
+  return await ref
+      .watch(audioRepositoryProvider)
+      .fetchAudioFiles(); // Multiple audios
 });
 
-final latestArticleProvider = FutureProvider<Article>((ref) async {
+final latestArticleProvider = FutureProvider<List<ArticleEntity>>((ref) async {
   return await ref.watch(articleRepositoryProvider).getArticles();
 });
 
-final latestQuestionProvider = FutureProvider<Question>((ref) async {
+final latestQuestionProvider = FutureProvider<List<Question>>((ref) async {
   return await ref.watch(questionRepositoryProvider).getQuestions();
 });
 
@@ -54,47 +58,60 @@ class HomeScreen extends ConsumerWidget {
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Latest Audio Section with Carousel
-                  Text(
-                    'Latest Audio',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 8),
-                  ref.watch(latestAudioProvider).when(
-                        data: (audios) => _buildAudioCarousel(audios),
-                        loading: () => Center(child: CircularProgressIndicator()),
-                        error: (error, _) => Text('Error loading audio'),
-                      ),
-                  SizedBox(height: 24),
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Latest Audio Section with Carousel
+                    Text(
+                      'Latest Audio',
+                      style:
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 8),
+                    ref.watch(latestAudioProvider).when(
+                          data: (audios) => _buildAudioCarousel(audios),
+                          loading: () =>
+                              Center(child: CircularProgressIndicator()),
+                          error: (error, _) => Text('Error loading audio'),
+                        ),
+                    SizedBox(height: 24),
 
-                  // Latest Article Section
-                  Text(
-                    'Latest Article',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 8),
-                  ref.watch(latestArticleProvider).when(
-                        data: (article) => ArticleWidget(article: article),
-                        loading: () => CircularProgressIndicator(),
-                        error: (error, _) => Text('Error loading article'),
-                      ),
-                  SizedBox(height: 24),
+                    // Latest Article Section
+                    Text(
+                      'Latest Article',
+                      style:
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 8),
+                    ref.watch(latestArticleProvider).when(
+                          data: (articles) => Column(
+                            children: articles
+                                .map((article) =>
+                                    ArticleWidget(article: article))
+                                .toList(),
+                          ),
+                          loading: () => CircularProgressIndicator(),
+                          error: (error, _) => Text('Error loading articles'),
+                        ),
+                    SizedBox(height: 24),
 
-                  // Latest Question Section
-                  Text(
-                    'Latest Question',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 8),
-                  ref.watch(latestQuestionProvider).when(
-                        data: (question) => QuestionWidget(question: question),
-                        loading: () => CircularProgressIndicator(),
-                        error: (error, _) => Text('Error loading question'),
-                      ),
-                ],
-              ),
+                    // Latest Question Section
+                    Text(
+                      'Latest Question',
+                      style:
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 8),
+                    ref.watch(latestQuestionProvider).when(
+                          data: (questions) => Column(
+                            children: questions
+                                .map((question) =>
+                                    QuestionWidget(question: question))
+                                .toList(),
+                          ),
+                          loading: () => CircularProgressIndicator(),
+                          error: (error, _) => Text('Error loading questions'),
+                        ),
+                  ]),
             ),
           ),
         ],
@@ -103,7 +120,7 @@ class HomeScreen extends ConsumerWidget {
   }
 
   // Carousel Slider for Audio
-  Widget _buildAudioCarousel(List<Audio> audios) {
+  Widget _buildAudioCarousel(List<AudioFile> audios) {
     return CarouselSlider.builder(
       itemCount: audios.length,
       itemBuilder: (context, index, realIdx) {
@@ -112,13 +129,16 @@ class HomeScreen extends ConsumerWidget {
           margin: EdgeInsets.symmetric(horizontal: 8.0),
           child: Card(
             elevation: 5,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(Icons.audiotrack, size: 50, color: Colors.teal),
                 SizedBox(height: 10),
-                Text(audio.title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text(audio.title,
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 SizedBox(height: 8),
                 Text(audio.duration.toString() + ' mins'),
                 SizedBox(height: 8),

@@ -1,6 +1,6 @@
 // domain/repositories/audio_repository.dart
 
-import 'package:devotion/features/audio/domain/entities/audio_file.dart';
+import 'package:devotion/features/audio/data/models/audio_model.dart';
 
 abstract class AudioRepository {
   Future<void> uploadAudioFile(AudioFile audioFile, String filePath);

@@ -1,9 +1,10 @@
 // lib/features/audio/data/datasources/firebase_audio_data_source.dart
 
 import 'dart:io';
+import 'package:devotion/features/audio/data/models/audio_model.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../domain/entities/audio_file.dart';
+
 
 class FirebaseAudioDataSource {
   final FirebaseFirestore firestore;
@@ -35,6 +36,9 @@ class FirebaseAudioDataSource {
         url: data['url'],
         uploaderId: data['uploaderId'],
         uploadDate: DateTime.parse(data['uploadDate']),
+        coverUrl: data['coverUrl'],
+        duration: data ['duration'],
+        setUrl: data['setUrl'],
       );
     }).toList();
   }
@@ -48,6 +52,9 @@ class FirebaseAudioDataSource {
       url: data['url'],
       uploaderId: data['uploaderId'],
       uploadDate: DateTime.parse(data['uploadDate']),
+      coverUrl:data['coverUrl'],
+      duration: data['duration'], 
+      setUrl: data['setUrl'],
     );
   }
 

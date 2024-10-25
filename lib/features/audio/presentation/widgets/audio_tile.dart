@@ -1,6 +1,6 @@
 // lib/features/audio/presentation/widgets/audio_tile.dart
 
-import 'package:devotion/features/audio/domain/entities/audio_file.dart';
+import 'package:devotion/features/audio/data/models/audio_model.dart';
 import 'package:devotion/features/audio/presentation/providers/audio_player_provider.dart';
 import 'package:devotion/features/audio/presentation/providers/download_provider.dart';
 import 'package:flutter/material.dart';

@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:devotion/features/audio/data/models/audio_model.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:devotion/features/audio/domain/entities/audio_file.dart';
 import 'package:devotion/features/audio/domain/repository/audio_repository.dart';
 
 class AudioRepositoryImpl implements AudioRepository {
@@ -43,7 +43,11 @@ class AudioRepositoryImpl implements AudioRepository {
           title: data['title'],
           url: data['url'],
           uploaderId: data['id'],
-          uploadDate: data['date'],
+          uploadDate: data['date'], 
+          coverUrl: data['coverUrl'], 
+          setUrl:data['setUrl'], 
+          duration: data['duration'],
+          
         );
       }).toList();
     } catch (e) {
