@@ -28,11 +28,15 @@ class AudioTile extends ConsumerWidget {
               try {
                 // Ensure the audio file URL is available
                 if (audioFile.url.isNotEmpty) {
-                  await audioPlayer.setUrl(audioFile.url);
-                  audioPlayer.play();
+                  // load and play the audio from the url
+                  Audio audio = Audio.load(audioFile.url);
+                  audio.play();
+                  // await audioPlayer.setUrl(audioFile.url);
+                  // audioPlayer.play();
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Audio file URL is unavailable')),
+                    const SnackBar(
+                        content: Text('Audio file URL is unavailable')),
                   );
                 }
               } catch (e) {
@@ -47,7 +51,9 @@ class AudioTile extends ConsumerWidget {
             onPressed: downloadState.status == DownloadStatus.downloading
                 ? null
                 : () {
-                    ref.read(downloadProvider(audioFile.id).notifier).download(audioFile.id);
+                    ref
+                        .read(downloadProvider(audioFile.id).notifier)
+                        .download(audioFile.id);
                   },
           ),
           if (downloadState.status == DownloadStatus.downloading)

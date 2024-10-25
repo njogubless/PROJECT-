@@ -15,7 +15,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   // Define navigation destinations
   final List<Widget> _screens = [
-    const HomeScreen(),
+    HomeScreen(),
     const AudioScreen(),
     ArticleScreen(),
     BookScreen(),

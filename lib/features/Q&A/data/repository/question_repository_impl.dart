@@ -18,6 +18,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
       askedAt: question.askedAt,
       answer: question.answer,
       answeredAt: question.answeredAt,
+      questionTitle: '',
     );
     await firestore.collection('questions').doc(question.id).set(questionModel.toMap());
   }
@@ -50,6 +51,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
       answer: question.answer,
       askedAt: question.askedAt,
       answeredAt: question.answeredAt,
+      questionTitle: '',
     );
     await firestore.collection('questions').doc(question.id).update({
       'answer': questionModel.answer,
