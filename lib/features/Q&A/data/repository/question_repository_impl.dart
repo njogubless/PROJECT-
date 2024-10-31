@@ -43,19 +43,12 @@ class QuestionRepositoryImpl implements QuestionRepository {
 
 
   @override
-  Future<void> answerQuestion(Question question) async {
-    final questionModel = QuestionModel(
-      id: question.id,
-      userId: question.userId,
-      question: question.questionText,
-      answer: question.answer,
-      askedAt: question.askedAt,
-      answeredAt: question.answeredAt,
-      questionTitle: '',
-    );
-    await firestore.collection('questions').doc(question.id).update({
-      'answer': questionModel.answer,
-      'answeredAt': questionModel.answeredAt,
-    });
-  }
+ @override
+Future<void> answerQuestion(String questionId, String answer) async {
+  await firestore.collection('questions').doc(questionId).update({
+    'answer': answer,
+    'answeredAt': DateTime.now(),
+  });
+}
+
 }

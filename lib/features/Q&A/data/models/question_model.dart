@@ -1,3 +1,5 @@
+import 'package:devotion/features/Q&A/domain/entities/question.dart';
+
 class QuestionModel {
   final String id;
   final String userId;
@@ -37,8 +39,20 @@ class QuestionModel {
       questionTitle: map['questionTitle'],
       answer: map['answer'],
       askedAt: DateTime.parse(map['askedAt']),
-      answeredAt:
-          map['answeredAt'] != null ? DateTime.parse(map['answeredAt']) : null,
+      answeredAt: map['answeredAt'] != null ? DateTime.parse(map['answeredAt']) : null,
+    );
+  }
+
+  // Convert QuestionModel to Question entity
+  Question toEntity() {
+    return Question(
+      id: id,
+      userId: userId,
+      questionText: question,
+      questionTitle: questionTitle,
+      answer: answer,
+      askedAt: askedAt,
+      answeredAt: answeredAt,
     );
   }
 }

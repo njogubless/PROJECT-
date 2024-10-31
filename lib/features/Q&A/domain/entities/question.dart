@@ -5,7 +5,8 @@ class Question {
   final String? answer; // Answer can be nullable
   final String? answerText; // If you need both, rename to avoid confusion
   final DateTime askedAt;
-  final DateTime? answeredAt; // answeredAt can also be nullable
+  final DateTime? answeredAt;
+  final String questionTitle; // answeredAt can also be nullable
 
   Question({
     required this.id,
@@ -15,5 +16,6 @@ class Question {
     this.answerText, // Nullable properties should not be required
     required this.askedAt,
     this.answeredAt,
+    required this.questionTitle,
   });
 }

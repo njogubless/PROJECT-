@@ -30,10 +30,10 @@ class SplashScreen extends ConsumerWidget {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset('assets/images/wheat.jpg', fit: BoxFit.cover),
+          Image.asset('assets/images/flower.jpg', fit: BoxFit.cover),
           const Center(
             child: Text(
-              'Reflections of Faith',
+              'Reflections on Faith',
               style: TextStyle(
                 fontSize: 36,
                 fontWeight: FontWeight.bold,

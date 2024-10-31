@@ -25,8 +25,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Reflections of Faith',
-      theme: Pallete.darkModeAppTheme,
+      title: 'Reflections on Faith',
+      theme: Pallete.lightModeAppTheme,
       home: const WelcomeScreen(),
     );
   }
