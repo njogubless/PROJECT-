@@ -1,6 +1,7 @@
 import 'package:devotion/core/common/sign_in_button.dart';
 import 'package:devotion/features/auth/presentation/screen/forget_password_screen.dart';
 import 'package:devotion/features/auth/presentation/screen/sign_up.dart';
+import 'package:devotion/features/auth/presentation/screen/welcome.dart';
 import 'package:devotion/theme/theme.dart';
 import 'package:devotion/widget/login_form.dart';
 import 'package:devotion/widget/primary_button.dart';
@@ -66,7 +67,8 @@ class LoginScreen extends StatelessWidget {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const ForgotPasswordScreen ()));
+                            builder: (context) =>
+                                const ForgotPasswordScreen()));
                   },
                   child: const Text(
                     ' Forgot Password ?',
@@ -80,8 +82,16 @@ class LoginScreen extends StatelessWidget {
                 const SizedBox(
                   height: 20,
                 ),
-                const PrimaryButton(
-                  buttonText: ' Log In',
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const WelcomeScreen()));
+                  },
+                  child: const PrimaryButton(
+                    buttonText: ' Log In',
+                  ),
                 ),
                 const SizedBox(
                   height: 20,

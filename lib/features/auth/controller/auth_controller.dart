@@ -1,5 +1,6 @@
-
+// auth_controller.dart
 import 'package:devotion/features/auth/data/repository/auth_repository.dart';
+import 'package:devotion/features/auth/presentation/screen/welcome.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 
@@ -16,8 +17,15 @@ class AuthController {
       : _authRepository = authRepository;
 
   // Sign in with Google
-  void signInWithGoogle(BuildContext context) {
-    _authRepository.signInWithGoogle(context);
+  Future<void> signInWithGoogle(BuildContext context) async {
+    final user = await _authRepository.signInWithGoogle(context);
+
+    if (user != null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const WelcomeScreen()),
+      );
+    }
   }
 
   // Sign up with phone number
@@ -36,12 +44,25 @@ class AuthController {
   }
 
   // Sign in with email and password
-  void signInWithEmail(String email, String password, BuildContext context) {
-    _authRepository.signInWithEmail(email, password, context);
+  void signInWithEmail(String email, String password, BuildContext context) async {
+    final user = await _authRepository.signInWithEmail(email, password, context);
+
+    if (user != null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const WelcomeScreen()),
+      );
+    }
   }
 
   // Send password reset email
   void sendPasswordReset(String email, BuildContext context) {
     _authRepository.sendPasswordReset(email, context);
+  }
+
+  // Sign out the user
+  void signOut(BuildContext context) async {
+    await _authRepository.signOutUser();
+    Navigator.pushReplacementNamed(context, '/login'); // Update to navigate back to the login screen
   }
 }
