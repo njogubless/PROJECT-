@@ -1,4 +1,9 @@
+import 'package:devotion/core/common/sign_in_button.dart';
+import 'package:devotion/features/auth/presentation/screen/login_screen.dart';
 import 'package:devotion/features/auth/presentation/screen/verification_screen.dart';
+import 'package:devotion/theme/theme.dart';
+import 'package:devotion/widget/primary_button.dart';
+import 'package:devotion/widget/signup_form.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -19,7 +24,8 @@ class _SignUpPageState extends State<SignUpPage> {
   Future<void> _signUpWithEmail() async {
     if (_formKey.currentState!.validate()) {
       try {
-        UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+        UserCredential userCredential =
+            await _auth.createUserWithEmailAndPassword(
           email: emailController.text.trim(),
           password: passwordController.text.trim(),
         );
@@ -37,7 +43,10 @@ class _SignUpPageState extends State<SignUpPage> {
         // Navigate to email verification page
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) =>const VerificationScreen(verificationType: '',)),
+          MaterialPageRoute(
+              builder: (context) => const VerificationScreen(
+                    verificationType: '',
+                  )),
         );
       } catch (e) {
         debugPrint('Error during sign up: $e');
@@ -51,57 +60,84 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Sign Up")),
-      body: Form(
-        key: _formKey,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              TextFormField(
-                controller: emailController,
-                decoration: const InputDecoration(labelText: 'Email'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your email';
-                  }
-                  return null;
-                },
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(
+              height: 70,
+            ),
+            Padding(
+              padding: kDefaultPadding,
+              child: Text(
+                'Create Account',
+                style: titleText,
               ),
-              TextFormField(
-                controller: passwordController,
-                decoration: const InputDecoration(labelText: 'Password'),
-                obscureText: true,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your password';
-                  }
-                  return null;
-                },
+            ),
+            const SizedBox(
+              height: 5,
+            ),
+            Padding(
+              padding: kDefaultPadding,
+              child: Row(
+                children: [
+                  Text(
+                    'Already Member ?',
+                    style: subTitle,
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const LoginScreen()));
+                    },
+                    child: Text(
+                      'Sign in',
+                      style: textButton.copyWith(
+                        decoration: TextDecoration.underline,
+                        decorationThickness: 1,
+                      ),
+                    ),
+                  )
+                ],
               ),
-              TextFormField(
-                controller: phoneController,
-                decoration: const InputDecoration(labelText: 'Phone Number'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your phone number';
-                  }
-                  return null;
-                },
+            ),
+            const SizedBox(height: 10,),
+            const Padding(
+              padding: kDefaultPadding,
+              child: SignupForm(),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            const Padding(padding: kDefaultPadding,
+            child: PrimaryButton(buttonText: 'Sign Up'),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Padding(
+              padding: kDefaultPadding,
+              child: Text(' or Log In With:', 
+              style: subTitle.copyWith(color: kBlackColor),
               ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _signUpWithEmail,
-                child: const Text('Sign Up'),
-              ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: _signUpWithGoogle, // Google sign-in logic
-                child: const Text('Sign Up with Google'),
-              ),
-            ],
-          ),
-        ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            const Padding(
+              padding: kDefaultPadding,
+              child: SignInButton(),
+            ),
+            const SizedBox(
+              height:20,
+            ),
+          ],
+        ), 
       ),
     );
   }

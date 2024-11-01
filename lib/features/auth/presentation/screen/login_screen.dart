@@ -1,6 +1,5 @@
 import 'package:devotion/core/common/sign_in_button.dart';
 import 'package:devotion/features/auth/presentation/screen/forget_password_screen.dart';
-import 'package:devotion/features/auth/presentation/screen/sign_in.dart';
 import 'package:devotion/features/auth/presentation/screen/sign_up.dart';
 import 'package:devotion/theme/theme.dart';
 import 'package:devotion/widget/login_form.dart';
