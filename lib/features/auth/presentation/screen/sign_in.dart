@@ -13,32 +13,32 @@ class SignInPage extends ConsumerWidget {
     final authRepository = ref.read(authRepositoryProvider);
 
     return Scaffold(
-      appBar: AppBar(title: Text('Sign In')),
+      appBar: AppBar(title: const Text('Sign In')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             TextFormField(
               controller: emailController,
-              decoration: InputDecoration(labelText: 'Email'),
+              decoration: const InputDecoration(labelText: 'Email'),
             ),
             TextFormField(
               controller: passwordController,
-              decoration: InputDecoration(labelText: 'Password'),
+              decoration: const InputDecoration(labelText: 'Password'),
               obscureText: true,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
                 await _signIn(context, authRepository);
               },
-              child: Text('Sign In'),
+              child: const Text('Sign In'),
             ),
             ElevatedButton(
               onPressed: () async {
                 await _signInWithGoogle(context, authRepository);
               },
-              child: Text('Sign In with Google'),
+              child: const Text('Sign In with Google'),
             ),
           ],
         ),

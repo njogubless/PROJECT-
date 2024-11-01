@@ -1,3 +1,4 @@
+import 'package:devotion/features/auth/presentation/screen/login_screen.dart';
 import 'package:devotion/features/auth/presentation/screen/welcome.dart';
 import 'package:devotion/firebase_options.dart';
 import 'package:devotion/theme/pallete.dart';
@@ -27,7 +28,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Reflections on Faith',
       theme: Pallete.lightModeAppTheme,
-      home: const WelcomeScreen(),
+      home: const LoginScreen(),
     );
   }
 }

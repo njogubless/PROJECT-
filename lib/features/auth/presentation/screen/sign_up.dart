@@ -37,10 +37,10 @@ class _SignUpPageState extends State<SignUpPage> {
         // Navigate to email verification page
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) =>VerificationScreen(verificationType: '',)),
+          MaterialPageRoute(builder: (context) =>const VerificationScreen(verificationType: '',)),
         );
       } catch (e) {
-        print('Error during sign up: $e');
+        debugPrint('Error during sign up: $e');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error during sign up: $e')),
         );
@@ -51,7 +51,7 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Sign Up")),
+      appBar: AppBar(title: const Text("Sign Up")),
       body: Form(
         key: _formKey,
         child: Padding(
@@ -60,7 +60,7 @@ class _SignUpPageState extends State<SignUpPage> {
             children: [
               TextFormField(
                 controller: emailController,
-                decoration: InputDecoration(labelText: 'Email'),
+                decoration: const InputDecoration(labelText: 'Email'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your email';
@@ -70,7 +70,7 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
               TextFormField(
                 controller: passwordController,
-                decoration: InputDecoration(labelText: 'Password'),
+                decoration: const InputDecoration(labelText: 'Password'),
                 obscureText: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -81,7 +81,7 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
               TextFormField(
                 controller: phoneController,
-                decoration: InputDecoration(labelText: 'Phone Number'),
+                decoration: const InputDecoration(labelText: 'Phone Number'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your phone number';
@@ -89,15 +89,15 @@ class _SignUpPageState extends State<SignUpPage> {
                   return null;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _signUpWithEmail,
-                child: Text('Sign Up'),
+                child: const Text('Sign Up'),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: _signUpWithGoogle, // Google sign-in logic
-                child: Text('Sign Up with Google'),
+                child: const Text('Sign Up with Google'),
               ),
             ],
           ),

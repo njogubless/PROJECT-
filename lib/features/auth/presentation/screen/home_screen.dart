@@ -31,9 +31,9 @@ class HomeScreen extends ConsumerWidget {
     return Scaffold(
       // Add the AppDrawer here
       appBar: AppBar(
-        title: Text('Home'),
+        title: const Text('Home'),
       ),
-      drawer: AppDrawer(
+      drawer: const AppDrawer(
         userName: 'John Doe', // Replace with actual user data
         userEmail: 'john.doe@example.com',
         userAvatarUrl: 'https://via.placeholder.com/150',
@@ -47,7 +47,7 @@ class HomeScreen extends ConsumerWidget {
             pinned: true,
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: true,
-              title: Text('Home', style: TextStyle(fontSize: 18.0)),
+              title: const Text('Home', style: TextStyle(fontSize: 18.0)),
               background: Image.network(
                 'https://via.placeholder.com/400x300', // Replace with a meaningful background image
                 fit: BoxFit.cover,
@@ -61,27 +61,27 @@ class HomeScreen extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Latest Audio Section with Carousel
-                    Text(
+                    const Text(
                       'Latest Audio',
                       style:
                           TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     ref.watch(latestAudioProvider).when(
                           data: (audios) => _buildAudioCarousel(audios),
                           loading: () =>
-                              Center(child: CircularProgressIndicator()),
-                          error: (error, _) => Text('Error loading audio'),
+                              const Center(child: CircularProgressIndicator()),
+                          error: (error, _) => const Text('Error loading audio'),
                         ),
-                    SizedBox(height: 24),
+                    const SizedBox(height: 24),
 
                     // Latest Article Section
-                    Text(
+                    const Text(
                       'Latest Article',
                       style:
                           TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     ref.watch(latestArticleProvider).when(
                           data: (articles) => Column(
                             children: articles
@@ -89,18 +89,18 @@ class HomeScreen extends ConsumerWidget {
                                     ArticleWidget(article: article))
                                 .toList(),
                           ),
-                          loading: () => CircularProgressIndicator(),
-                          error: (error, _) => Text('Error loading articles'),
+                          loading: () => const CircularProgressIndicator(),
+                          error: (error, _) => const Text('Error loading articles'),
                         ),
-                    SizedBox(height: 24),
+                    const SizedBox(height: 24),
 
                     // Latest Question Section
-                    Text(
+                    const Text(
                       'Latest Question',
                       style:
                           TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     ref.watch(latestQuestionProvider).when(
                           data: (questions) => Column(
                             children: questions
@@ -108,8 +108,8 @@ class HomeScreen extends ConsumerWidget {
                                     QuestionWidget(question: question))
                                 .toList(),
                           ),
-                          loading: () => CircularProgressIndicator(),
-                          error: (error, _) => Text('Error loading questions'),
+                          loading: () => const CircularProgressIndicator(),
+                          error: (error, _) => const Text('Error loading questions'),
                         ),
                   ]),
             ),
@@ -126,7 +126,7 @@ class HomeScreen extends ConsumerWidget {
       itemBuilder: (context, index, realIdx) {
         final audio = audios[index];
         return Container(
-          margin: EdgeInsets.symmetric(horizontal: 8.0),
+          margin: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Card(
             elevation: 5,
             shape:
@@ -134,20 +134,20 @@ class HomeScreen extends ConsumerWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.audiotrack, size: 50, color: Colors.teal),
-                SizedBox(height: 10),
+                const Icon(Icons.audiotrack, size: 50, color: Colors.teal),
+                const SizedBox(height: 10),
                 Text(audio.title,
                     style:
-                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                SizedBox(height: 8),
-                Text(audio.duration.toString() + ' mins'),
-                SizedBox(height: 8),
+                        const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                Text('${audio.duration} mins'),
+                const SizedBox(height: 8),
                 ElevatedButton.icon(
                   onPressed: () {
                     // Trigger audio playback
                   },
-                  icon: Icon(Icons.play_arrow),
-                  label: Text('Play'),
+                  icon: const Icon(Icons.play_arrow),
+                  label: const Text('Play'),
                 ),
               ],
             ),
