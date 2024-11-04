@@ -30,7 +30,7 @@ class AuthRepository {
   CollectionReference get _users =>
       _firestore.collection(FirebaseConstants.usersCollection);
 
-  void signInWithGoogle() async {
+  Future<UserModel> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
@@ -43,22 +43,20 @@ class AuthRepository {
 
       UserCredential userCredential =
           await _auth.signInWithCredential(credential);
-      UserModel userModel;
-      if(userCredential.additionalUserInfo!.isNewUser){
-        userModel=UserModel(
-        uid: userCredential.user!.uid,
-        isAuthenticated: true,
-        name: userCredential.user!.displayName ?? 'No name',
-      );
+      late UserModel userModel;
 
-      await _users.doc(userCredential.user!.uid).set(userModel.toMap());
+      if (userCredential.additionalUserInfo!.isNewUser) {
+          userModel = UserModel(
+          uid: userCredential.user!.uid,
+          isAuthenticated: true,
+          name: userCredential.user!.displayName ?? 'No name',
+        );
 
+        await _users.doc(userCredential.user!.uid).set(userModel.toMap());
       }
-      
-
-      //print(userCredential.user?.email);
+      return userModel; //print(userCredential.user?.email);
     } catch (e) {
-      print(e);
+      rethrow;
     }
   }
 }
