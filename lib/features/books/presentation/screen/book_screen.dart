@@ -1,4 +1,3 @@
-import 'package:devotion/features/books/domain/entities/book.dart';
 import 'package:devotion/features/books/presentation/providers/book_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,15 +29,6 @@ class BookScreen extends ConsumerWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                final newArticle = BookEntity(
-                  id: DateTime.now().toString(),
-                  title: _titleController.text,
-                  // content: _contentController.text, // Assuming BookEntity has content field
-                  // createdAt: DateTime.now(), // Add createdAt if needed
-                  author: '', // Add author or remove if unnecessary
-                  description: '',
-                  fileUrl: '',
-                );
                 // Call the create article use case
                 // ref.read(createArticleUseCaseProvider).call(newArticle);
                 // _titleController.clear();

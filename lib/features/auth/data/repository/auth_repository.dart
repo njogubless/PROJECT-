@@ -50,7 +50,9 @@ class AuthRepository {
         if (userCredential.additionalUserInfo!.isNewUser) {
           UserModel userModel = UserModel(
             uid: userCredential.user!.uid,
-            name: userCredential.user!.displayName ?? 'No name',
+            userName: userCredential.user!.displayName ?? 'No name',
+            userEmail: userCredential.user!.displayemail ?? 'No email',
+            role: userCredential.user!.displayrole ?? ' no role',
             isAuthenticated: true,
           );
           await _users.doc(userCredential.user!.uid).set(userModel.toMap());
@@ -101,14 +103,16 @@ class AuthRepository {
 
   // Sign up with email and password
   Future<void> signUpWithEmail(
-      String email, String password, BuildContext context) async {
+      String email, String password, String role, BuildContext context) async {
     try {
       UserCredential userCredential =
           await _auth.createUserWithEmailAndPassword(email: email, password: password);
 
       UserModel userModel = UserModel(
         uid: userCredential.user!.uid,
-        name: email.split('@')[0],
+        userName: email.split('@')[0],
+        userEmail: email,
+        role: role,
         isAuthenticated: true,
       );
       await _users.doc(userCredential.user!.uid).set(userModel.toMap());

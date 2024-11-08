@@ -39,8 +39,8 @@ class AuthController {
   }
 
   // Sign up with email and password
-  void signUpWithEmail(String email, String password, BuildContext context) {
-    _authRepository.signUpWithEmail(email, password, context);
+  void signUpWithEmail(String email, String password, String role, BuildContext context) {
+    _authRepository.signUpWithEmail(email, password, role, context);
   }
 
   // Sign in with email and password

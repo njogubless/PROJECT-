@@ -13,7 +13,7 @@ class AudioWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(15),
       ),
       elevation: 5,
-      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Row(
@@ -28,7 +28,7 @@ class AudioWidget extends StatelessWidget {
                 fit: BoxFit.cover,
               ),
             ),
-            SizedBox(width: 16),
+            const SizedBox(width: 16),
 
             // Audio Title and Duration
             Expanded(
@@ -37,15 +37,15 @@ class AudioWidget extends StatelessWidget {
                 children: [
                   Text(
                     audio.title,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
                     '${audio.duration.toString()} mins', // Display the duration of the audio
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 14,
                       color: Colors.grey,
                     ),
@@ -56,7 +56,7 @@ class AudioWidget extends StatelessWidget {
 
             // Play Button
             IconButton(
-              icon: Icon(
+              icon: const Icon(
                 Icons.play_circle_fill,
                 size: 40,
                 color: Colors.teal,
@@ -74,6 +74,6 @@ class AudioWidget extends StatelessWidget {
 
   void _playAudio(AudioFile audio) {
     // Handle audio playback functionality here
-    print('Playing audio: ${audio.title}');
+    debugPrint('Playing audio: ${audio.title}');
   }
 }

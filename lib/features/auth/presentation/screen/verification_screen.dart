@@ -34,7 +34,7 @@ class VerificationScreen extends ConsumerWidget {
                   }
                 });
               },
-              child: Text('I have verified'),
+              child: const Text('I have verified'),
             ),
           ],
         ),

@@ -1,26 +1,31 @@
- class UserModel {
- final String uid;
- final bool isAuthenticated;
- final String name;
- 
+class UserModel {
+  final String uid;
+  final bool isAuthenticated;
+  final String userName;
+  final String userEmail;
+  final String role;
+
   UserModel({
     required this.uid,
     required this.isAuthenticated,
-    required this.name,
-    
+    required this.userEmail,
+    required this.userName,
+    required this.role,
   });
 
   UserModel copyWith({
     String? uid,
     bool? isAuthenticated,
-    String? name,
-    
+    String? userName,
+    String? userEmail,
+    String? role,
   }) {
     return UserModel(
       uid: uid ?? this.uid,
       isAuthenticated: isAuthenticated ?? this.isAuthenticated,
-      name: name ?? this.name,
-     
+      userName: userName ?? this.userName,
+      userEmail: userName ?? this.userEmail,
+      role: role ?? this.role,
     );
   }
 
@@ -28,8 +33,9 @@
     return <String, dynamic>{
       'uid': uid,
       'isAuthenticated': isAuthenticated,
-      'name': name,
-      
+      'userName': userName,
+      'userEmail': userEmail,
+      'role': role,
     };
   }
 
@@ -37,31 +43,29 @@
     return UserModel(
       uid: map['uid'] as String,
       isAuthenticated: map['isAuthenticated'] as bool,
-      name: map['name'] as String,
-      
+      userName: map['userName'] as String,
+      userEmail: map['userEmail'] as String,
+      role: map['role'] as String,
     );
   }
-  
+
   @override
   String toString() {
-    return 'UserModel(uid: $uid, isAuthenticated: $isAuthenticated, name: $name, )';
+    return 'UserModel(uid: $uid, isAuthenticated: $isAuthenticated, userName: $userName, userEmail: $userEmail, role:$role, )';
   }
 
   @override
   bool operator ==(covariant UserModel other) {
     if (identical(this, other)) return true;
-  
-    return 
-      other.uid == uid &&
-      other.isAuthenticated == isAuthenticated &&
-      other.name == name;
+
+    return other.uid == uid &&
+        other.isAuthenticated == isAuthenticated &&
+        other.userName == userName;
+        
   }
 
   @override
   int get hashCode {
-    return uid.hashCode ^
-      isAuthenticated.hashCode ^
-      name.hashCode ;
+    return uid.hashCode ^ isAuthenticated.hashCode ^ userName.hashCode;
   }
 }
- 

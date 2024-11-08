@@ -16,16 +16,16 @@ class ArticleWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(article.title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text(article.title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             // SizedBox(height: 8),
             // Text('By ${article.author}', style: TextStyle(color: Colors.grey)),
             // Assuming a summary field exists
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             ElevatedButton(
               onPressed: () {
                 // Navigate to full article
               },
-              child: Text('Read more'),
+              child: const Text('Read more'),
             ),
           ],
         ),

@@ -22,7 +22,7 @@ class FirebaseArticleDatasource implements ArticleRemoteDatasource {
   Future<List<ArticleModel>> getArticles() async {
     final querySnapshot = await firestore.collection('articles').get();
     return querySnapshot.docs
-        .map((doc) => ArticleModel.fromMap(doc.data() as Map<String, dynamic>))
+        .map((doc) => ArticleModel.fromMap(doc.data()))
         .toList();
   }
 }

@@ -1,4 +1,3 @@
-import 'package:devotion/features/books/domain/entities/book.dart';
 import 'package:devotion/features/books/domain/usecases/upload_book_usecase.dart';
 import 'package:devotion/features/books/presentation/book_upload_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

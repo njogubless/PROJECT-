@@ -16,8 +16,16 @@ class AppDrawer extends ConsumerWidget {
     this.userAvatarUrl = 'https://via.placeholder.com/150', // Default avatar
   }) : super(key: key);
 
+  Future launchlink(String link) async {
+    try {
+      await launchUrl(Uri.parse(link), mode: LaunchMode.externalApplication);
+    } catch (error) {
+      print(error);
+    }
+  }
+
   @override
-  Widget build(BuildContext context,WidgetRef ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final authRepository = ref.read(authRepositoryProvider);
     return Drawer(
       child: ListView(
@@ -29,27 +37,39 @@ class AppDrawer extends ConsumerWidget {
             currentAccountPicture: CircleAvatar(
               backgroundImage: NetworkImage(userAvatarUrl),
             ),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: Colors.teal,
             ),
           ),
           ListTile(
-            leading: Icon(Icons.lock),
-            title: Text('Admin Login'),
+            leading: const Icon(Icons.lock),
+            title: const Text('Admin Login'),
             onTap: () {
               Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => AdminLoginPage()),
+                MaterialPageRoute(builder: (context) => const AdminLoginPage()),
               );
             },
           ),
           ListTile(
-            leading: Icon(Icons.logout),
-            title: Text('Sign Out'),
-            onTap: () async {
-              await authRepository.signOutUser();
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>SignInPage()));
+            title: const Text(
+              " Reflection On Faith Website",
+              style: TextStyle(
+                fontSize: 20,
+              ),
+            ),
+            onTap: () {
+              launchlink("https:www.hikersafrique.com");
+              ListTile(
+                leading: const Icon(Icons.logout),
+                title: const Text('Sign Out'),
+                onTap: () async {
+                  await authRepository.signOutUser();
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) => SignInPage()));
+                },
+              );
             },
-          ),
+          )
         ],
       ),
     );

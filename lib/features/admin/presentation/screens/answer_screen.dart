@@ -12,7 +12,7 @@ class AnswerQuestionsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Answer Questions')),
+      appBar: AppBar(title: const Text('Answer Questions')),
       body: ListView.builder(
         itemCount: questions.length,
         itemBuilder: (context, index) {
@@ -20,7 +20,7 @@ class AnswerQuestionsScreen extends StatelessWidget {
             title: Text(questions[index]['question']!),
             subtitle: Text('Asked by: ${questions[index]['user']}'),
             trailing: IconButton(
-              icon: Icon(Icons.reply),
+              icon: const Icon(Icons.reply),
               onPressed: () {
                 // Navigate to answer screen with the selected question
               },

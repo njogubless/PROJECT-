@@ -16,16 +16,16 @@ class QuestionWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             //Text(question.title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            SizedBox(height: 8),
-            Text('Asked by ${question.askedAt}', style: TextStyle(color: Colors.grey)),
-            SizedBox(height: 12),
+            const SizedBox(height: 8),
+            Text('Asked by ${question.askedAt}', style: const TextStyle(color: Colors.grey)),
+            const SizedBox(height: 12),
             Text(question.questionText), // Assuming a summary field exists
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             ElevatedButton(
               onPressed: () {
                 // Navigate to full question details
               },
-              child: Text('View Details'),
+              child: const Text('View Details'),
             ),
           ],
         ),

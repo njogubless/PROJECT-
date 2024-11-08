@@ -1,7 +1,4 @@
-import 'package:devotion/core/providers/providers.dart';
 import 'package:devotion/features/auth/presentation/screen/home_screen.dart';
-import 'package:devotion/features/auth/presentation/screen/login_screen.dart';
-import 'package:devotion/features/auth/presentation/screen/splash_screen.dart';
 import 'package:devotion/firebase_options.dart';
 import 'package:devotion/theme/pallete.dart';
 import 'package:firebase_core/firebase_core.dart';

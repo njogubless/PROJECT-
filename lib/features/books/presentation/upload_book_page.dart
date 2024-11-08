@@ -1,5 +1,4 @@
 import 'package:devotion/features/books/data/models/book_model.dart';
-import 'package:devotion/features/books/domain/entities/book.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'providers/book_providers.dart';

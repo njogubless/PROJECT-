@@ -6,24 +6,24 @@ class AdminLoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _formKey = GlobalKey<FormState>();
-    final _emailController = TextEditingController();
-    final _passwordController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+    final emailController = TextEditingController();
+    final passwordController = TextEditingController();
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Admin Login'),
+        title: const Text('Admin Login'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
-          key: _formKey,
+          key: formKey,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(labelText: 'Email'),
+                controller: emailController,
+                decoration: const InputDecoration(labelText: 'Email'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your email';
@@ -32,8 +32,8 @@ class AdminLoginPage extends StatelessWidget {
                 },
               ),
               TextFormField(
-                controller: _passwordController,
-                decoration: InputDecoration(labelText: 'Password'),
+                controller: passwordController,
+                decoration: const InputDecoration(labelText: 'Password'),
                 obscureText: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -42,17 +42,17 @@ class AdminLoginPage extends StatelessWidget {
                   return null;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  if (_formKey.currentState!.validate()) {
+                  if (formKey.currentState!.validate()) {
                     // Perform login and navigate to admin dashboard
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(builder: (context) => AdminDashboard()),
                     );
                   }
                 },
-                child: Text('Login'),
+                child: const Text('Login'),
               ),
             ],
           ),
