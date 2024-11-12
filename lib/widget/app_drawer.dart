@@ -3,6 +3,7 @@ import 'package:devotion/features/auth/data/repository/auth_repository.dart';
 import 'package:devotion/features/auth/presentation/screen/sign_in.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AppDrawer extends ConsumerWidget {
   final String userName;

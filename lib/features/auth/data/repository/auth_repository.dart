@@ -1,9 +1,12 @@
 // auth_repository.dart
+import 'package:devotion/core/failure.dart';
+import 'package:devotion/core/type_defs.dart';
 import 'package:devotion/features/auth/data/models/user_models.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:devotion/core/constants/firebase_constants.dart';
 
@@ -32,7 +35,7 @@ class AuthRepository {
       _firestore.collection(FirebaseConstants.usersCollection);
 
   // Sign in with Google
-  Future<User?> signInWithGoogle(BuildContext context) async {
+  FutureEither<UserModel> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
@@ -45,7 +48,9 @@ class AuthRepository {
 
         UserCredential userCredential =
             await _auth.signInWithCredential(credential);
-        
+
+        UserModel userModel;
+
         // Save new user to Firestore if they are a new user
         if (userCredential.additionalUserInfo!.isNewUser) {
           UserModel userModel = UserModel(
@@ -56,22 +61,21 @@ class AuthRepository {
             isAuthenticated: true,
           );
           await _users.doc(userCredential.user!.uid).set(userModel.toMap());
+        } else {
+          userModel = await getUserData(userCredential.user!.uid).first;
         }
-        
-        return userCredential.user; // Return the authenticated user
       }
+      return right(UserModel as UserModel);
+    } on FirebaseException catch (e) {
+      throw e.message!;
     } catch (e) {
-      debugPrint('Error during Google sign-in: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error during Google sign-in: $e')),
-      );
-      return null;
+      return left(Failure(e.toString()));
     }
-    return null;
   }
 
   // Sign up with phone number
-  Future<void> signUpWithPhoneNumber(String phoneNumber, BuildContext context) async {
+  Future<void> signUpWithPhoneNumber(
+      String phoneNumber, BuildContext context) async {
     await _auth.verifyPhoneNumber(
       phoneNumber: phoneNumber,
       verificationCompleted: (PhoneAuthCredential credential) async {
@@ -105,8 +109,8 @@ class AuthRepository {
   Future<void> signUpWithEmail(
       String email, String password, String role, BuildContext context) async {
     try {
-      UserCredential userCredential =
-          await _auth.createUserWithEmailAndPassword(email: email, password: password);
+      UserCredential userCredential = await _auth
+          .createUserWithEmailAndPassword(email: email, password: password);
 
       UserModel userModel = UserModel(
         uid: userCredential.user!.uid,
@@ -126,7 +130,8 @@ class AuthRepository {
   Future<User?> signInWithEmail(
       String email, String password, BuildContext context) async {
     try {
-      final userCredential = await _auth.signInWithEmailAndPassword(email: email, password: password);
+      final userCredential = await _auth.signInWithEmailAndPassword(
+          email: email, password: password);
       return userCredential.user;
     } catch (e) {
       // Handle errors
@@ -145,7 +150,12 @@ class AuthRepository {
 
   // Sign out the user
   Future<void> signOutUser() async {
-    await _googleSignIn.signOut(); 
+    await _googleSignIn.signOut();
     await _auth.signOut();
+  }
+
+  Stream<UserModel> getUserData(String uid) {
+    return _users.doc(uid).snapshots().map(
+        (event) => UserModel.fromMap(event.data() as Map<String, dynamic>));
   }
 }

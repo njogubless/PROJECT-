@@ -70,7 +70,7 @@ class SignInPage extends ConsumerWidget {
   // Google Sign-In Function
   Future<void> _signInWithGoogle(BuildContext context, AuthRepository authRepo) async {
     try {
-      await authRepo.signInWithGoogle(context); // Handle Google Sign-In logic
+      await authRepo.signInWithGoogle(); // Handle Google Sign-In logic
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => HomeScreen()), // Navigate to HomeScreen

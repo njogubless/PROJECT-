@@ -1,4 +1,5 @@
 // auth_controller.dart
+import 'package:devotion/core/util/utils.dart';
 import 'package:devotion/features/auth/data/repository/auth_repository.dart';
 import 'package:devotion/features/auth/presentation/screen/welcome.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,15 +19,14 @@ class AuthController {
 
   // Sign in with Google
   Future<void> signInWithGoogle(BuildContext context) async {
-    final user = await _authRepository.signInWithGoogle(context);
+    final user = await _authRepository.signInWithGoogle();
+    user.fold((l) => showSnackbar(context, l.message), (r) => null );
 
-    if (user != null) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const WelcomeScreen()),
-      );
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const WelcomeScreen()),
+    );
     }
-  }
 
   // Sign up with phone number
   void signUpWithPhoneNumber(String phoneNumber, BuildContext context) {
@@ -39,13 +39,16 @@ class AuthController {
   }
 
   // Sign up with email and password
-  void signUpWithEmail(String email, String password, String role, BuildContext context) {
+  void signUpWithEmail(
+      String email, String password, String role, BuildContext context) {
     _authRepository.signUpWithEmail(email, password, role, context);
   }
 
   // Sign in with email and password
-  void signInWithEmail(String email, String password, BuildContext context) async {
-    final user = await _authRepository.signInWithEmail(email, password, context);
+  void signInWithEmail(
+      String email, String password, BuildContext context) async {
+    final user =
+        await _authRepository.signInWithEmail(email, password, context);
 
     if (user != null) {
       Navigator.pushReplacement(
@@ -63,6 +66,7 @@ class AuthController {
   // Sign out the user
   void signOut(BuildContext context) async {
     await _authRepository.signOutUser();
-    Navigator.pushReplacementNamed(context, '/login'); // Update to navigate back to the login screen
+    Navigator.pushReplacementNamed(
+        context, '/login'); // Update to navigate back to the login screen
   }
 }

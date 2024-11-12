@@ -46,6 +46,13 @@
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true />
+	<key>NSAppTransportSecurity</key>
+	<dict>
+	<key>NSAllowsArbitaryLoads</key><true />
+	</dict>
+	<key>NSMicrophoneUsageDescription</key>
+	<String>explain why the app uses the microphone here</String>
 	<true/>
 <key>CFBundleURLTypes</key>
 <array>
