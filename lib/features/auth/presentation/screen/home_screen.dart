@@ -25,7 +25,7 @@ final latestQuestionProvider = FutureProvider<List<Question>>((ref) async {
   return await ref.watch(questionRepositoryProvider).getQuestions();
 });
 
-class HomeScreen extends ConsumerWidget {
+class  HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(

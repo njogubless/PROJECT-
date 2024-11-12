@@ -34,6 +34,8 @@ class AuthRepository {
   CollectionReference get _users =>
       _firestore.collection(FirebaseConstants.usersCollection);
 
+  Stream<User?> get authStateChange => _auth.authStateChanges();
+
   // Sign in with Google
   FutureEither<UserModel> signInWithGoogle() async {
     try {
@@ -73,6 +75,16 @@ class AuthRepository {
     }
   }
 
+
+
+       // getUserdata function 
+   Stream<UserModel> getUserData(String uid) {
+    return _users.doc(uid).snapshots().map(
+        (event) => UserModel.fromMap(event.data() as Map<String, dynamic>));
+  }
+
+
+
   // Sign up with phone number
   Future<void> signUpWithPhoneNumber(
       String phoneNumber, BuildContext context) async {
@@ -91,6 +103,8 @@ class AuthRepository {
     );
   }
 
+
+
   // Verify 6-digit code
   Future<void> verifyCode(
       String verificationId, String code, BuildContext context) async {
@@ -104,6 +118,8 @@ class AuthRepository {
       // Handle errors
     }
   }
+
+
 
   // Sign up with email and password
   Future<void> signUpWithEmail(
@@ -154,8 +170,5 @@ class AuthRepository {
     await _auth.signOut();
   }
 
-  Stream<UserModel> getUserData(String uid) {
-    return _users.doc(uid).snapshots().map(
-        (event) => UserModel.fromMap(event.data() as Map<String, dynamic>));
-  }
+ 
 }

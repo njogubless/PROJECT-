@@ -1,4 +1,6 @@
+import 'package:devotion/core/common/loader.dart';
 import 'package:devotion/core/common/sign_in_button.dart';
+import 'package:devotion/features/auth/controller/auth_controller.dart';
 import 'package:devotion/features/auth/presentation/screen/forget_password_screen.dart';
 import 'package:devotion/features/auth/presentation/screen/sign_up.dart';
 import 'package:devotion/features/auth/presentation/screen/welcome.dart';
@@ -6,14 +8,17 @@ import 'package:devotion/theme/theme.dart';
 import 'package:devotion/widget/login_form.dart';
 import 'package:devotion/widget/primary_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends ConsumerWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isLoading = ref.watch(authControllerProvider);
     return Scaffold(
-      body: Padding(
+      body: isLoading ? const Loader() : 
+      Padding(
           padding: kDefaultPadding,
           child: SingleChildScrollView(
             child: Column(

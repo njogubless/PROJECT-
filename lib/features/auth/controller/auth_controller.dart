@@ -1,32 +1,64 @@
 // auth_controller.dart
 import 'package:devotion/core/util/utils.dart';
+import 'package:devotion/features/auth/data/models/user_models.dart';
 import 'package:devotion/features/auth/data/repository/auth_repository.dart';
 import 'package:devotion/features/auth/presentation/screen/welcome.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 
-final authControllerProvider = Provider(
+final userProvider = StateProvider<UserModel?>((ref) => null);
+
+final authControllerProvider = StateNotifierProvider<AuthController, bool>(
   (ref) => AuthController(
-    authRepository: ref.read(authRepositoryProvider),
+    authRepository: ref.watch(authRepositoryProvider),
+    ref: ref,
   ),
 );
 
-class AuthController {
-  final AuthRepository _authRepository;
+final authStateChangeProvider = StreamProvider((ref) {
+  final authController = ref.watch(authControllerProvider);
+  return authController.authStateChange;
+});
 
-  AuthController({required AuthRepository authRepository})
-      : _authRepository = authRepository;
+
+
+final getUserDataProvider = StreamProvider.family((ref, String uid) {
+  final authController = ref.watch(authControllerProvider.notifier);
+  return authController.getUserData(uid);
+});
+
+class AuthController extends StateNotifier<bool> {
+  final AuthRepository _authRepository;
+  final Ref _ref;
+
+  AuthController({required AuthRepository authRepository, required Ref ref})
+      : _authRepository = authRepository,
+        _ref = ref,
+        super(false); //loading
+
+  Stream<User?> get authStateChange => _authRepository.authStateChange;
 
   // Sign in with Google
   Future<void> signInWithGoogle(BuildContext context) async {
+    state = true;
     final user = await _authRepository.signInWithGoogle();
-    user.fold((l) => showSnackbar(context, l.message), (r) => null );
+    state = false;
+    user.fold(
+      (l) => showSnackbar(context, l.message),
+      (userModel) =>
+          _ref.read(userProvider.notifier).update((state) => userModel),
+    );
 
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => const WelcomeScreen()),
     );
-    }
+  }
+
+  Stream<UserModel> getUserData(String uid) {
+    return _authRepository.getUserData(uid);
+  }
 
   // Sign up with phone number
   void signUpWithPhoneNumber(String phoneNumber, BuildContext context) {
