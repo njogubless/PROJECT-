@@ -2,7 +2,6 @@ import 'package:devotion/core/common/loader.dart';
 import 'package:devotion/core/error/error_text.dart';
 import 'package:devotion/features/auth/controller/auth_controller.dart';
 import 'package:devotion/features/auth/data/models/user_models.dart';
-import 'package:devotion/features/auth/presentation/screen/home_screen.dart';
 import 'package:devotion/firebase_options.dart';
 import 'package:devotion/router.dart';
 import 'package:devotion/theme/pallete.dart';

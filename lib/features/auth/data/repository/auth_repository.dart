@@ -58,8 +58,8 @@ class AuthRepository {
           UserModel userModel = UserModel(
             uid: userCredential.user!.uid,
             userName: userCredential.user!.displayName ?? 'No name',
-            userEmail: userCredential.user!.displayemail ?? 'No email',
-            role: userCredential.user!.displayrole ?? ' no role',
+            userEmail: userCredential.user!.email ?? 'No email',
+            role: ' user',
             isAuthenticated: true,
           );
           await _users.doc(userCredential.user!.uid).set(userModel.toMap());

@@ -17,7 +17,7 @@ final authControllerProvider = StateNotifierProvider<AuthController, bool>(
 );
 
 final authStateChangeProvider = StreamProvider((ref) {
-  final authController = ref.watch(authControllerProvider);
+  final authController = ref.watch(authControllerProvider.notifier);
   return authController.authStateChange;
 });
 
@@ -28,7 +28,7 @@ final getUserDataProvider = StreamProvider.family((ref, String uid) {
   return authController.getUserData(uid);
 });
 
-class AuthController extends StateNotifier<bool> {
+ class AuthController extends StateNotifier<bool> {
   final AuthRepository _authRepository;
   final Ref _ref;
 
@@ -70,17 +70,17 @@ class AuthController extends StateNotifier<bool> {
     _authRepository.verifyCode(verificationId, code, context);
   }
 
-  // Sign up with email and password
+  // Sign up with userEmail and password
   void signUpWithEmail(
-      String email, String password, String role, BuildContext context) {
-    _authRepository.signUpWithEmail(email, password, role, context);
+      String userEmail, String password, String role, BuildContext context) {
+    _authRepository.signUpWithEmail(userEmail, password, role, context);
   }
 
-  // Sign in with email and password
+  // Sign in with userEmail and password
   void signInWithEmail(
-      String email, String password, BuildContext context) async {
+      String userEmail, String password, BuildContext context) async {
     final user =
-        await _authRepository.signInWithEmail(email, password, context);
+        await _authRepository.signInWithEmail(userEmail, password, context);
 
     if (user != null) {
       Navigator.pushReplacement(
@@ -90,9 +90,9 @@ class AuthController extends StateNotifier<bool> {
     }
   }
 
-  // Send password reset email
-  void sendPasswordReset(String email, BuildContext context) {
-    _authRepository.sendPasswordReset(email, context);
+  // Send password reset userEmail
+  void sendPasswordReset(String userEmail, BuildContext context) {
+    _authRepository.sendPasswordReset(userEmail, context);
   }
 
   // Sign out the user

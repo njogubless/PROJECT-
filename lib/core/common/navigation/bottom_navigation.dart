@@ -1,16 +1,17 @@
 import 'package:devotion/features/Q&A/presentation/screens/question_page.dart';
 import 'package:devotion/features/articles/presentation/screens/article_screen.dart';
 import 'package:devotion/features/audio/presentation/screens/audio_screen.dart';
+import 'package:devotion/features/audio/presentation/screens/devotion.dart';
 import 'package:devotion/features/auth/presentation/screen/home_screen.dart';
 import 'package:devotion/features/books/presentation/screen/book_screen.dart';
 import 'package:flutter/material.dart';
 
 class BottomNavBar extends StatefulWidget {
   @override
-  _BottomNavBarState createState() => _BottomNavBarState();
+  BottomNavBarState createState() => BottomNavBarState();
 }
 
-class _BottomNavBarState extends State<BottomNavBar> {
+class BottomNavBarState extends State<BottomNavBar> {
   int _selectedIndex = 0;
 
   // Define navigation destinations
@@ -20,6 +21,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
     ArticleScreen(),
     BookScreen(),
     const QuestionPage(),
+    const DevotionPage(),
   ];
 
   void _onItemTapped(int index) {
@@ -42,6 +44,10 @@ class _BottomNavBarState extends State<BottomNavBar> {
           BottomNavigationBarItem(
             icon: Icon(Icons.audiotrack),
             label: 'Audio',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.mic),
+            label: 'Devotion',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.article),
