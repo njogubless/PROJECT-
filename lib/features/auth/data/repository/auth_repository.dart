@@ -51,6 +51,7 @@ class AuthRepository {
         UserCredential userCredential =
             await _auth.signInWithCredential(credential);
 
+        // ignore: unused_local_variable
         UserModel userModel;
 
         // Save new user to Firestore if they are a new user
