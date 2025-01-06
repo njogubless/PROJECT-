@@ -15,6 +15,7 @@ class PrimaryButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(16), color: kPrimaryColor),
         child: Text(
           'Sign In',
-          style: textButton.copyWith(color: kWhiteColor),));
+          style: textButton.copyWith(color: kWhiteColor),)
+          );
   }
 }

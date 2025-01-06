@@ -142,7 +142,5 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  Future<void> _signUpWithGoogle() async {
-    // Add Google sign-in logic here
-  }
+  
 }
