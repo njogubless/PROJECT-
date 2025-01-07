@@ -75,21 +75,42 @@ class AuthRepository {
     }
   }
 
+  FutureEither<UserModel> signInWithEmailAndPassword(
+      String email, String password) async {
+    try {
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+          email: email, password: password);
 
+      UserModel userModel;
 
-       // getUserdata function 
-   Stream<UserModel> getUserData(String uid) {
+      if (userCredential.additionalUserInfo!.isNewUser) {
+        userModel = UserModel(
+            uid: userCredential.user!.uid,
+            isAuthenticated: true,
+            userEmail: userCredential.user!.email ?? 'No email',
+            userName: userCredential.user!.displayName ?? 'No name',
+            role: 'user');
+        await _users.doc(userCredential.user!.uid).set(userModel.toMap());
+      } else {
+        userModel = await getUserData(userCredential.user!.uid).first;
+      }
+      return right(userModel);
+    } on FirebaseAuthException catch (e) {
+      return left(Failure(e.message ?? 'An error occured'));
+    } catch (e) {
+      return left(Failure(e.toString()));
+    }
+  }
+
+  // getUserdata function
+  Stream<UserModel> getUserData(String uid) {
     return _users.doc(uid).snapshots().map(
         (event) => UserModel.fromMap(event.data() as Map<String, dynamic>));
   }
-
-
 
   // Sign out the user
   Future<void> signOutUser() async {
     await _googleSignIn.signOut();
     await _auth.signOut();
   }
-
- 
 }

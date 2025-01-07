@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 //use the userProvider to update user information
 final userProvider = StateProvider<UserModel?>((ref) => null);
 
-final authControllerProvider = StateNotifierProvider<AuthController, bool>( 
+final authControllerProvider = StateNotifierProvider<AuthController, bool>(
   (ref) => AuthController(
     authRepository: ref.watch(authRepositoryProvider),
     ref: ref,
@@ -54,10 +54,6 @@ class AuthController extends StateNotifier<bool> {
       MaterialPageRoute(builder: (context) => const WelcomeScreen()),
     );
   }
- 
-
-
-
 
   Stream<UserModel> getUserData(String uid) {
     return _authRepository.getUserData(uid);
@@ -69,8 +65,6 @@ class AuthController extends StateNotifier<bool> {
     Navigator.pushReplacementNamed(
         context, '/login'); // Update to navigate back to the login screen
   }
-
- 
 
   // // Sign up with phone number
   // void signUpWithPhoneNumber(String phoneNumber, BuildContext context) {
@@ -106,6 +100,4 @@ class AuthController extends StateNotifier<bool> {
   // void sendPasswordReset(String userEmail, BuildContext context) {
   //   _authRepository.sendPasswordReset(userEmail, context);
   // }
-
-  
 }
