@@ -41,6 +41,7 @@ dependencies:
   routemaster: ^1.0.1
   open_file_manager: ^1.0.3
   open_file: ^3.5.10
+  iconsax_flutter: ^1.0.0
 
 dev_dependencies:
   flutter_test:
