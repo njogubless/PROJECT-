@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "975142255429",
+    "project_id": "reflection-of-faith",
+    "storage_bucket": "reflection-of-faith.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:975142255429:android:08429e1627b1354d8edc2c",
+        "android_client_info": {
+          "package_name": "com.example.devotion"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBoTJ6Zw-IFa66bdQiL5aZdDpCSQ4mmLoQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
