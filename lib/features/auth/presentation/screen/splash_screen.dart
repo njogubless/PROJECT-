@@ -21,7 +21,7 @@ class SplashScreen extends ConsumerWidget {
       } else {
         // User is not signed in, navigate to sign-up screen
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => SignUpPage()),
+          MaterialPageRoute(builder: (context) => const SignUpScreen()),
         );
       }
     });

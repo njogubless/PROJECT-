@@ -143,6 +143,8 @@
 //   }
 // }
 
+import 'package:devotion/core/common/styles/login_Signup_widgets/form_divider.dart';
+import 'package:devotion/core/common/styles/login_Signup_widgets/social_button.dart';
 import 'package:devotion/core/common/styles/text_strings.dart';
 import 'package:devotion/core/constants/sizes.dart';
 import 'package:flutter/material.dart';
@@ -223,7 +225,11 @@ class SignUpScreen extends StatelessWidget {
                    child: const Text( TTexts.createAccount)),
                    )
                 ],
-              ))
+              )),
+              //divider
+              TFormDivider(dividerText: TTexts.orSignupWith),
+              //social Button
+              const TSocialButton(),
             ],
           ),
         ),
