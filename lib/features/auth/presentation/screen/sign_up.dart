@@ -227,7 +227,7 @@ class SignUpScreen extends StatelessWidget {
                 ],
               )),
               //divider
-              TFormDivider(dividerText: TTexts.orSignupWith),
+              const TFormDivider(dividerText: TTexts.orSignupWith),
               //social Button
               const TSocialButton(),
             ],

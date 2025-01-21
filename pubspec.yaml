@@ -34,7 +34,7 @@ dependencies:
   carousel_slider: ^5.0.0
   audiofileplayer: ^2.1.1
   audio_video_progress_bar: ^2.0.3
-  rxdart: ^0.26.0
+  rxdart: ^0.27.7
   just_audio_background: ^0.0.1-beta.13
   google_fonts: ^6.2.1
   fpdart: ^1.1.0
@@ -46,7 +46,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^4.0.0
+  flutter_lints: ^5.0.0
 
 flutter_launcher_icons:
   android: true

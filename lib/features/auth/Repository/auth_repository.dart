@@ -35,6 +35,7 @@ class AuthRepository {
 
   Stream<User?> get authStateChange => _auth.authStateChanges();
 
+
   // Sign in with Google
   FutureEither<UserModel> signInWithGoogle() async {
     try {

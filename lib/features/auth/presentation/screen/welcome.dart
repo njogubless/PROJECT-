@@ -47,10 +47,10 @@ class WelcomeScreen extends StatelessWidget {
                       buttonText: 'Sign in',
                       onTap: SignInPage(),
                     )),
-                    Expanded(
+                    const Expanded(
                         child: WelcomeButton(
                       buttonText: 'Sign up',
-                      onTap: SignUpPage(),
+                      onTap: SignUpScreen(),
                     )),
                   ],
                 ),
