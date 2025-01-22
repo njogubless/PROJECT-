@@ -1,6 +1,6 @@
 import 'package:devotion/features/admin/presentation/screens/admin_log_in.dart';
 import 'package:devotion/features/auth/Repository/auth_repository.dart';
-import 'package:devotion/features/auth/presentation/screen/sign_in.dart';
+import 'package:devotion/features/auth/presentation/screen/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -65,8 +65,10 @@ class AppDrawer extends ConsumerWidget {
                 title: const Text('Sign Out'),
                 onTap: () async {
                   await authRepository.signOutUser();
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => SignInPage()));
+                  if (context.mounted) {
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => HomeScreen()));
+                  }
                 },
               );
             },
