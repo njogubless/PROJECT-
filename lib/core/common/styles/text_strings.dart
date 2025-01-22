@@ -9,7 +9,7 @@ class TTexts {
   static const phoneNumber = 'Phone Number';
   static const rememberMe = 'Remember Me';
   static const forgetPassword = 'Forget Password';
-  static const signIn = 'Sign IN';
+  static const signIn = 'Sign In';
   static const createAccount = 'Create Account';
   static const orSignInWith= ' or Sign in With';
   static const orSignupWith = 'or Sign Up With';

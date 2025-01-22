@@ -2,7 +2,7 @@
 import 'package:devotion/core/util/utils.dart';
 import 'package:devotion/features/auth/data/models/user_models.dart';
 import 'package:devotion/features/auth/Repository/auth_repository.dart';
-import 'package:devotion/features/auth/presentation/screen/welcome.dart';
+import 'package:devotion/features/auth/presentation/screen/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +51,7 @@ class AuthController extends StateNotifier<bool> {
 
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const WelcomeScreen()),
+      MaterialPageRoute(builder: (context) => HomeScreen()),
     );
   }
 
@@ -70,7 +70,7 @@ class AuthController extends StateNotifier<bool> {
         _ref.read(userProvider.notifier).update((state) => userModel);
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const WelcomeScreen()),
+          MaterialPageRoute(builder: (context) => HomeScreen()),
         );
       },
     );

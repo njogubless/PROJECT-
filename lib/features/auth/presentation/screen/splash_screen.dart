@@ -1,5 +1,5 @@
 // presentation/screens/splash_screen.dart
-import 'package:devotion/features/auth/presentation/screen/sign_in.dart';
+import 'package:devotion/features/auth/presentation/screen/login_screen.dart';
 import 'package:devotion/features/auth/presentation/screen/sign_up.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,7 +16,7 @@ class SplashScreen extends ConsumerWidget {
       if (user != null) {
         // User is signed in, navigate to the main screen
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => SignInPage()),
+          MaterialPageRoute(builder: (context) => LoginScreen()),
         );
       } else {
         // User is not signed in, navigate to sign-up screen
