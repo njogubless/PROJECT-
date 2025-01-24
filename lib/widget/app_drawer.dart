@@ -59,7 +59,7 @@ class AppDrawer extends ConsumerWidget {
               ),
             ),
             onTap: () {
-              launchlink("https:www.hikersafrique.com");
+              launchlink("https://andrewcphiri.com/");
               ListTile(
                 leading: const Icon(Icons.logout),
                 title: const Text('Sign Out'),

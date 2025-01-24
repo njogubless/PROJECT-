@@ -21,4 +21,24 @@ class AudioFile {
     required this.uploaderId,
     required this.uploadDate,
   });
+
+
+
+  factory AudioFile.fromJson(Map<String, dynamic> json) {
+
+    return AudioFile(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      url: json['url'] as String,
+      coverUrl: json['coverUrl'] as String,
+      duration: Duration(seconds: json['duration'] as int),
+      setUrl: json['setUrl'] as String,
+      uploaderId: json['uploaderId'] as String,
+      uploadDate: DateTime.parse(json['uploadDate'] as String),
+    );
+
+  }
+
 }
+
+

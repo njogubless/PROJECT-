@@ -1,12 +1,14 @@
+import 'package:flutter/material.dart';
 import 'package:devotion/features/Q&A/presentation/screens/question_page.dart';
 import 'package:devotion/features/articles/presentation/screens/article_screen.dart';
 import 'package:devotion/features/audio/presentation/screens/audio_screen.dart';
 import 'package:devotion/features/audio/presentation/screens/devotion.dart';
 import 'package:devotion/features/auth/presentation/screen/home_screen.dart';
 import 'package:devotion/features/books/presentation/screen/book_screen.dart';
-import 'package:flutter/material.dart';
 
 class BottomNavBar extends StatefulWidget {
+  const BottomNavBar({Key? key}) : super(key: key);
+
   @override
   BottomNavBarState createState() => BottomNavBarState();
 }
@@ -14,14 +16,14 @@ class BottomNavBar extends StatefulWidget {
 class BottomNavBarState extends State<BottomNavBar> {
   int _selectedIndex = 0;
 
-  // Define navigation destinations
+  // Example list of screens for navigation
   final List<Widget> _screens = [
     HomeScreen(),
     const AudioScreen(),
+    const DevotionPage(),
     ArticleScreen(),
     BookScreen(),
     const QuestionPage(),
-    const DevotionPage(),
   ];
 
   void _onItemTapped(int index) {
@@ -33,31 +35,46 @@ class BottomNavBarState extends State<BottomNavBar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _screens[_selectedIndex],  // Show the selected screen
+      body: _screens[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,  // Use this if you have more than 3 items
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
+        type: BottomNavigationBarType.fixed,
+        items: [
+          const BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.audiotrack),
             label: 'Audio',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.mic),
             label: 'Devotion',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.article),
+            icon: Stack(
+              children: [
+                const Icon(Icons.article),
+                Positioned(
+                  right: 0,
+                  child: CircleAvatar(
+                    radius: 6,
+                    backgroundColor: Colors.red,
+                    child: const Text(
+                      '1', // Replace with a dynamic value if necessary
+                      style: TextStyle(color: Colors.white, fontSize: 10),
+                    ),
+                  ),
+                ),
+              ],
+            ),
             label: 'Articles',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.book),
             label: 'Books',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.question_answer),
             label: 'Q&A',
           ),
