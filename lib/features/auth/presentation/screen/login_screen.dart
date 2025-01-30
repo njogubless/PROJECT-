@@ -6,6 +6,7 @@ import 'package:devotion/features/auth/controller/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:icons_plus/icons_plus.dart';
+import 'package:routemaster/routemaster.dart';
 
 class LoginScreen extends ConsumerWidget {
   const LoginScreen({super.key});
@@ -14,6 +15,7 @@ class LoginScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final emailController = TextEditingController();
     final passwordController = TextEditingController();
+    final authState = ref.watch(authControllerProvider);
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -37,8 +39,8 @@ class LoginScreen extends ConsumerWidget {
               ),
               Form(
                 child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: TSizes.spaceBtwSections),
+                  padding: const EdgeInsets.symmetric(
+                      vertical: TSizes.spaceBtwSections),
                   child: Column(
                     children: [
                       // Email
@@ -74,7 +76,8 @@ class LoginScreen extends ConsumerWidget {
                           ),
                           // Forgot Password
                           TextButton(
-                              onPressed: () {}, child: const Text(TTexts.forgetPassword)),
+                              onPressed: () {},
+                              child: const Text(TTexts.forgetPassword)),
                         ],
                       ),
                       // Sign In Button
@@ -89,28 +92,52 @@ class LoginScreen extends ConsumerWidget {
                               ref
                                   .read(authControllerProvider.notifier)
                                   .signInWithEmailAndPassword(
-                                      context, email, password);
+                                      context, email, password)
+                                  .then((_) {
+                                Routemaster.of(context).replace('/homeScreen');
+                              }).catchError((error) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(error.toString())),
+                                );
+                              });
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text("Please fill in all fields"),
-                                ),
+                                    content: Text("Please fill in all fields")),
                               );
                             }
                           },
-                          child: const Text(TTexts.signIn),
+                          child: const Text(TTexts.logInTitle),
                         ),
                       ),
                       const SizedBox(height: TSizes.spaceBtwItems),
                       // Create Account Button
-                      SizedBox(
-                        width: double.infinity,
-                        child: OutlinedButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/signup'); // Update with your route
-                          },
-                          child: const Text(TTexts.createAccount),
-                        ),
+                      // SizedBox(
+                      //   width: double.infinity,
+                      //   child: OutlinedButton(
+                      //     onPressed: () {
+                      //       Navigator.pushNamed(
+                      //           context, '/signup'); // Update with your route
+                      //     },
+                      //     child: const Text(TTexts.createAccount),
+                      //   ),
+                      // ),
+                      // Replace the existing Create Account Button section in LoginScreen
+                      const SizedBox(height: TSizes.spaceBtwItems),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text("Don't have an account?"),
+                          TextButton(
+                            onPressed: () {
+                              Routemaster.of(context).replace('/signup');
+                            },
+                            child: const Text(
+                              TTexts.createAccount,
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

@@ -29,7 +29,7 @@ class HomeScreen extends ConsumerWidget {
   Future<Map<String, dynamic>> _fetchUserData() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      return {'$user.name': 'Guest', 'email': 'guest@example.com', 'avatarUrl': ''};
+      return {'$user.name':  'Guest', 'email': 'guest@example.com', 'avatarUrl': ''};
     }
 
     final userDoc =

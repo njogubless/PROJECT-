@@ -55,10 +55,10 @@ bool isByPassLogin = true;//set this to true to bypass login
                   if (data != null) {
                     getData(ref, data);
                     if (userModel != null) {
-                      return LoggedInRoute;
+                      return loggedInRoute;
                     }
                   }
-                  return LoggedOutRoute;
+                  return loggedOutRoute;
                 },
               ),
               routeInformationParser: const RoutemasterParser(),

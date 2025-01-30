@@ -1,22 +1,23 @@
-
-
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:routemaster/routemaster.dart';
 import 'package:devotion/core/common/styles/login_Signup_widgets/form_divider.dart';
 import 'package:devotion/core/common/styles/login_Signup_widgets/social_button.dart';
 import 'package:devotion/core/common/styles/text_strings.dart';
 import 'package:devotion/core/constants/sizes.dart';
 import 'package:devotion/features/auth/controller/sign_up_controller.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SignUpScreen extends ConsumerWidget {
   const SignUpScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final SignUpController signUpController = ref.watch(signUpControllerProvider);
+    final signUpController = ref.watch(signUpControllerProvider.notifier);
+    final signUpState = ref.watch(signUpControllerProvider);
+
     return Scaffold(
       appBar: AppBar(),
-      body:  SingleChildScrollView(
+      body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(TSizes.defaultSpace),
           child: Column(
@@ -26,108 +27,123 @@ class SignUpScreen extends ConsumerWidget {
                   style: Theme.of(context).textTheme.headlineMedium),
               const SizedBox(height: TSizes.spaceBtwSections),
 
-              ///FORM
+              // Form Section
               Form(
                 key: signUpController.signupformKey,
-                  child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Flexible(
-                        child: TextFormField(
-                          controller: signUpController.firstName,
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Please enter your first name';
-                            }
-                            return null;
-                          },
-                          expands: false,
-                          decoration: const InputDecoration(
-                              labelText: TTexts.firstName,
-                              prefixIcon: Icon(Icons.person_2_rounded)),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: _buildTextField(
+                            controller: signUpController.firstName,
+                            label: TTexts.firstName,
+                            icon: Icons.person_2_rounded,
+                            validator: (value) => value!.isEmpty
+                                ? 'Please enter your first name'
+                                : null,
+                          ),
                         ),
+                        const SizedBox(width: TSizes.spaceBtwinputFields),
+                        Flexible(
+                          child: _buildTextField(
+                            controller: signUpController.lastName,
+                            label: TTexts.lastName,
+                            icon: Icons.person_2_rounded,
+                            validator: (value) => value!.isEmpty
+                                ? 'Please enter your last name'
+                                : null,
+                          ),
+                        )
+                      ],
+                    ),
+                    const SizedBox(height: TSizes.spaceBtwinputFields),
+                    _buildTextField(
+                      controller: signUpController.email,
+                      label: TTexts.email,
+                      icon: Icons.email_rounded,
+                      validator: (value) => value!.isEmpty
+                          ? 'Please enter your email'
+                          : null,
+                    ),
+                    const SizedBox(height: TSizes.spaceBtwinputFields),
+                    _buildTextField(
+                      controller: signUpController.phoneNumber,
+                      label: TTexts.phoneNumber,
+                      icon: Icons.call,
+                      validator: (value) => value!.isEmpty
+                          ? 'Please enter your phone number'
+                          : null,
+                    ),
+                    const SizedBox(height: TSizes.spaceBtwinputFields),
+                    _buildTextField(
+                      controller: signUpController.password,
+                      label: TTexts.password,
+                      icon: Icons.password_rounded,
+                      obscureText: true,
+                      validator: (value) => value!.isEmpty
+                          ? 'Please enter your password'
+                          : null,
+                    ),
+                    const SizedBox(height: TSizes.spaceBtwSections),
+
+                    // Sign-Up Button
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: signUpState.isLoading
+                            ? null
+                            : () => signUpController.signUp(context),
+                        child: signUpState.isLoading
+                            ? const CircularProgressIndicator()
+                            : const Text(TTexts.createAccount),
                       ),
-                      const SizedBox(width: TSizes.spaceBtwinputFields),
-                      Flexible(
-                        child: TextFormField(
-                          controller: signUpController.lastName,
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Please enter your last name';
-                            }
-                            return null;
-                          },
-                          expands: false,
-                          decoration: const InputDecoration(
-                              labelText: TTexts.lastName,
-                              prefixIcon: Icon(Icons.person_2_rounded)),
-                        ),
-                      )
-                    ],
-                  ),
-                  const SizedBox(height: TSizes.spaceBtwinputFields),
+                    ),
+                  ],
+                ),
+              ),
 
-                  //email
-                  TextFormField(
-                    controller: signUpController.email,
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Please enter your email';
-                      }
-                      return null;
-                    },
-                    decoration: InputDecoration(
-                        labelText: TTexts.email,
-                        prefixIcon: Icon(Icons.email_rounded)),
-                  ),
-                   const SizedBox(height: TSizes.spaceBtwinputFields),
-                  //phone number
-                  TextFormField(
-                    controller: signUpController.phoneNumber,
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Please enter your phone number';
-                      }
-                      return null;
-                    },
-                    decoration: const InputDecoration(
-                        labelText: TTexts.phoneNumber,
-                        prefixIcon: Icon(Icons.call)),
-                  ),
-                   const SizedBox(height: TSizes.spaceBtwinputFields),
-                  //password
-                  TextFormField(
-                    controller: signUpController.password,
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Please enter your password';
-                      }
-                      return null;
-                    },
-                    obscureText: true,
-                    decoration: const InputDecoration(
-                        labelText: TTexts.password,
-                        prefixIcon: Icon(Icons.password_rounded),
-                        //suffixIcon: Icon(Icons.)
-                        ),
-                  ),
-                   const SizedBox(height: TSizes.spaceBtwSections),
-
-                   //signupButton
-                   SizedBox(width: double.infinity,
-                   child: ElevatedButton(onPressed: (){},
-                   child: const Text( TTexts.createAccount)),
-                   )
-                ],
-              )),
-              //divider
               const TFormDivider(dividerText: TTexts.orSignupWith),
-              //social Button
               const TSocialButton(),
+              const SizedBox(height: TSizes.spaceBtwItems),
+
+              // Sign-In Link
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text("Already have an Account?"),
+                  TextButton(
+                    onPressed: () =>
+                        Routemaster.of(context).replace('/login'),
+                    child: const Text(
+                      'Sign In',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  )
+                ],
+              ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  // Custom Text Field Builder
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    String? Function(String?)? validator,
+    bool obscureText = false,
+  }) {
+    return TextFormField(
+      controller: controller,
+      validator: validator,
+      obscureText: obscureText,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon),
       ),
     );
   }
