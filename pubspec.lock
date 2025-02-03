@@ -752,6 +752,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.15.0"
+<<<<<<< HEAD
   mime:
     dependency: transitive
     description:
@@ -832,6 +833,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.0.3"
+=======
+>>>>>>> e3e242f ( adding dependencies)
   path:
     dependency: transitive
     description:
@@ -1069,6 +1072,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.2"
+<<<<<<< HEAD
   typed_data:
     dependency: transitive
     description:
@@ -1173,6 +1177,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.11+1"
+=======
+>>>>>>> e3e242f ( adding dependencies)
   vector_math:
     dependency: transitive
     description:
@@ -1189,6 +1195,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "14.2.4"
+<<<<<<< HEAD
   web:
     dependency: transitive
     description:
@@ -1229,6 +1236,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.2"
+=======
+>>>>>>> e3e242f ( adding dependencies)
 sdks:
   dart: ">=3.5.0 <4.0.0"
   flutter: ">=3.24.0"
