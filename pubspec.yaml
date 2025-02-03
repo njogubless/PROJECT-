@@ -43,6 +43,8 @@ dependencies:
   open_file: ^3.5.10
   iconsax_flutter: ^1.0.0
   connectivity_plus: ^6.1.2
+  flutter_spinkit: ^5.2.1
+  loader_overlay: ^4.0.4+1
 
 dev_dependencies:
   flutter_test:
