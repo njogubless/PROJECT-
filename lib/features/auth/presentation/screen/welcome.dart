@@ -50,7 +50,7 @@ class WelcomeScreen extends StatelessWidget {
                     Expanded(
                         child: WelcomeButton(
                       buttonText: 'Sign up',
-                      onTap: SignUpPage(),
+                      onTap: SignUpScreen(),
                     )),
                   ],
                 ),
