@@ -19,11 +19,9 @@ class AdminLoginPage extends StatelessWidget {
       final password = passwordController.text.trim();
 
       try {
-        // Authenticate the user
         final userCredential = await FirebaseAuth.instance
             .signInWithEmailAndPassword(email: email, password: password);
 
-        // Check user role in Firestore
         final userId = userCredential.user!.uid;
         final userDoc = await FirebaseFirestore.instance
             .collection('users')
@@ -31,27 +29,42 @@ class AdminLoginPage extends StatelessWidget {
             .get();
 
         if (userDoc.exists) {
-          final userRole = userDoc.data()?['role'] ?? 'user';
+          final isAdmin = userDoc.data()?['isAdmin'] ?? false;
 
-          if (userRole == 'admin') {
-            // Navigate to admin dashboard
+          if (isAdmin) {
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(builder: (context) => AdminDashboard()),
             );
           } else {
-            // Show error for non-admin users
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Access denied: Admins only')),
+              SnackBar(
+                content: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Logged in as User'),
+                    TextButton(
+                      onPressed: () async {
+                        await FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(userId)
+                            .update({'isAdmin': true});
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Admin role granted')),
+                        );
+                      },
+                      child: const Text('Grant Admin Rights'),
+                    ),
+                  ],
+                ),
+              ),
             );
           }
         } else {
-          // User document not found
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('User not found in Firestore')),
           );
         }
       } catch (e) {
-        // Handle errors (e.g., invalid email/password)
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Login failed: $e')),
         );
@@ -59,43 +72,76 @@ class AdminLoginPage extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Admin Login'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              TextFormField(
-                controller: emailController,
-                decoration: const InputDecoration(labelText: 'Email'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your email';
-                  }
-                  return null;
-                },
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF2193b0), Color(0xFF6dd5ed)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Center(
+          child: Card(
+            elevation: 8,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            margin: const EdgeInsets.all(24),
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Form(
+                key: formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    const Text(
+                      'Admin Login',
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: emailController,
+                      decoration: const InputDecoration(
+                        prefixIcon: Icon(Icons.email),
+                        labelText: 'Email',
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your email';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: passwordController,
+                      decoration: const InputDecoration(
+                        prefixIcon: Icon(Icons.lock),
+                        labelText: 'Password',
+                        border: OutlineInputBorder(),
+                      ),
+                      obscureText: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your password';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton(
+                      onPressed: () => _login(context),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: const Text('Login'),
+                    ),
+                  ],
+                ),
               ),
-              TextFormField(
-                controller: passwordController,
-                decoration: const InputDecoration(labelText: 'Password'),
-                obscureText: true,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your password';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () => _login(context),
-                child: const Text('Login'),
-              ),
-            ],
+            ),
           ),
         ),
       ),

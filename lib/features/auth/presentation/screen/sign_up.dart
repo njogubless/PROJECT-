@@ -23,8 +23,14 @@ class SignUpScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(TTexts.signUpTitle,
-                  style: Theme.of(context).textTheme.headlineMedium),
+                Text(
+                TTexts.signUpTitle,
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blueAccent,
+                  ),
+                textAlign: TextAlign.center,
+                ),
               const SizedBox(height: TSizes.spaceBtwSections),
 
               // Form Section
@@ -89,16 +95,51 @@ class SignUpScreen extends ConsumerWidget {
 
                     // Sign-Up Button
                     SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: signUpState.isLoading
-                            ? null
-                            : () => signUpController.signUp(context),
-                        child: signUpState.isLoading
-                            ? const CircularProgressIndicator()
-                            : const Text(TTexts.createAccount),
-                      ),
-                    ),
+  width: double.infinity,
+  child: ElevatedButton(
+    onPressed: signUpState.isLoading
+        ? null
+        : () async {
+            try {
+              await signUpController.signUp(context);
+              if (context.mounted) {
+                // Show success message
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Account created successfully! Please login."),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                // Navigate to login page
+                Routemaster.of(context).replace('/login');
+              }
+            } catch (e) {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(e.toString()),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            }
+          },
+    child: signUpState.isLoading
+        ? const CircularProgressIndicator()
+        : const Text(TTexts.createAccount),
+  ),
+),
+                    // SizedBox(
+                    //   width: double.infinity,
+                    //   child: ElevatedButton(
+                    //     onPressed: signUpState.isLoading
+                    //         ? null
+                    //         : () => signUpController.signUp(context),
+                    //     child: signUpState.isLoading
+                    //         ? const CircularProgressIndicator()
+                    //         : const Text(TTexts.createAccount),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),

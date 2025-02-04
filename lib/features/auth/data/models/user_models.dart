@@ -1,16 +1,20 @@
+import 'dart:convert';
+
 class UserModel {
   final String uid;
   final bool isAuthenticated;
   final String userName;
   final String userEmail;
-  final String role;
+  //final String profilePic;
+  bool isAdmin = false;
 
   UserModel({
     required this.uid,
     required this.isAuthenticated,
     required this.userEmail,
     required this.userName,
-    required this.role,
+    //required this.profilePic,
+    this.isAdmin = false,
   });
 
   UserModel copyWith({
@@ -18,14 +22,16 @@ class UserModel {
     bool? isAuthenticated,
     String? userName,
     String? userEmail,
+    //String? profilePic,
     String? role,
   }) {
     return UserModel(
       uid: uid ?? this.uid,
       isAuthenticated: isAuthenticated ?? this.isAuthenticated,
       userName: userName ?? this.userName,
-      userEmail: userName ?? this.userEmail,
-      role: role ?? this.role,
+      userEmail: userEmail ?? this.userEmail,
+      //profilePic: profilePic ?? this.profilePic,
+      isAdmin: isAdmin,
     );
   }
 
@@ -35,7 +41,8 @@ class UserModel {
       'isAuthenticated': isAuthenticated,
       'userName': userName,
       'userEmail': userEmail,
-      'role': role,
+      //profilePic: profilePic,
+      'isAdmin': isAdmin,
     };
   }
 
@@ -45,14 +52,20 @@ class UserModel {
       isAuthenticated: map['isAuthenticated'] as bool,
       userName: map['userName'] as String,
       userEmail: map['userEmail'] as String,
-      role: map['role'] as String,
+      //profilePic: map['profilePic'] as String,
+      isAdmin: map['isAdmin'] as bool,
     );
   }
 
   @override
   String toString() {
-    return 'UserModel(uid: $uid, isAuthenticated: $isAuthenticated, userName: $userName, userEmail: $userEmail, role:$role, )';
+    return 'UserModel(uid: $uid, isAuthenticated: $isAuthenticated, userName: $userName, userEmail: $userEmail,)';
   }
+
+  String toJson() => json.encode(toMap());
+
+  factory UserModel.fromJson(String source) =>
+      UserModel.fromMap(json.encode(source) as Map<String, dynamic>);
 
   @override
   bool operator ==(covariant UserModel other) {
@@ -61,7 +74,6 @@ class UserModel {
     return other.uid == uid &&
         other.isAuthenticated == isAuthenticated &&
         other.userName == userName;
-        
   }
 
   @override

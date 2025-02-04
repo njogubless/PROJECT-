@@ -13,28 +13,57 @@ class MainLayout extends StatefulWidget {
   MainLayoutState createState() => MainLayoutState();
 }
 
-class MainLayoutState extends State<MainLayout> {
+class MainLayoutState extends State<MainLayout> with SingleTickerProviderStateMixin {
   int _selectedIndex = 0;
 
   final List<Widget> _screens = [
     const HomeScreen(),
     const AudioScreen(),
     const DevotionPage(),
-    ArticleScreen(),
+   ArticleScreen(),
     BookScreen(),
     const QuestionPage(),
   ];
 
+  late AnimationController _animationController;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _animation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    );
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      _animationController.forward(from: 0.0);
     });
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _screens[_selectedIndex],
+      body: FadeTransition(
+        opacity: _animation,
+        child: IndexedStack(
+          index: _selectedIndex,
+          children: _screens,
+        ),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         items: [
@@ -50,34 +79,8 @@ class MainLayoutState extends State<MainLayout> {
             icon: Icon(Icons.mic),
             label: 'Devotion',
           ),
-          BottomNavigationBarItem(
-            icon: Stack(
-              children: [
-                const Icon(Icons.article),
-                Positioned(
-                  right: 0,
-                  child: Container(
-                    padding: const EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    constraints: const BoxConstraints(
-                      minWidth: 12,
-                      minHeight: 12,
-                    ),
-                    child: const Text(
-                      '1',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 8,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.article),
             label: 'Articles',
           ),
           const BottomNavigationBarItem(
@@ -91,7 +94,11 @@ class MainLayoutState extends State<MainLayout> {
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.blueAccent,
+        unselectedItemColor: Colors.grey,
+        showUnselectedLabels: false,
+        backgroundColor: Colors.white,
         onTap: _onItemTapped,
+        elevation: 10,
       ),
     );
   }

@@ -16,7 +16,7 @@ class LoginScreen extends ConsumerWidget {
     final emailController = TextEditingController();
     final passwordController = TextEditingController();
     final authState = ref.watch(authControllerProvider);
-
+    final formKey = GlobalKey<FormState>();
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -28,16 +28,23 @@ class LoginScreen extends ConsumerWidget {
                 children: [
                   Text(
                     TTexts.logInTitle,
-                    style: Theme.of(context).textTheme.headlineMedium,
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blueAccent,
+                        ),
                   ),
                   const SizedBox(height: TSizes.sm),
                   Text(
                     TTexts.logInSubTitle,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontStyle: FontStyle.italic,
+                          color: Colors.grey[600],
+                        ),
                   ),
                 ],
               ),
               Form(
+                key: formKey,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                       vertical: TSizes.spaceBtwSections),
@@ -46,6 +53,15 @@ class LoginScreen extends ConsumerWidget {
                       // Email
                       TextFormField(
                         controller: emailController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'please enter a valid email';
+                          }
+                          if (!value.contains('@')) {
+                            return 'Please enter a valid email';
+                          }
+                          return null;
+                        },
                         decoration: const InputDecoration(
                           prefixIcon: Icon(Iconsax.direct_right_bold),
                           labelText: TTexts.email,
@@ -56,6 +72,15 @@ class LoginScreen extends ConsumerWidget {
                       TextFormField(
                         controller: passwordController,
                         obscureText: true,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'please enter your password';
+                          }
+                          if (value.length < 8) {
+                            return ' Password must be alteast 8 characters';
+                          }
+                          return null;
+                        },
                         decoration: const InputDecoration(
                           prefixIcon: Icon(Iconsax.password_check_bold),
                           labelText: TTexts.password,
@@ -176,3 +201,13 @@ class LoginScreen extends ConsumerWidget {
     );
   }
 }
+String _getErrorMessage(String error) {
+    if (error.contains('user-not-found')) {
+      return 'No user found with this email';
+    } else if (error.contains('wrong-password')) {
+      return 'Wrong password provided';
+    } else if (error.contains('invalid-email')) {
+      return 'Invalid email address';
+    }
+    return 'An error occurred during sign in';
+  }

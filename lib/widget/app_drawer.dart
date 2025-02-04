@@ -1,24 +1,22 @@
+import 'dart:io';
 import 'package:devotion/features/admin/presentation/screens/admin_log_in.dart';
 import 'package:devotion/features/auth/Repository/auth_repository.dart';
-import 'package:devotion/features/auth/Repository/repository2.dart';
+import 'package:devotion/core/constants/firebase_constants.dart';
 import 'package:devotion/features/auth/presentation/screen/home_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AppDrawer extends ConsumerWidget {
-  final String userName;
-  final String userEmail;
-  final String userAvatarUrl; // Use a default avatar image if none provided
+  const AppDrawer({Key? key}) : super(key: key);
 
-  const AppDrawer({
-    Key? key,
-    required this.userName,
-    required this.userEmail,
-    this.userAvatarUrl = 'https://via.placeholder.com/150', // Default avatar
-  }) : super(key: key);
 
-  Future launchlink(String link) async {
+
+   Future launchlink(String link) async {
     try {
       await launchUrl(Uri.parse(link), mode: LaunchMode.externalApplication);
     } catch (error) {
@@ -26,26 +24,75 @@ class AppDrawer extends ConsumerWidget {
     }
   }
 
+  Future<void> _uploadProfilePicture(BuildContext context) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      final File imageFile = File(pickedFile.path);
+      final user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        try {
+          // Upload image to Firebase Storage
+          final storageRef = FirebaseStorage.instance
+              .ref('user_avatars/${user.uid}.jpg');
+          await storageRef.putFile(imageFile);
+
+          // Get download URL
+          final downloadUrl = await storageRef.getDownloadURL();
+
+          // Update Firestore with the new profile picture URL
+          await FirebaseFirestore.instance
+              .collection(FirebaseConstants.usersCollection)
+              .doc(user.uid)
+              .update({'avatarUrl': downloadUrl});
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to upload image: $e')),
+          );
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authRepository = ref.read(authRepositoryProvider);
+    final user = FirebaseAuth.instance.currentUser;
+
     return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: <Widget>[
+      child: Column(
+        children: [
           UserAccountsDrawerHeader(
-            accountName: Text(userName),
-            accountEmail: Text(userEmail),
-            currentAccountPicture: CircleAvatar(
-              backgroundImage: NetworkImage(userAvatarUrl),
-            ),
-            decoration: const BoxDecoration(
-              color: Colors.teal,
+            accountName: Text(user?.displayName ?? 'Loading...'),
+            accountEmail: Text(user?.email ?? 'Loading...'),
+            currentAccountPicture: GestureDetector(
+              onTap: () async {
+                await _uploadProfilePicture(context);
+              },
+              child: Stack(
+                alignment: Alignment.bottomRight,
+                children: [
+                  CircleAvatar(
+                    backgroundImage: user?.photoURL != null
+                        ? NetworkImage(user!.photoURL!)
+                        : const AssetImage('assets/images/wheel.png')
+                            as ImageProvider,
+                    radius: 30,
+                  ),
+                  const Icon(
+                    Icons.edit,
+                    color: Colors.white,
+                    size: 16,
+                  ),
+                ],
+              ),
             ),
           ),
           ListTile(
             leading: const Icon(Icons.lock),
-            title: const Text('Admin Login'),
+            title: const Text("Admin Login"),
             onTap: () {
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (context) => const AdminLoginPage()),
@@ -73,7 +120,7 @@ class AppDrawer extends ConsumerWidget {
                 },
               );
             },
-          )
+          ),
         ],
       ),
     );

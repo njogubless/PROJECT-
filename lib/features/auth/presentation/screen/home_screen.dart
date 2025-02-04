@@ -1,39 +1,19 @@
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:devotion/features/audio/data/models/audio_model.dart';
-import 'package:devotion/features/articles/domain/entities/article_entity.dart';
-import 'package:devotion/features/Q&A/domain/entities/question.dart';
 import 'package:devotion/widget/app_drawer.dart';
 
-final latestAudioProvider = FutureProvider<List<AudioFile>>((ref) async {
-  final snapshot = await FirebaseFirestore.instance.collection('audios').get();
-  return snapshot.docs.map((doc) => AudioFile.fromJson(doc.data())).toList();
-});
-
-final latestArticleProvider = FutureProvider<List<ArticleEntity>>((ref) async {
-  final snapshot = await FirebaseFirestore.instance.collection('articles').get();
-  return snapshot.docs.map((doc) => ArticleEntity.fromJson(doc.data())).toList();
-});
-
-final latestQuestionProvider = FutureProvider<List<Question>>((ref) async {
-  final snapshot = await FirebaseFirestore.instance.collection('questions').get();
-  return snapshot.docs.map((doc) => Question.fromJson(doc.data())).toList();
-});
-
 class HomeScreen extends ConsumerWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({Key? key}) : super(key: key);
 
   Future<Map<String, dynamic>> _fetchUserData() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      return {'$user.name':  'Guest', 'email': 'guest@example.com', 'avatarUrl': ''};
+      return {'name': 'Guest', 'email': 'guest@example.com', 'avatarUrl': ''};
     }
 
-    final userDoc =
-        await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+    final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
     return {
       'name': userDoc['name'] ?? 'User',
       'email': userDoc['email'] ?? user.email,
@@ -48,221 +28,113 @@ class HomeScreen extends ConsumerWidget {
       builder: (context, snapshot) {
         final userName = snapshot.data?['name'] ?? 'Loading...';
         final userEmail = snapshot.data?['email'] ?? 'Loading...';
-        final userAvatarUrl =
-            snapshot.data?['avatarUrl'] ?? 'https://via.placeholder.com/150';
+        final userAvatarUrl = snapshot.data?['avatarUrl'] ?? 'https://via.placeholder.com/150';
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Home'),
+            title: const Text(
+              'Welcome Home',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+            centerTitle: true,
+            backgroundColor: Colors.blueAccent,
           ),
-          drawer: AppDrawer(
-            userName: userName,
-            userEmail: userEmail,
-            userAvatarUrl: userAvatarUrl,
-          ),
-          body: CustomScrollView(
-            slivers: [
-              SliverAppBar(
-                expandedHeight: 200.0,
-                floating: false,
-                pinned: true,
-                flexibleSpace: FlexibleSpaceBar(
-                  centerTitle: true,
-                  title: const Text(
-                    'Home',
-                    style: TextStyle(fontSize: 18.0),
-                  ),
-                  background: Image.network(
-                    'https://via.placeholder.com/400x300',
-                    fit: BoxFit.cover,
-                  ),
-                ),
+          drawer: AppDrawer(),
+          body: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildSectionHeader('Latest Audio'),
+                  _buildHorizontalListView(_sampleAudioItems(), Icons.audiotrack),
+                  const SizedBox(height: 20),
+                  _buildSectionHeader('Latest Articles'),
+                  _buildHorizontalListView(_sampleArticleItems(), Icons.article),
+                  const SizedBox(height: 20),
+                  _buildSectionHeader('Latest Questions'),
+                  _buildVerticalListView(_sampleQuestionItems()),
+                ],
               ),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildSection(
-                        context,
-                        ref,
-                        title: 'Latest Audio',
-                        provider: latestAudioProvider,
-                        itemBuilder: (audio) => _buildAudioCard(audio),
-                        navigateTo: () {
-                          Navigator.pushNamed(context, '/otherAudios');
-                        },
-                      ),
-                      _buildSection(
-                        context,
-                        ref,
-                        title: 'Latest Article',
-                        provider: latestArticleProvider,
-                        itemBuilder: (article) =>
-                            _buildArticleCard(context, article),
-                        navigateTo: () {
-                          Navigator.pushNamed(context, '/otherArticles');
-                        },
-                      ),
-                      _buildSection(
-                        context,
-                        ref,
-                        title: 'Latest Question',
-                        provider: latestQuestionProvider,
-                        itemBuilder: (question) =>
-                            _buildQuestionCard(context, question),
-                        navigateTo: () {
-                          Navigator.pushNamed(context, '/otherQuestions');
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
         );
       },
     );
   }
 
-  Widget _buildSection<T>(
-    BuildContext context,
-    WidgetRef ref, {
-    required String title,
-    required FutureProvider<List<T>> provider,
-    required Widget Function(T item) itemBuilder,
-    required VoidCallback navigateTo,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-            TextButton(
-              onPressed: navigateTo,
-              child: const Text(
-                'See All',
-                style: TextStyle(color: Colors.blue),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        ref.watch(provider).when(
-              data: (items) => SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: items.map((item) => itemBuilder(item)).toList(),
-                ),
-              ),
-              loading: () => const CircularProgressIndicator(),
-              error: (error, _) => const Text('Error loading data'),
-            ),
-        const SizedBox(height: 24),
-      ],
-    );
-  }
-
-  Widget _buildAudioCard(AudioFile audio) {
-    return Card(
-      elevation: 4,
-      margin: const EdgeInsets.symmetric(horizontal: 8.0),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Container(
-        padding: const EdgeInsets.all(8.0),
-        width: 200,
-        child: Column(
-          children: [
-            const Icon(Icons.audiotrack, size: 40, color: Colors.teal),
-            const SizedBox(height: 8),
-            Text(
-              audio.title,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            ElevatedButton.icon(
-              onPressed: () {
-                // Play audio logic here
-              },
-              icon: const Icon(Icons.play_arrow),
-              label: const Text('Play'),
-            ),
-          ],
+  Widget _buildSectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );
   }
 
-  Widget _buildArticleCard(BuildContext context, ArticleEntity article) {
-    return Card(
-      elevation: 4,
-      margin: const EdgeInsets.symmetric(horizontal: 8.0),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Container(
-        padding: const EdgeInsets.all(8.0),
-        width: 200,
-        child: Column(
-          children: [
-            Text(
-              article.title,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+  Widget _buildHorizontalListView(List<String> items, IconData icon) {
+    return SizedBox(
+      height: 150,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: items.length,
+        itemBuilder: (context, index) {
+          return Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            margin: const EdgeInsets.only(right: 12),
+            child: Container(
+              width: 120,
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(icon, size: 40, color: Colors.blue),
+                  const SizedBox(height: 8),
+                  Text(
+                    items[index],
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                ],
               ),
-              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 8),
-            TextButton(
-              onPressed: () {
-                // Navigate to article details
-              },
-              child: const Text('Read More'),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildQuestionCard(BuildContext context, Question question) {
-    return Card(
-      elevation: 4,
-      margin: const EdgeInsets.symmetric(horizontal: 8.0),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Container(
-        padding: const EdgeInsets.all(8.0),
-        width: 200,
-        child: Column(
-          children: [
-            Text(
-              question.questionTitle,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            TextButton(
-              onPressed: () {
-                // Navigate to question details
-              },
-              child: const Text('View Details'),
-            ),
-          ],
-        ),
-      ),
+  Widget _buildVerticalListView(List<String> items) {
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: items.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          leading: const Icon(Icons.question_answer, color: Colors.blue),
+          title: Text(items[index]),
+          subtitle: const Text("View Answer"),
+          trailing: const Icon(Icons.chevron_right),
+        );
+      },
     );
+  }
+
+  List<String> _sampleAudioItems() {
+    return ["Motivation Talk", "Morning Devotion", "Peaceful Meditation"];
+  }
+
+  List<String> _sampleArticleItems() {
+    return ["Faith and Courage", "Steps to Overcome Fear", "Walking by Faith"];
+  }
+
+  List<String> _sampleQuestionItems() {
+    return ["What is faith?", "How to handle challenges?", "Tips on prayer life"];
   }
 }
