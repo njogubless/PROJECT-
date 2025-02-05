@@ -30,32 +30,21 @@ class HomeScreen extends ConsumerWidget {
         final userEmail = snapshot.data?['email'] ?? 'Loading...';
         final userAvatarUrl = snapshot.data?['avatarUrl'] ?? 'https://via.placeholder.com/150';
 
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text(
-              'Welcome Home',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-            centerTitle: true,
-            backgroundColor: Colors.blueAccent,
-          ),
-          drawer: AppDrawer(),
-          body: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildSectionHeader('Latest Audio'),
-                  _buildHorizontalListView(_sampleAudioItems(), Icons.audiotrack),
-                  const SizedBox(height: 20),
-                  _buildSectionHeader('Latest Articles'),
-                  _buildHorizontalListView(_sampleArticleItems(), Icons.article),
-                  const SizedBox(height: 20),
-                  _buildSectionHeader('Latest Questions'),
-                  _buildVerticalListView(_sampleQuestionItems()),
-                ],
-              ),
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSectionHeader('Latest Audio'),
+                _buildHorizontalListView(_sampleAudioItems(), Icons.audiotrack),
+                const SizedBox(height: 20),
+                _buildSectionHeader('Latest Articles'),
+                _buildHorizontalListView(_sampleArticleItems(), Icons.article),
+                const SizedBox(height: 20),
+                _buildSectionHeader('Latest Questions'),
+                _buildVerticalListView(_sampleQuestionItems()),
+              ],
             ),
           ),
         );
@@ -116,11 +105,13 @@ class HomeScreen extends ConsumerWidget {
       physics: const NeverScrollableScrollPhysics(),
       itemCount: items.length,
       itemBuilder: (context, index) {
-        return ListTile(
-          leading: const Icon(Icons.question_answer, color: Colors.blue),
-          title: Text(items[index]),
-          subtitle: const Text("View Answer"),
-          trailing: const Icon(Icons.chevron_right),
+        return Material(
+          child: ListTile(
+            leading: const Icon(Icons.question_answer, color: Colors.blue),
+            title: Text(items[index]),
+            subtitle: const Text("View Answer"),
+            trailing: const Icon(Icons.chevron_right),
+          ),
         );
       },
     );

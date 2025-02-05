@@ -1,3 +1,4 @@
+import 'package:devotion/features/articles/presentation/screens/article_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
@@ -51,7 +52,7 @@ class AdminDashboard extends StatelessWidget {
   void _navigateToWriteArticle(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const WriteArticleScreen()),
+      MaterialPageRoute(builder: (context) => ArticleScreen()),
     );
   }
 

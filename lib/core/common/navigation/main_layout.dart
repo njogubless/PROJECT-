@@ -1,70 +1,44 @@
-import 'package:flutter/material.dart';
-import 'package:devotion/features/auth/presentation/screen/home_screen.dart';
+import 'package:devotion/core/providers/providers.dart';
 import 'package:devotion/features/Q&A/presentation/screens/question_page.dart';
 import 'package:devotion/features/articles/presentation/screens/article_screen.dart';
-import 'package:devotion/features/audio/presentation/screens/audio_screen.dart';
 import 'package:devotion/features/audio/presentation/screens/devotion.dart';
+import 'package:devotion/features/auth/presentation/screen/home_screen.dart';
 import 'package:devotion/features/books/presentation/screen/book_screen.dart';
+import 'package:flutter/material.dart';
 
 class MainLayout extends StatefulWidget {
   const MainLayout({Key? key}) : super(key: key);
 
   @override
-  MainLayoutState createState() => MainLayoutState();
+  State<MainLayout> createState() => _MainLayoutState();
 }
 
-class MainLayoutState extends State<MainLayout> with SingleTickerProviderStateMixin {
+class _MainLayoutState extends State<MainLayout> {
   int _selectedIndex = 0;
 
+  // List of screens
   final List<Widget> _screens = [
     const HomeScreen(),
-    const AudioScreen(),
+    AudioScreen(),
     const DevotionPage(),
-   ArticleScreen(),
+    ArticleScreen(),
     BookScreen(),
     const QuestionPage(),
   ];
 
-  late AnimationController _animationController;
-  late Animation<double> _animation;
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-    _animation = CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    );
-  }
-
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
-      _animationController.forward(from: 0.0);
     });
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FadeTransition(
-        opacity: _animation,
-        child: IndexedStack(
-          index: _selectedIndex,
-          children: _screens,
-        ),
-      ),
+      body: _screens[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
         type: BottomNavigationBarType.fixed,
         items: [
           const BottomNavigationBarItem(
@@ -79,8 +53,34 @@ class MainLayoutState extends State<MainLayout> with SingleTickerProviderStateMi
             icon: Icon(Icons.mic),
             label: 'Devotion',
           ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.article),
+          BottomNavigationBarItem(
+            icon: Stack(
+              children: [
+                const Icon(Icons.article),
+                Positioned(
+                  right: 0,
+                  child: Container(
+                    padding: const EdgeInsets.all(1),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    constraints: const BoxConstraints(
+                      minWidth: 12,
+                      minHeight: 12,
+                    ),
+                    child: const Text(
+                      '1',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 8,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              ],
+            ),
             label: 'Articles',
           ),
           const BottomNavigationBarItem(
@@ -92,14 +92,12 @@ class MainLayoutState extends State<MainLayout> with SingleTickerProviderStateMi
             label: 'Q&A',
           ),
         ],
-        currentIndex: _selectedIndex,
         selectedItemColor: Colors.blueAccent,
         unselectedItemColor: Colors.grey,
-        showUnselectedLabels: false,
-        backgroundColor: Colors.white,
-        onTap: _onItemTapped,
-        elevation: 10,
+        showUnselectedLabels: true,
       ),
     );
   }
 }
+
+
