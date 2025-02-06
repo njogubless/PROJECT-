@@ -4,6 +4,7 @@ import 'package:devotion/features/articles/presentation/screens/article_screen.d
 import 'package:devotion/features/audio/presentation/screens/devotion.dart';
 import 'package:devotion/features/auth/presentation/screen/home_screen.dart';
 import 'package:devotion/features/books/presentation/screen/book_screen.dart';
+import 'package:devotion/widget/app_drawer.dart';
 import 'package:flutter/material.dart';
 
 class MainLayout extends StatefulWidget {
@@ -21,7 +22,7 @@ class _MainLayoutState extends State<MainLayout> {
     const HomeScreen(),
     AudioScreen(),
     const DevotionPage(),
-    ArticleScreen(),
+    ArticlePage(),
     BookScreen(),
     const QuestionPage(),
   ];
@@ -35,7 +36,26 @@ class _MainLayoutState extends State<MainLayout> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _screens[_selectedIndex],
+      drawer: AppDrawer(),
+      appBar: AppBar(
+        title: Text(
+          _selectedIndex == 0
+          ? "Home"
+          :_screens[_selectedIndex].runtimeType.toString()),),
+      body: Builder(builder: (context) {
+        try {
+          return _screens[_selectedIndex];
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Error loading page'),
+            ),
+          );
+          return const Center(
+            child: Text('Error loading page'),
+          );
+        }
+      }),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
@@ -99,5 +119,3 @@ class _MainLayoutState extends State<MainLayout> {
     );
   }
 }
-
-

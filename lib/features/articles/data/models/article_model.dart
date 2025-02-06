@@ -17,13 +17,16 @@ class ArticleModel {
 
   // To map from Firebase
   factory ArticleModel.fromMap(Map<String, dynamic> map) {
-    return ArticleModel(
-      id: map['id'],
-      title: map['title'],
-      content: map['content'],
-      createdAt: DateTime.parse(map['createdAt']),
-    );
-  }
+  return ArticleModel(
+    id: map['id'] ?? '',
+    title: map['title'] ?? '',
+    content: map['content'] ?? '',
+    createdAt: map['timestamp'] != null
+        ? (map['timestamp'] as Timestamp).toDate()
+        : DateTime.now(),
+  );
+}
+
 
   // To map to Firebase
   Map<String, dynamic> toMap() {
@@ -35,6 +38,7 @@ class ArticleModel {
     };
   }
 }
+
 
 // article_remote_datasource.dart
 abstract class ArticleRemoteDatasource {
@@ -48,7 +52,7 @@ class FirebaseArticleDatasource implements ArticleRemoteDatasource {
 
   @override
   Future<void> createArticle(ArticleModel article) async {
-    await _firestore.collection('articles').doc(article.id).set(article.toMap());
+    await _firestore.collection('articles').doc(article.id as String?).set(article.toMap());
   }
 
   @override
@@ -58,19 +62,4 @@ class FirebaseArticleDatasource implements ArticleRemoteDatasource {
   }
 }
 
-// article_repository_impl.dart (Data Layer)
-// class ArticleRepositoryImpl implements ArticleRepository {
-//   final ArticleRemoteDatasource remoteDatasource;
 
-//   ArticleRepositoryImpl(this.remoteDatasource);
-
-//   @override
-//   Future<void> createArticle(ArticleModel article) {
-//     return remoteDatasource.createArticle(article);
-//   }
-
-//   @override
-//   Future<List<ArticleModel>> getArticles() {
-//     return remoteDatasource.getArticles();
-//   }
-// }

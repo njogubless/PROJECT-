@@ -32,38 +32,57 @@ class MyApp extends ConsumerStatefulWidget {
 
 class _MyAppState extends ConsumerState<MyApp> {
   UserModel? userModel;
+  bool isByPassLogin = true; // Set to true to bypass login for UI testing
 
-bool isByPassLogin = true;//set this to true to bypass login
-  void getData(WidgetRef ref, User data) async {
-    userModel = await ref
-        .watch(authControllerProvider.notifier)
-        .getUserData(data.uid)
-        .first;
-    ref.read(userProvider.notifier).update((state) => userModel);
-    setState(() {});
+  void fetchDataOnce(User data) async {
+    if (userModel == null) {
+      userModel = await ref
+          .read(authControllerProvider.notifier)
+          .getUserData(data.uid)
+          .first;
+      ref.read(userProvider.notifier).update((state) => userModel);
+      setState(() {});
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return ref.watch(authStateChangeProvider).when(
-        data: (data) => MaterialApp.router(
-              debugShowCheckedModeBanner: false,
-              title: ' Reflection On Faith',
-              theme: Pallete.lightModeAppTheme,
-              routerDelegate: RoutemasterDelegate(
-                routesBuilder: (context) {
-                  if (data != null) {
-                    getData(ref, data);
-                    if (userModel != null) {
-                      return loggedInRoute;
-                    }
-                  }
-                  return loggedOutRoute;
-                },
-              ),
-              routeInformationParser: const RoutemasterParser(),
-            ),
-        error: (error, stackTrace) => ErrorText(error: error.toString()),
-        loading: () => const Loader());
+      data: (data) {
+        if (isByPassLogin) {
+          // Bypass login, directly go to logged-in route
+          return MaterialApp.router(
+            debugShowCheckedModeBanner: false,
+            title: 'Reflection On Faith',
+            theme: Pallete.lightModeAppTheme,
+            routerDelegate: RoutemasterDelegate(routesBuilder: (_) => loggedInRoute),
+            routeInformationParser: const RoutemasterParser(),
+          );
+        } else {
+          if (data != null) {
+            fetchDataOnce(data);
+            if (userModel != null) {
+              return MaterialApp.router(
+                debugShowCheckedModeBanner: false,
+                title: 'Reflection On Faith',
+                theme: Pallete.lightModeAppTheme,
+                routerDelegate: RoutemasterDelegate(routesBuilder: (_) => loggedInRoute),
+                routeInformationParser: const RoutemasterParser(),
+              );
+            }
+          }
+
+          return MaterialApp.router(
+            debugShowCheckedModeBanner: false,
+            title: 'Reflection On Faith',
+            theme: Pallete.lightModeAppTheme,
+            routerDelegate: RoutemasterDelegate(routesBuilder: (_) => loggedOutRoute),
+            routeInformationParser: const RoutemasterParser(),
+          );
+        }
+      },
+      error: (error, stackTrace) => ErrorText(error: error.toString()),
+      loading: () => const Loader(),
+    );
   }
 }

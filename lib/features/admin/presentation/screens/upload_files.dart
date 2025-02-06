@@ -1,101 +1,53 @@
 import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:devotion/core/constants/firebase_constants.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 
-class UploadFiles extends ConsumerWidget {
-  const UploadFiles({super.key});
+class UploadFiles {
+  /// Uploads a file to Firebase Storage and saves metadata to Firestore.
+  static Future<void> uploadFileToFirebase(String collectionPath, String storagePath) async {
+    try {
+      // Pick file using file picker
+      FilePickerResult? result = await FilePicker.platform.pickFiles();
+      if (result == null) return;
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    Future<File> saveFilePermanently(PlatformFile file) async {
-      final appStorage = await getApplicationDocumentsDirectory();
-      final newFile = File('${appStorage.path}/${file.name}');
-      return File(file.path!).copy(newFile.path);
+      File file = File(result.files.single.path!);
+      String fileName = result.files.single.name;
+
+      // Upload file to Firebase Storage
+      Reference ref = FirebaseStorage.instance.ref('$storagePath/$fileName');
+      UploadTask uploadTask = ref.putFile(file);
+
+      await uploadTask.whenComplete(() => {});
+      String downloadUrl = await ref.getDownloadURL();
+
+      // Save file metadata in Firestore
+      await FirebaseFirestore.instance.collection(collectionPath).add({
+        'fileName': fileName,
+        'downloadUrl': downloadUrl,
+        'uploadedAt': FieldValue.serverTimestamp(),
+      });
+
+      print('File uploaded successfully to $storagePath');
+    } catch (e) {
+      print('Error uploading file: $e');
+      rethrow;
     }
-
-    void openFile(PlatformFile file) {
-      OpenFile.open(file.path!);
-    }
-
-    void openFiles(List<PlatformFile> files) => Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => FilesPage(
-              files: files,
-              onOpenedFile: openFile,
-            ),
-          ),
-        );
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('File Upload'),
-      ),
-      body: Container(
-        constraints: const BoxConstraints(
-          maxWidth: 400,
-        ),
-        padding: const EdgeInsets.all(32),
-        alignment: Alignment.topCenter,
-        child: ElevatedButton(
-          onPressed: () async {
-            final result =
-                await FilePicker.platform.pickFiles(allowMultiple: true);
-            if (result == null) return;
-
-            openFiles(result.files);
-
-            //open single file
-            final file = result.files.first;
-            openFile(file);
-
-            debugPrint(' Name: ${file.name}');
-            debugPrint(' Bytes: ${file.bytes}');
-            debugPrint(' Size: ${file.size}');
-            debugPrint(' Extension: ${file.extension}');
-            debugPrint(' Path: ${file.path}');
-
-            final newFile = await saveFilePermanently(file);
-            debugPrint('from Path: ${file.path}');
-            debugPrint('To Path: ${newFile.path}');
-          },
-          child: const Text('Upload Files'),
-        ),
-      ),
-    );
   }
-}
 
-class FilesPage extends StatelessWidget {
-  final List<PlatformFile> files;
-  final void Function(PlatformFile) onOpenedFile;
+  // Save file permanently in local storage
+  static Future<File> saveFilePermanently(PlatformFile file) async {
+    final appStorage = await getApplicationDocumentsDirectory();
+    final newFile = File('${appStorage.path}/${file.name}');
+    return File(file.path!).copy(newFile.path);
+  }
 
-  const FilesPage({
-    super.key,
-    required this.files,
-    required this.onOpenedFile,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Uploaded Files'),
-      ),
-      body: ListView.builder(
-        itemCount: files.length,
-        itemBuilder: (context, index) {
-          final file = files[index];
-          return ListTile(
-            title: Text(file.name),
-            subtitle: Text('Size: ${file.size} bytes'),
-            onTap: () => onOpenedFile(file),
-          );
-        },
-      ),
-    );
+  // Open file
+  static void openFile(PlatformFile file) {
+    OpenFile.open(file.path!);
   }
 }
