@@ -1,7 +1,7 @@
 import 'package:devotion/core/providers/providers.dart';
 import 'package:devotion/features/Q&A/presentation/screens/question_page.dart';
 import 'package:devotion/features/articles/presentation/screens/article_screen.dart';
-import 'package:devotion/features/audio/presentation/screens/devotion.dart';
+import 'package:devotion/features/audio/presentation/screens/audio_record_page.dart';
 import 'package:devotion/features/auth/presentation/screen/home_screen.dart';
 import 'package:devotion/features/books/presentation/screen/book_screen.dart';
 import 'package:devotion/widget/app_drawer.dart';

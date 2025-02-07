@@ -6,4 +6,5 @@ class FirebaseConstants {
   static const feedbackCollection = 'feedback';
   static const articleCollection = 'article';
   static const testimonyCollection = 'testimony'; 
+  static const devotionCollection = 'Devotion';
 }

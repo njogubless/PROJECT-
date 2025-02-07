@@ -3,7 +3,7 @@ import 'package:devotion/core/common/navigation/main_layout.dart';
 import 'package:devotion/features/Q&A/presentation/screens/question_page.dart';
 import 'package:devotion/features/articles/presentation/screens/article_screen.dart';
 import 'package:devotion/features/audio/presentation/screens/audio_screen.dart';
-import 'package:devotion/features/audio/presentation/screens/devotion.dart';
+import 'package:devotion/features/audio/presentation/screens/audio_record_page.dart';
 import 'package:devotion/features/auth/presentation/screen/home_screen.dart';
 import 'package:devotion/features/auth/presentation/screen/login_screen.dart';
 import 'package:devotion/features/auth/presentation/screen/sign_up.dart';

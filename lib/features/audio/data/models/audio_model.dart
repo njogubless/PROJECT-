@@ -1,4 +1,3 @@
-
 class AudioFile {
   final String id;
   final String title;
@@ -22,10 +21,21 @@ class AudioFile {
     required this.uploadDate,
   });
 
-
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'url': url,
+      'coverUrl': coverUrl,
+      'duration': duration.inSeconds,  // Convert Duration to seconds
+      'setUrl': setUrl,
+      'isPlaying': isPlaying,
+      'uploaderId': uploaderId,
+      'uploadDate': uploadDate.toIso8601String(),  // Convert DateTime to ISO string
+    };
+  }
 
   factory AudioFile.fromJson(Map<String, dynamic> json) {
-
     return AudioFile(
       id: json['id'] as String,
       title: json['title'] as String,
@@ -36,9 +46,5 @@ class AudioFile {
       uploaderId: json['uploaderId'] as String,
       uploadDate: DateTime.parse(json['uploadDate'] as String),
     );
-
   }
-
 }
-
-
