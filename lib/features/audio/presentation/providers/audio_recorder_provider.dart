@@ -1,5 +1,5 @@
 // lib/features/audio/presentation/providers/audio_recorder_provider.dart
-import 'package:devotion/features/audio/presentation/screens/audio_screen.dart';
+import 'package:devotion/features/audio/presentation/screens/audio_recoding_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:record/record.dart';
 import 'dart:async';
