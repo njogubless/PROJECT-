@@ -8,6 +8,7 @@ class AudioFile {
   final bool isPlaying;          // Status to indicate if audio is playing
   final String uploaderId;
   final DateTime uploadDate;
+  final String scripture;        // Scripture for audio
 
   AudioFile({
     required this.id,
@@ -19,6 +20,7 @@ class AudioFile {
     this.isPlaying = false,      // Default value for audio play status
     required this.uploaderId,
     required this.uploadDate,
+    required this.scripture,
   });
 
   Map<String, dynamic> toJson() {
@@ -31,7 +33,8 @@ class AudioFile {
       'setUrl': setUrl,
       'isPlaying': isPlaying,
       'uploaderId': uploaderId,
-      'uploadDate': uploadDate.toIso8601String(),  // Convert DateTime to ISO string
+      'uploadDate': uploadDate.toIso8601String(),
+      'scripture': scripture,  // Convert DateTime to ISO string
     };
   }
 
@@ -45,6 +48,7 @@ class AudioFile {
       setUrl: json['setUrl'] as String,
       uploaderId: json['uploaderId'] as String,
       uploadDate: DateTime.parse(json['uploadDate'] as String),
+      scripture: json['scripture'] as String,
     );
   }
 }

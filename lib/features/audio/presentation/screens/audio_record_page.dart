@@ -214,8 +214,14 @@
 //   }
 // }
 // lib/features/audio/presentation/pages/record_audio_page.dart
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:devotion/features/audio/data/models/audio_model.dart';
 import 'package:devotion/features/audio/presentation/providers/audio_provider.dart';
 import 'package:devotion/features/audio/presentation/widgets/wave_form_painter.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -227,6 +233,101 @@ class RecordAudioPage extends ConsumerStatefulWidget {
 }
 
 class _RecordAudioPageState extends ConsumerState<RecordAudioPage> {
+
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final minutes = twoDigits(duration.inMinutes.remainder(60));
+    final seconds = twoDigits(duration.inSeconds.remainder(60));
+    return '$minutes:$seconds';
+  }
+
+  Future<void> _submitRecording() async {
+    final recordingState = ref.read(audioRecorderProvider);
+
+    if (recordingState.recordedFilePath == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No recording available')),
+      );
+      return;
+    }
+
+    //validate form fields
+    if(_titleController.text.isEmpty || _scriptureController.text.isEmpty || _ministerController.text.isEmpty){
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill all fields')),
+      );
+      return;
+    }
+
+    try {
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
+
+      // 1. Upload audio file to Firebase Storage
+      final storageRef = FirebaseStorage.instance
+          .ref()
+          .child('Devotion')
+          .child('${DateTime.now().millisecondsSinceEpoch}.m4a');
+
+      final audioFile = File(recordingState.recordedFilePath!);
+      final uploadTask = await storageRef.putFile(audioFile);
+      final downloadUrl = await uploadTask.ref.getDownloadURL();
+
+      // 2. Create Firestore document
+      final devotionDoc = AudioFile(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: _titleController.text,
+        url: downloadUrl,
+        coverUrl: '', // Optional cover image
+        duration: recordingState.recordingDuration,
+        setUrl: '', // Optional set URL
+        uploaderId: FirebaseAuth.instance.currentUser?.uid ?? 'anonymous',
+        uploadDate: DateTime.now(),
+        scripture: _scriptureController.text,
+      );
+
+      // 3. Save to Firestore
+      await FirebaseFirestore.instance
+          .collection('Devotion')
+          .doc(devotionDoc.id)
+          .set(devotionDoc.toJson());
+
+      // Close loading dialog
+      Navigator.pop(context);
+
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Recording uploaded successfully'),
+        backgroundColor: Colors.green,),
+      );
+
+      // Navigate back
+      Navigator.pop(context);
+    } catch (e) {
+      // Close loading dialog
+      Navigator.pop(context);
+
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error uploading recording: $e'),
+        backgroundColor: Colors.red,),
+      );
+    }
+  }
+
+
+
+
+
+
+
+
+
+
   final _titleController = TextEditingController();
   final _scriptureController = TextEditingController();
   final _ministerController = TextEditingController();

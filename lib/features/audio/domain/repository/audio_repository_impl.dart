@@ -47,6 +47,7 @@ class AudioRepositoryImpl implements AudioRepository {
           coverUrl: data['coverUrl'], 
           setUrl:data['setUrl'], 
           duration: data['duration'],
+          scripture: data['scripture'],
           
         );
       }).toList();

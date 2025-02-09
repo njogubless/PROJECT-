@@ -1,9 +1,11 @@
+import 'package:devotion/features/audio/data/models/audio_model.dart';
+import 'package:devotion/features/audio/presentation/screens/audio_list_page.dart';
+import 'package:devotion/features/audio/presentation/screens/audio_player_page.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -12,10 +14,11 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProviderStateMixin {
+class _HomeScreenState extends ConsumerState<HomeScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
-  
+
   @override
   void initState() {
     super.initState();
@@ -23,14 +26,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
       duration: const Duration(milliseconds: 1000),
       vsync: this,
     );
-    
+
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _animationController,
         curve: Curves.easeInOut,
       ),
     );
-    
+
     _animationController.forward();
   }
 
@@ -38,6 +41,37 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
   void dispose() {
     _animationController.dispose();
     super.dispose();
+  }
+
+  Stream<List<AudioFile>> _getLatestAudios() {
+    return FirebaseFirestore.instance
+        .collection('DevotionPage')
+        .orderBy('createdAt', descending: true)
+        .limit(3)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => AudioFile.fromJson(doc.data()))
+            .toList());
+  }
+
+  Stream<List<Map<String, dynamic>>> _getLatestArticles() {
+    return FirebaseFirestore.instance
+        .collection('articles')
+        .orderBy('createdAt', descending: true)
+        .limit(3)
+        .snapshots()
+        .map((snapshot) =>
+            snapshot.docs.map((doc) => {'id': doc.id, ...doc.data()}).toList());
+  }
+
+  Stream<List<Map<String, dynamic>>> _getLatestQuestions() {
+    return FirebaseFirestore.instance
+        .collection('questions')
+        .orderBy('createdAt', descending: true)
+        .limit(3)
+        .snapshots()
+        .map((snapshot) =>
+            snapshot.docs.map((doc) => {'id': doc.id, ...doc.data()}).toList());
   }
 
   Future<Map<String, dynamic>> _fetchUserData() async {
@@ -178,7 +212,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (_) => DevotionPage()));
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
                       foregroundColor: Colors.purple.shade400,
@@ -191,7 +228,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
                       ),
                     ),
                     child: Text(
-                      'Start Reading',
+                      'Start Listening',
                       style: GoogleFonts.poppins(
                         fontWeight: FontWeight.bold,
                       ),
@@ -223,12 +260,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
           ),
           SizedBox(
             height: 180,
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              scrollDirection: Axis.horizontal,
-              itemCount: _sampleAudioItems().length,
-              itemBuilder: (context, index) {
-                return _buildAudioCard(_sampleAudioItems()[index]);
+            child: StreamBuilder<List<AudioFile>>(
+              stream: _getLatestAudios(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return const Center(child: Text('Error loading audios'));
+                }
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                final audios = snapshot.data ?? [];
+                return ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  scrollDirection: Axis.horizontal,
+                  itemCount: audios.length,
+                  itemBuilder: (context, index) {
+                    final audio = audios[index];
+                    return _buildAudioCard(audio);
+                  },
+                );
               },
             ),
           ),
@@ -272,7 +323,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
             ),
             const SizedBox(height: 10),
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => AudioPlayerPage(audioFile: audio)));
+              },
               child: Text(
                 'Listen Now',
                 style: GoogleFonts.poppins(
@@ -304,12 +360,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
           ),
           SizedBox(
             height: 180,
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              scrollDirection: Axis.horizontal,
-              itemCount: _sampleArticleItems().length,
-              itemBuilder: (context, index) {
-                return _buildArticleCard(_sampleArticleItems()[index]);
+            child: StreamBuilder<List<Map<String, dynamic>>>(
+              stream: _getLatestArticles(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return const Center(child: Text('Error loading articles'));
+                }
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                final articles = snapshot.data ?? [];
+                return ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  scrollDirection: Axis.horizontal,
+                  itemCount: articles.length,
+                  itemBuilder: (context, index) {
+                    final article = articles[index];
+                    return _buildArticleCard(article);
+                  },
+                );
               },
             ),
           ),
@@ -318,7 +388,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
     );
   }
 
-  Widget _buildArticleCard(String title) {
+  Widget _buildArticleCard(Map<String, dynamic> article) {
     return Container(
       width: 160,
       margin: const EdgeInsets.all(5),
@@ -343,17 +413,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
               ),
             ),
             const SizedBox(height: 15),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Text(
+                article['title'] ?? 'Untitled Article',
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
             const SizedBox(height: 10),
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushNamed(
+                  context,
+                  '/article-detail',
+                  arguments: article['id'],
+                );
+              },
               child: Text(
                 'Read More',
                 style: GoogleFonts.poppins(
@@ -369,36 +450,54 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
     );
   }
 
+
+
   Widget _buildLatestQuestionsSection() {
-    return SliverList(
-      delegate: SliverChildBuilderDelegate(
-        (context, index) {
-          if (index == 0) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: Text(
-                'Latest Questions',
-                style: GoogleFonts.poppins(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+    return SliverToBoxAdapter(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: Text(
+              'Latest Questions',
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
               ),
-            );
-          }
-          final questions = _sampleQuestionItems();
-          final questionIndex = index - 1;
-          if (questionIndex >= questions.length) return null;
-          
-          return _buildQuestionCard(questions[questionIndex]);
-        },
-        childCount: _sampleQuestionItems().length + 1,
+            ),
+          ),
+          StreamBuilder<List<Map<String, dynamic>>>(
+            stream: _getLatestQuestions(),
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return const Center(child: Text('Error loading questions'));
+              }
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              final questions = snapshot.data ?? [];
+              return ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                itemCount: questions.length,
+                itemBuilder: (context, index) {
+                  final question = questions[index];
+                  return _buildQuestionCard(question);
+                },
+              );
+            },
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildQuestionCard(String question) {
+ Widget _buildQuestionCard(Map<String, dynamic> question) {
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15),
       ),
@@ -416,7 +515,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
           ),
         ),
         title: Text(
-          question,
+          question['title'] ?? 'Untitled Question',
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.w500,
           ),
@@ -435,10 +534,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
           Icons.chevron_right_rounded,
           color: Colors.green,
         ),
+        onTap: () {
+          Navigator.pushNamed(
+            context,
+            '/question-detail',
+            arguments: question['id'],
+          );
+        },
       ),
     );
   }
 
+  
   List<String> _sampleAudioItems() {
     return ["Motivation Talk", "Morning Devotion", "Peaceful Meditation"];
   }
@@ -448,6 +555,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
   }
 
   List<String> _sampleQuestionItems() {
-    return ["What is faith?", "How to handle challenges?", "Tips on prayer life"];
+    return [
+      "What is faith?",
+      "How to handle challenges?",
+      "Tips on prayer life"
+    ];
   }
 }

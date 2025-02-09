@@ -14,6 +14,15 @@ class AudioPlayerPage extends ConsumerStatefulWidget {
 }
 
 class _AudioPlayerPageState extends ConsumerState<AudioPlayerPage> {
+
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final minutes = twoDigits(duration.inMinutes.remainder(60));
+    final seconds = twoDigits(duration.inSeconds.remainder(60));
+    return '$minutes:$seconds';
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final playerState = ref.watch(audioPlayerProvider);

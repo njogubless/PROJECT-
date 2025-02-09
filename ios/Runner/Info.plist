@@ -52,7 +52,7 @@
 	<key>NSAllowsArbitaryLoads</key><true />
 	</dict>
 	<key>NSMicrophoneUsageDescription</key>
-	<String>explain why the app uses the microphone here</String>
+	<String> Need microphone access for audio playback</String>
 	<true/>
 <key>CFBundleURLTypes</key>
 <array>

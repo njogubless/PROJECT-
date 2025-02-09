@@ -39,6 +39,7 @@ class FirebaseAudioDataSource {
         coverUrl: data['coverUrl'],
         duration: data ['duration'],
         setUrl: data['setUrl'],
+        scripture: data['scripture'],
       );
     }).toList();
   }
@@ -55,6 +56,7 @@ class FirebaseAudioDataSource {
       coverUrl:data['coverUrl'],
       duration: data['duration'], 
       setUrl: data['setUrl'],
+      scripture: data['scripture'],
     );
   }
 

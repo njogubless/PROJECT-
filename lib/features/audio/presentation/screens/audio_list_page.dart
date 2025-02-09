@@ -1,6 +1,13 @@
 // lib/features/audio/presentation/pages/audio_list_page.dart
-class AudioListPage extends ConsumerWidget {
-  const AudioListPage({super.key});
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:devotion/features/audio/data/models/audio_model.dart';
+import 'package:devotion/features/audio/presentation/screens/audio_player_page.dart';
+import 'package:devotion/features/audio/presentation/screens/audio_record_page.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+class DevotionPage extends ConsumerWidget {
+  const DevotionPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -19,7 +26,7 @@ class AudioListPage extends ConsumerWidget {
         ],
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('Devotion').snapshots(),
+        stream: FirebaseFirestore.instance.collection('DevotionPage').snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return const Center(child: Text('Something went wrong'));
