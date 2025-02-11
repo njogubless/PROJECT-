@@ -28,12 +28,7 @@ class AudioTile extends ConsumerWidget {
               try {
                 // Ensure the audio file URL is available
                 if (audioFile.url.isNotEmpty) {
-                  // load and play the audio from the url
-                  //Audio audio = Audio.load(audioFile.url);
-                  //audio.play();
-                  // await audioPlayer.setUrl(audioFile.url);
-                  // audioPlayer.play();
-                } else {
+                 
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                         content: Text('Audio file URL is unavailable')),

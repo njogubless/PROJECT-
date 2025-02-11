@@ -4,6 +4,8 @@ class BookModel {
   final String author;
   final String description;
   final String fileUrl;
+  final String coverUrl;
+  final String downloadUrl;
 
   // Constructor
   BookModel({
@@ -12,6 +14,8 @@ class BookModel {
     required this.author,
     required this.description,
     required this.fileUrl,
+    required this.coverUrl,
+    required this.downloadUrl,
   });
 
   // Factory method to create a BookModel from a map
@@ -22,6 +26,8 @@ class BookModel {
       author: map['author'] as String,
       description: map['description'] as String,
       fileUrl: map['fileUrl'] as String,
+      coverUrl: map['coverUrl'] as String,
+      downloadUrl: map['downloadUrl'] as String,
     );
   }
 
@@ -33,6 +39,8 @@ class BookModel {
       'author': author,
       'description': description,
       'fileUrl': fileUrl,
+      'downloadUrl': downloadUrl,
+      'coverUrl': coverUrl,
     };
   }
 }

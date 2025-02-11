@@ -15,6 +15,8 @@ class BookRepositoryImpl implements BookRepository {
       author: book.author,
       description: book.description,
       fileUrl: book.fileUrl,
+      coverUrl: book.coverUrl,
+      downloadUrl: book.downloadUrl,
     );
 
     await firestore.collection('books').doc(book.id).set(bookModel.toMap());

@@ -132,7 +132,7 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
             decoration: BoxDecoration(
               color: theme.primaryColor,
               image: const DecorationImage(
-                image: AssetImage('assets/images/drawer_header_bg.jpg'),
+                image: AssetImage('assets/images/ROF.webp'),
                 fit: BoxFit.cover,
                 opacity: 0.7,
               ),

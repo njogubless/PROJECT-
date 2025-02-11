@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // import 'package:flutter_riverpod/flutter_riverpod.dart';
 // import 'package:audioplayers/audioplayers.dart';
 
@@ -65,6 +66,9 @@
 
 //   factory AudioPlayerState.stopped() => AudioPlayerState(isPlaying: false, isPaused: false);
 // }
+=======
+
+>>>>>>> d8dc86b ( making changes on the audio platform and book screen)
 
 import 'package:just_audio/just_audio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -198,4 +202,8 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState> {
 
 final audioPlayerProvider = StateNotifierProvider<AudioPlayerNotifier, AudioPlayerState>((ref) {
   return AudioPlayerNotifier();
+<<<<<<< HEAD
 });
+=======
+});
+>>>>>>> d8dc86b ( making changes on the audio platform and book screen)

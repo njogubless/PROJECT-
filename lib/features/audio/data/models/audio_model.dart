@@ -8,7 +8,11 @@ class AudioFile {
   final bool isPlaying;          // Status to indicate if audio is playing
   final String uploaderId;
   final DateTime uploadDate;
+<<<<<<< HEAD
   final String scripture;        // Scripture for audio
+=======
+  final String scripture;
+>>>>>>> d8dc86b ( making changes on the audio platform and book screen)
 
   AudioFile({
     required this.id,
@@ -34,7 +38,11 @@ class AudioFile {
       'isPlaying': isPlaying,
       'uploaderId': uploaderId,
       'uploadDate': uploadDate.toIso8601String(),
+<<<<<<< HEAD
       'scripture': scripture,  // Convert DateTime to ISO string
+=======
+      'scripture': scripture,
+>>>>>>> d8dc86b ( making changes on the audio platform and book screen)
     };
   }
 

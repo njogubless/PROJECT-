@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:devotion/features/books/data/models/book_model.dart';
 import 'package:devotion/features/books/data/repository/book_repository_impl.dart';
 import 'package:devotion/features/books/domain/entities/book.dart';
 import 'package:devotion/features/books/domain/repository/book_repository.dart';
@@ -10,7 +11,7 @@ import '../book_upload_notifier.dart';
 
 //this provider fetches the list of articles(books) asynchronously
 
-final articlesProvider = FutureProvider<List<BookEntity>>((ref) async {
+final booksProvider = FutureProvider<List<BookModel>>((ref) async {
   final repository = ref.read(bookRepositoryProvider);
   return await repository.getBooks(bookRepositoryProvider);
 });

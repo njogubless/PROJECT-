@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // // lib/features/audio/presentation/pages/record_audio_page.dart
 // import 'dart:io';
 
@@ -214,6 +215,8 @@
 //   }
 // }
 // lib/features/audio/presentation/pages/record_audio_page.dart
+=======
+>>>>>>> d8dc86b ( making changes on the audio platform and book screen)
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -335,12 +338,16 @@ class _RecordAudioPageState extends ConsumerState<RecordAudioPage> {
   @override
   Widget build(BuildContext context) {
     final recordingState = ref.watch(audioRecorderProvider);
+    final screenHeight = MediaQuery.of(context).size.height;
+    final formHeight = screenHeight * 0.4; // 40% of screen height for form
+    final recordingHeight = screenHeight * 0.6; // 60% of screen height for recording
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Record Sermon'),
         backgroundColor: Theme.of(context).primaryColor,
       ),
+<<<<<<< HEAD
       body: SafeArea(
         child: Column(
           children: [
@@ -369,6 +376,87 @@ class _RecordAudioPageState extends ConsumerState<RecordAudioPage> {
                           labelText: 'Scripture Reference',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
+=======
+      body: SingleChildScrollView(
+        child: SizedBox(
+          height: screenHeight - kToolbarHeight - MediaQuery.of(context).padding.top,
+          child: Column(
+            children: [
+              // Form section with fixed height
+              SizedBox(
+                height: formHeight,
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        TextField(
+                          controller: _titleController,
+                          decoration: const InputDecoration(
+                            labelText: 'Sermon Title',
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        TextField(
+                          controller: _scriptureController,
+                          decoration: const InputDecoration(
+                            labelText: 'Scripture Reference',
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        TextField(
+                          controller: _ministerController,
+                          decoration: const InputDecoration(
+                            labelText: 'Minister Name',
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              // Recording section with remaining height
+              SizedBox(
+                height: recordingHeight,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (recordingState.isRecording || recordingState.recordedFilePath != null)
+                      SizedBox(
+                        height: 100,
+                        child: CustomPaint(
+                          painter: WaveformPainter(
+                            waveformData: recordingState.waveformData,
+                          ),
+                          size: Size(MediaQuery.of(context).size.width, 100),
+                        ),
+                      ),
+                    const SizedBox(height: 20),
+                    Text(
+                      _formatDuration(recordingState.recordingDuration),
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (!recordingState.isRecording)
+                          FloatingActionButton(
+                            onPressed: () => ref.read(audioRecorderProvider.notifier).startRecording(),
+                            child: const Icon(Icons.mic),
+                          )
+                        else ...[
+                          FloatingActionButton(
+                            onPressed: recordingState.isPaused
+                                ? () => ref.read(audioRecorderProvider.notifier).resumeRecording()
+                                : () => ref.read(audioRecorderProvider.notifier).pauseRecording(),
+                            child: Icon(recordingState.isPaused ? Icons.play_arrow : Icons.pause),
+>>>>>>> d8dc86b ( making changes on the audio platform and book screen)
                           ),
                           filled: true,
                           fillColor: Colors.grey[100],
@@ -455,14 +543,107 @@ class _RecordAudioPageState extends ConsumerState<RecordAudioPage> {
                           child: const Text('Submit Recording'),
                         ),
                       ],
+<<<<<<< HEAD
                     ],
                   ),
+=======
+                    ),
+                    if (recordingState.recordedFilePath != null)
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: ElevatedButton(
+                          onPressed: _submitRecording,
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: const Size(double.infinity, 50),
+                          ),
+                          child: const Text('Submit Recording'),
+                        ),
+                      ),
+                  ],
+>>>>>>> d8dc86b ( making changes on the audio platform and book screen)
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
+<<<<<<< HEAD
+=======
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final minutes = twoDigits(duration.inMinutes.remainder(60));
+    final seconds = twoDigits(duration.inSeconds.remainder(60));
+    return '$minutes:$seconds';
+  }
+
+  Future<void> _submitRecording() async {
+    final recordingState = ref.read(audioRecorderProvider);
+
+    if (recordingState.recordedFilePath == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No recording available')),
+      );
+      return;
+    }
+
+    try {
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
+
+      // 1. Upload audio file to Firebase Storage
+      final storageRef = FirebaseStorage.instance
+          .ref()
+          .child('devotions')
+          .child('${DateTime.now().millisecondsSinceEpoch}.m4a');
+
+      final audioFile = File(recordingState.recordedFilePath!);
+      final uploadTask = await storageRef.putFile(audioFile);
+      final downloadUrl = await uploadTask.ref.getDownloadURL();
+
+      // 2. Create Firestore document
+      final devotionDoc = AudioFile(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: _titleController.text,
+        url: downloadUrl,
+        coverUrl: '', // Optional cover image
+        duration: recordingState.recordingDuration,
+        setUrl: '', // Optional set URL
+        uploaderId: FirebaseAuth.instance.currentUser?.uid ?? 'anonymous',
+        uploadDate: DateTime.now(),
+        scripture: _scriptureController.text,
+      );
+
+      // 3. Save to Firestore
+      await FirebaseFirestore.instance
+          .collection('Devotion')
+          .doc(devotionDoc.id)
+          .set(devotionDoc.toJson());
+
+      // Close loading dialog
+      Navigator.pop(context);
+
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Recording uploaded successfully')),
+      );
+
+      // Navigate back
+      Navigator.pop(context);
+    } catch (e) {
+      // Close loading dialog
+      Navigator.pop(context);
+
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error uploading recording: $e')),
+      );
+    }
+  }
+>>>>>>> d8dc86b ( making changes on the audio platform and book screen)
 }

@@ -128,13 +128,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             children: [
               Row(
                 children: [
-                  // CircleAvatar(
-                  //   radius: 30,
-                  //   backgroundImage: CachedNetworkImageProvider(
-                  //     userData?['avatarUrl'] ?? 'https://via.placeholder.com/60',
-                  //   ),
-                  // ),
-                  const SizedBox(width: 15),
+                const SizedBox(width: 15),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
