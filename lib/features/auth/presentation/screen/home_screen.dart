@@ -45,7 +45,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
   Stream<List<AudioFile>> _getLatestAudios() {
     return FirebaseFirestore.instance
-        .collection('DevotionPage')
+        .collection('Sermons')
         .orderBy('createdAt', descending: true)
         .limit(3)
         .snapshots()
@@ -56,8 +56,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
   Stream<List<Map<String, dynamic>>> _getLatestArticles() {
     return FirebaseFirestore.instance
-        .collection('articles')
-        .orderBy('createdAt', descending: true)
+        .collection('article')
+        .orderBy('timestamp', descending: true)
         .limit(3)
         .snapshots()
         .map((snapshot) =>
@@ -67,7 +67,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   Stream<List<Map<String, dynamic>>> _getLatestQuestions() {
     return FirebaseFirestore.instance
         .collection('questions')
-        .orderBy('createdAt', descending: true)
+        .orderBy('askedAt', descending: true)
         .limit(3)
         .snapshots()
         .map((snapshot) =>
@@ -282,7 +282,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     );
   }
 
-  Widget _buildAudioCard(String title) {
+  Widget _buildAudioCard(AudioFile audio) {
     return Container(
       width: 160,
       margin: const EdgeInsets.all(5),
@@ -308,7 +308,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             ),
             const SizedBox(height: 15),
             Text(
-              title,
+              audio.title,
               textAlign: TextAlign.center,
               style: GoogleFonts.poppins(
                 fontSize: 14,

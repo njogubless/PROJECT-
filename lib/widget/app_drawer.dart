@@ -1,5 +1,8 @@
 import 'dart:io';
+import 'package:devotion/features/admin/presentation/screens/admin_log_in.dart';
 import 'package:devotion/features/auth/Repository/auth_repository.dart';
+import 'package:devotion/services/help_support.dart';
+import 'package:devotion/services/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -229,7 +232,7 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
                   title: const Text("Admin Login"),
                   onTap: () {
                     Navigator.pop(context);
-                    Navigator.pushNamed(context, '/admin-login');
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => AdminLoginPage()));
                   },
                 ),
                 ListTile(
@@ -249,7 +252,7 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
                   title: const Text("Settings"),
                   onTap: () {
                     Navigator.pop(context);
-                    Navigator.pushNamed(context, '/settings');
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsPage()));
                   },
                 ),
                 ListTile(
@@ -257,7 +260,7 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
                   title: const Text("Help & Support"),
                   onTap: () {
                     Navigator.pop(context);
-                    Navigator.pushNamed(context, '/help');
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => HelpSupportPage()));
                   },
                 ),
                 if (user != null)

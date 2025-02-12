@@ -47,12 +47,7 @@ class AudioRepositoryImpl implements AudioRepository {
           coverUrl: data['coverUrl'], 
           setUrl:data['setUrl'], 
           duration: data['duration'],
-<<<<<<< HEAD
           scripture: data['scripture'],
-          
-=======
-          scripture: data['scripture'],          
->>>>>>> d8dc86b ( making changes on the audio platform and book screen)
         );
       }).toList();
     } catch (e) {

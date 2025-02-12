@@ -6,10 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AudioPlayerPage extends ConsumerStatefulWidget {
   final AudioFile audioFile;
-<<<<<<< HEAD
 
-=======
->>>>>>> d8dc86b ( making changes on the audio platform and book screen)
   const AudioPlayerPage({required this.audioFile, super.key});
 
   @override
