@@ -71,6 +71,7 @@ class _ArticlePageState extends ConsumerState<ArticlePage> {
                     MaterialPageRoute(
                       builder: (context) => ArticleDetailScreen(
                         articleId: article.id,
+                        articleTitle: article.title,
                       ),
                     ),
                   );
@@ -123,6 +124,13 @@ class ArticleSearchDelegate extends SearchDelegate {
           title: Text(article.title),
           onTap: () {
             // Show article details
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ArticleDetailScreen(
+                          articleId: article.id,
+                          articleTitle: article.title,
+                        )));
           },
         );
       },

@@ -106,7 +106,7 @@ class _MainLayoutState extends State<MainLayout> with TickerProviderStateMixin {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Theme.of(context).primaryColor.withOpacity(0.1),
+              const Color.fromARGB(255, 104, 165, 214).withOpacity(0.1),
               Colors.white,
             ],
           ),
@@ -232,12 +232,11 @@ class _MainLayoutState extends State<MainLayout> with TickerProviderStateMixin {
 // Add these theme configurations to your main.dart
 ThemeData appTheme() {
   return ThemeData(
-    primaryColor: const Color(0xFF6366F1), // Indigo
-    scaffoldBackgroundColor: Colors.white,
+    primaryColor: const Color.fromARGB(255, 82, 169, 240),
     fontFamily: GoogleFonts.poppins().fontFamily,
     textTheme: GoogleFonts.poppinsTextTheme(),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      selectedItemColor: Color(0xFF6366F1),
+      selectedItemColor: Color.fromARGB(255, 149, 151, 245),
       unselectedItemColor: Colors.grey,
     ),
   );

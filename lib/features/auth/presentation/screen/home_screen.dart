@@ -1,3 +1,6 @@
+import 'package:devotion/features/Q&A/presentation/screens/question_page.dart';
+import 'package:devotion/features/articles/presentation/screens/article_detail_screen.dart';
+import 'package:devotion/features/articles/presentation/screens/article_list_screen.dart';
 import 'package:devotion/features/audio/data/models/audio_model.dart';
 import 'package:devotion/features/audio/presentation/screens/audio_list_page.dart';
 import 'package:devotion/features/audio/presentation/screens/audio_player_page.dart';
@@ -128,7 +131,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             children: [
               Row(
                 children: [
-                const SizedBox(width: 15),
+                  const SizedBox(width: 15),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -410,7 +413,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Text(
-                article['title'] ?? 'Untitled Article',
+                article['title'] ?? 'Article ${article['id'] ?? ""}',
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -423,11 +426,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             const SizedBox(height: 10),
             TextButton(
               onPressed: () {
-                Navigator.pushNamed(
-                  context,
-                  '/article-detail',
-                  arguments: article['id'],
-                );
+               Navigator.push(context, MaterialPageRoute(builder: (context) => ArticleDetailScreen(articleId: article['id'], articleTitle: article['title'])));
               },
               child: Text(
                 'Read More',
@@ -443,8 +442,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       ),
     );
   }
-
-
 
   Widget _buildLatestQuestionsSection() {
     return SliverToBoxAdapter(
@@ -489,7 +486,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     );
   }
 
- Widget _buildQuestionCard(Map<String, dynamic> question) {
+  Widget _buildQuestionCard(Map<String, dynamic> question) {
+  
+  final questionText = question['question'] ?? 'No question text available';
+  final questionId = question['id'] ?? '';
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
       shape: RoundedRectangleBorder(
@@ -526,20 +527,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         ),
         trailing: const Icon(
           Icons.chevron_right_rounded,
-          color: Colors.green,
+          color: Colors.grey,
         ),
         onTap: () {
-          Navigator.pushNamed(
-            context,
-            '/question-detail',
-            arguments: question['id'],
-          );
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => QuestionDetailPage(
+                      questionId: questionId,
+              questionText: questionText)));
         },
       ),
     );
   }
 
-  
   List<String> _sampleAudioItems() {
     return ["Motivation Talk", "Morning Devotion", "Peaceful Meditation"];
   }

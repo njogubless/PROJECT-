@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 
 class ArticleDetailScreen extends StatefulWidget {
   final String articleId;
+  final String articleTitle;
 
-  const ArticleDetailScreen({Key? key, required this.articleId}) : super(key: key);
+  const ArticleDetailScreen({Key? key, required this.articleId, required this.articleTitle}) : super(key: key);
 
   @override
   _ArticleDetailScreenState createState() => _ArticleDetailScreenState();
