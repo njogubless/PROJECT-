@@ -27,7 +27,7 @@ class _ArticlePageState extends ConsumerState<ArticlePage> {
 
   @override
   Widget build(BuildContext context) {
-    final articleList = ref.watch(articleProvider);
+    final articleList = ref.watch(articleStreamProvider);
 
     return Scaffold(
       appBar: AppBar(

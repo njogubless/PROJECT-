@@ -1,47 +1,40 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:devotion/features/books/data/models/book_model.dart';
-import 'package:devotion/features/books/data/repository/book_repository_impl.dart';
-import 'package:devotion/features/books/domain/entities/book.dart';
-import 'package:devotion/features/books/domain/repository/book_repository.dart';
-import 'package:devotion/features/books/domain/usecases/upload_book_usecase.dart';
-import 'package:devotion/features/books/presentation/book_upload_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:devotion/features/books/data/models/book_model.dart';
 
-import '../book_upload_notifier.dart';
-
-//this provider fetches the list of articles(books) asynchronously
-
-final booksProvider = FutureProvider<List<BookModel>>((ref) async {
-  final repository = ref.read(bookRepositoryProvider);
-  return await repository.getBooks(bookRepositoryProvider);
-});
-
-//provider for creating an article
-// final CreateArticleUsecaseProvider = Provider<CreateArticleUsecase>((ref) {
-//   final repository = ref.read(bookRepositoryProvider);
-//   return CreateArticleUsecase(repository);
-// });
-
-// Firebase Firestore instance provider
+// Firestore provider
 final firestoreProvider = Provider<FirebaseFirestore>((ref) {
   return FirebaseFirestore.instance;
 });
 
-// Repository provider
-final bookRepositoryProvider = Provider<BookRepository>((ref) {
+// Books provider - directly fetches from Firestore
+final booksProvider = FutureProvider<List<BookModel>>((ref) async {
   final firestore = ref.watch(firestoreProvider);
-  return BookRepositoryImpl(firestore);
+  
+  try {
+    final snapshot = await firestore.collection('books').get();
+    return snapshot.docs.map((doc) => BookModel.fromJson({
+      ...doc.data(),
+      'id': doc.id,
+    })).toList();
+  } catch (e) {
+    throw 'Failed to fetch books: $e';
+  }
 });
 
-// Use case provider
-final uploadBookUseCaseProvider = Provider<UploadBookUseCase>((ref) {
-  final repository = ref.watch(bookRepositoryProvider);
-  return UploadBookUseCase(repository);
+// Book upload provider
+final bookUploadProvider = FutureProvider.family<void, BookModel>((ref, book) async {
+  final firestore = ref.watch(firestoreProvider);
+  
+  try {
+    await firestore.collection('books').add(book.toJson());
+  } catch (e) {
+    throw 'Failed to upload book: $e';
+  }
 });
 
-// Book upload state notifier provider
-final bookUploadNotifierProvider =
-    StateNotifierProvider<BookUploadNotifier, BookUploadState>((ref) {
-  final useCase = ref.watch(uploadBookUseCaseProvider);
-  return BookUploadNotifier(useCase);
-});
+// Simple download tracking
+final downloadedBooksProvider = StateProvider<Set<String>>((ref) => {});
+
+// Selected book provider (optional - for book details view)
+final selectedBookProvider = StateProvider<BookModel?>((ref) => null);

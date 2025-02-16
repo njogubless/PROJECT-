@@ -31,6 +31,19 @@ class BookModel {
     );
   }
 
+  // Factory method to create a BookModel from JSON
+  factory BookModel.fromJson(Map<String, dynamic> json) {
+    return BookModel(
+      id: json['id'] as String? ?? '',
+      title: json['title'] as String? ?? '',
+      author: json['author'] as String? ?? '',
+      description: json['description'] as String? ?? '',
+      fileUrl: json['fileUrl'] as String? ?? '',
+      coverUrl: json['coverUrl'] as String? ?? '',
+      downloadUrl: json['downloadUrl'] as String? ?? '',
+    );
+  }
+
   // Method to convert the BookModel to a map
   Map<String, dynamic> toMap() {
     return {
@@ -43,4 +56,15 @@ class BookModel {
       'coverUrl': coverUrl,
     };
   }
+
+  // Method to convert the BookModel to JSON
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'title': title,
+    'author': author,
+    'description': description,
+    'fileUrl': fileUrl,
+    'coverUrl': coverUrl,
+    'downloadUrl': downloadUrl,
+  };
 }
