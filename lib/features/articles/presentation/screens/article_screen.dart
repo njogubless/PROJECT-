@@ -1,5 +1,6 @@
 import 'package:devotion/features/articles/presentation/providers/article_provider.dart';
 import 'package:devotion/features/articles/presentation/screens/article_detail_screen.dart';
+import 'package:devotion/widget/bookmark_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -61,10 +62,7 @@ class _ArticlePageState extends ConsumerState<ArticlePage> {
                 subtitle: Text(
                   "Published on: ${article.createdAt.toLocal().toString().split(' ')[0]}",
                 ),
-                trailing: IconButton(
-                  icon: Icon(Icons.bookmark_border),
-                  onPressed: () => toggleBookmark(article.id),
-                ),
+              trailing: BookmarkButton(articleId: article.id),
                 onTap: () {
                   Navigator.push(
                     context,

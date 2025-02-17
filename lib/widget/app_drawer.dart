@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:devotion/features/admin/presentation/screens/admin_log_in.dart';
 import 'package:devotion/features/auth/Repository/auth_repository.dart';
+import 'package:devotion/services/bookmark_screen.dart';
 import 'package:devotion/services/help_support.dart';
 import 'package:devotion/services/settings_page.dart';
 import 'package:flutter/material.dart';
@@ -245,6 +246,14 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
                   leading: const Icon(Icons.share),
                   title: const Text("Share App"),
                   onTap: _shareApp,
+                ),
+                ListTile(
+                  leading: Icon(Icons.bookmark),
+                  title: Text('Bookmarks'),
+                  onTap: (){
+                    Navigator.pop(context);
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => BookmarksScreen()));
+                  },
                 ),
                 const Divider(),
                 ListTile(
