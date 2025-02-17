@@ -339,95 +339,112 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       ),
     );
   }
-
-  Widget _buildLatestArticlesSection() {
-    return SliverToBoxAdapter(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: Text(
-              'Latest Articles',
-              style: GoogleFonts.poppins(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+Widget _buildLatestArticlesSection() {
+  return SliverToBoxAdapter(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          child: Text(
+            'Latest Articles',
+            style: GoogleFonts.poppins(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(
-            height: 180,
-            child: StreamBuilder<List<Map<String, dynamic>>>(
-              stream: _getLatestArticles(),
-              builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  return const Center(child: Text('Error loading articles'));
-                }
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                final articles = snapshot.data ?? [];
-                return ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  scrollDirection: Axis.horizontal,
-                  itemCount: articles.length,
-                  itemBuilder: (context, index) {
-                    final article = articles[index];
-                    return _buildArticleCard(article);
-                  },
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildArticleCard(Map<String, dynamic> article) {
-    return Container(
-      width: 160,
-      margin: const EdgeInsets.all(5),
-      child: Card(
-        elevation: 4,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
         ),
+        SizedBox(
+          height: 180,
+          child: StreamBuilder<List<Map<String, dynamic>>>(
+            stream: _getLatestArticles(),
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return const Center(child: Text('Error loading articles'));
+              }
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              final articles = snapshot.data ?? [];
+              return ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                scrollDirection: Axis.horizontal,
+                itemCount: articles.length,
+                itemBuilder: (context, index) {
+                  final article = articles[index];
+                  return _buildArticleCard(article);
+                },
+              );
+            },
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget _buildArticleCard(Map<String, dynamic> article) {
+  return Container(
+    width: 160,
+    margin: const EdgeInsets.all(5),
+    child: Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              padding: const EdgeInsets.all(15),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Colors.orange.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
                 Icons.article_rounded,
-                size: 40,
+                size: 32,
                 color: Colors.orange,
               ),
             ),
-            const SizedBox(height: 15),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Text(
-                article['title'] ?? 'Article ${article['id'] ?? ""}',
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
+            const SizedBox(height: 8),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    article['title'] ?? 'Article ${article['id'] ?? ""}',
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.poppins(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 10),
             TextButton(
               onPressed: () {
-               Navigator.push(context, MaterialPageRoute(builder: (context) => ArticleDetailScreen(articleId: article['id'], articleTitle: article['title'])));
+                Navigator.push(
+                  context, 
+                  MaterialPageRoute(
+                    builder: (context) => ArticleDetailScreen(
+                      articleId: article['id'], 
+                      articleTitle: article['title']
+                    )
+                  )
+                );
               },
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
               child: Text(
                 'Read More',
                 style: GoogleFonts.poppins(
@@ -440,8 +457,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildLatestQuestionsSection() {
     return SliverToBoxAdapter(
