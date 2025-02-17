@@ -1,8 +1,8 @@
 plugins {
     id 'com.android.application'
-    // FlutterFire Configuration
     id 'com.google.gms.google-services'
     id 'kotlin-android'
+    //id 'dev.flutter.flutter-gradle-plugin'
 }
 
 def localProperties = new Properties()
@@ -67,10 +67,6 @@ android {
             minifyEnabled false
         }
     }
-}
-
-flutter {
-    source '../..'
 }
 
 dependencies {
