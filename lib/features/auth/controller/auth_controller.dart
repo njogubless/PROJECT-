@@ -2,7 +2,6 @@
 import 'package:devotion/core/util/utils.dart';
 import 'package:devotion/features/auth/data/models/user_models.dart';
 import 'package:devotion/features/auth/Repository/auth_repository.dart';
-import 'package:devotion/features/auth/presentation/screen/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
@@ -74,6 +73,61 @@ class AuthController extends StateNotifier<bool> {
     return _authRepository.getUserData(uid);
   }
 
+  Future<void> resetPassword(BuildContext context, String email) async {
+    try {
+      state = true;
+      if (email.isEmpty) {
+        throw 'please enter an email adress';
+      }
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Password reset link sent to your email'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      String errorMessage;
+
+      switch (e.code) {
+        case 'Invalid-email':
+          errorMessage = ' The email adress is invalid';
+          break;
+        case 'user-not-found':
+          errorMessage = 'No User found with email adress';
+          break;
+        case ' too-many-requests ':
+          errorMessage = 'Too many requests. Try again later';
+          break;
+        default:
+          errorMessage = e.message ?? 'An error occured';
+      }
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      state = false;
+    }
+  }
+
   // Sign out the user
   void signOut(BuildContext context) async {
     await _authRepository.signOutUser();
@@ -81,115 +135,3 @@ class AuthController extends StateNotifier<bool> {
         context, '/login'); // Update to navigate back to the login screen
   }
 }
-
-// import 'package:devotion/core/util/utils.dart';
-// import 'package:devotion/features/auth/Repository/auth_repository.dart';
-// import 'package:devotion/features/auth/data/models/user_models.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:flutter/material.dart';
-// import 'package:routemaster/routemaster.dart';
-
-// final userProvider = StateProvider<UserModel?>((ref) => null);
-
-// final authControllerProvider =
-//     StateNotifierProvider<AuthController, AsyncValue<void>>((ref) {
-//   return AuthController(
-//     authRepository: ref.watch(authRepositoryProvider),
-//     ref: ref,
-//   );
-// });
-
-// final authStateChangeProvider = StreamProvider((ref) {
-//   final authController = ref.watch(authControllerProvider.notifier);
-//   return authController.authStateChange;
-// });
-
-// final getUserDataProvider = StreamProvider.family((ref, String uid) {
-//   final authController = ref.watch(authControllerProvider.notifier);
-//   return authController.getUserData(uid);
-// });
-
-// class AuthController extends StateNotifier<AsyncValue<void>> {
-//   final AuthRepository _authRepository;
-//   final Ref _ref;
-
-//   AuthController({
-//     required AuthRepository authRepository,
-//     required Ref ref,
-//   })  : _authRepository = authRepository,
-//         _ref = ref,
-//         super(const AsyncValue.data(null));
-
-//   Stream<User?> get authStateChange => _authRepository.authStateChange;
-
-//   Future<void> signInWithGoogle(BuildContext context) async {
-//     state = const AsyncValue.loading();
-//     try {
-//       final result = await _authRepository.signInWithGoogle();
-//       state = const AsyncValue.data(null);
-
-//       result.fold(
-//         (failure) => showSnackbar(context, failure.message),
-//         (userModel) {
-//           _ref.read(userProvider.notifier).state = userModel;
-//           if (userModel.role == 'admin') {
-//             Routemaster.of(context).replace('/admin-dashboard');
-//           } else {
-//             Routemaster.of(context).replace('/homeScreen');
-//           }
-//         },
-//       );
-//     } catch (e, st) {
-//       state = AsyncValue.error(e, st);
-//       showSnackbar(context, 'Error: $e');
-//     }
-//   }
-
-//   Future<void> signInWithEmailAndPassword(
-//     BuildContext context,
-//     String email,
-//     String password,
-//   ) async {
-//     state = const AsyncValue.loading();
-//     try {
-//       final result = await _authRepository.signInWithEmailAndPassword(
-//         email,
-//         password,
-//       );
-//       state = const AsyncValue.data(null);
-
-//       result.fold(
-//         (failure) => showSnackbar(context, failure.message),
-//         (userModel) {
-//           _ref.read(userProvider.notifier).state = userModel;
-//           if (userModel.role == 'admin') {
-//             Routemaster.of(context).replace('/admin-dashboard');
-//           } else {
-//             Routemaster.of(context).replace('/homescreen');
-//           }
-//         },
-//       );
-//     } catch (e, st) {
-//       state = AsyncValue.error(e, st);
-//       showSnackbar(context, 'Error: $e');
-//     }
-//   }
-
-//   Stream<UserModel> getUserData(String uid) {
-//     return _authRepository.getUserData(uid);
-//   }
-
-//   Future<void> signOut(BuildContext context) async {
-//     state = const AsyncValue.loading();
-//     try {
-//       await _authRepository.signOutUser();
-//       _ref.read(userProvider.notifier).state = null;
-//       state = const AsyncValue.data(null);
-//       Routemaster.of(context).replace('/login');
-//     } catch (e, st) {
-//       state = AsyncValue.error(e, st);
-//       showSnackbar(context, 'Error: $e');
-//     }
-//   }
-// }

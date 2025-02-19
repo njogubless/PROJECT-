@@ -1,50 +1,93 @@
-// presentation/screens/forgot_password_screen.dart
-import 'package:devotion/theme/theme.dart';
+import 'package:devotion/features/auth/controller/auth_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ForgotPasswordScreen extends StatelessWidget {
-  const  ForgotPasswordScreen({super.key});
+class ForgotPasswordScreen extends ConsumerStatefulWidget {
+  const ForgotPasswordScreen({super.key});
+
+  @override
+  ConsumerState<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+}
+
+class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
+  final emailController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
+  bool isLoading = false;
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _resetPassword() async {
+    if (formKey.currentState!.validate()) {
+      setState(() {
+        isLoading = true;
+      });
+
+      await ref
+          .read(authControllerProvider.notifier)
+          .resetPassword(context, emailController.text.trim());
+
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController emailController = TextEditingController();
-
     return Scaffold(
-      appBar: AppBar(title:  Text('Forgot Password', style: titleText,)),
+      appBar: AppBar(
+        title: const Text('Reset Password'),
+      ),
       body: Padding(
-        padding: kDefaultPadding,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 50,),
-            Text('Enter your email to reset your password', style: subTitle ,),
-            const SizedBox(height: 5,),
-            TextField(
-              controller: emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
-              keyboardType: TextInputType.emailAddress,
-            ),
-            const SizedBox(height: 5,),
-            ElevatedButton(
-              onPressed: () async {
-                try {
-                  await FirebaseAuth.instance
-                      .sendPasswordResetEmail(email: emailController.text);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Password reset email sent!')),
-                  );
-                  Navigator.of(context).pop();
-                } catch (e) {
-                  debugPrint('Password is not being reset');
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error: $e')),
-                  );
-                }
-              },
-              child: const Text('Send Reset Link'),
-            ),
-          ],
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 20),
+              const Text(
+                'Enter your email address and we\'ll send you a link to reset your password.',
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 20),
+              TextFormField(
+                controller: emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.email),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your email';
+                  }
+                  if (!value.contains('@')) {
+                    return 'Please enter a valid email';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: isLoading ? null : _resetPassword,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                child: isLoading
+                    ? const CircularProgressIndicator()
+                    : const Text(
+                        'Send Reset Link',
+                        style: TextStyle(fontSize: 16),
+                      ),
+              ),
+            ],
+          ),
         ),
       ),
     );

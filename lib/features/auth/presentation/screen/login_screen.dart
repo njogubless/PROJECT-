@@ -1,22 +1,93 @@
+import 'package:devotion/core/common/navigation/main_layout.dart';
 import 'package:devotion/core/common/styles/image_strings.dart';
 import 'package:devotion/core/common/styles/spacing_styles.dart';
 import 'package:devotion/core/common/styles/text_strings.dart';
 import 'package:devotion/core/constants/sizes.dart';
 import 'package:devotion/features/auth/controller/auth_controller.dart';
+import 'package:devotion/features/auth/controller/auth_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:routemaster/routemaster.dart';
 
-class LoginScreen extends ConsumerWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final emailController = TextEditingController();
-    final passwordController = TextEditingController();
-    final authState = ref.watch(authControllerProvider);
-    final formKey = GlobalKey<FormState>();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
+  bool rememberMe = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedCredentials();
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadSavedCredentials() async {
+    final savedCredentials = await AuthPreferences.getSavedCredentials();
+    setState(() {
+      rememberMe = savedCredentials['rememberMe'];
+      if (rememberMe) {
+        emailController.text = savedCredentials['email'];
+        passwordController.text = savedCredentials['password'];
+      }
+    });
+  }
+
+  void _showForgotPasswordDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Reset Password'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Enter your email to receive a password reset link'),
+            const SizedBox(height: TSizes.spaceBtwinputFields),
+            TextFormField(
+              controller: emailController,
+              decoration: const InputDecoration(
+                labelText: TTexts.email,
+                prefixIcon: Icon(Iconsax.direct_right_bold),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              ref.read(authControllerProvider.notifier)
+                  .resetPassword(context, emailController.text.trim());
+              Navigator.pop(context);
+            },
+            child: const Text('Reset Password'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    ref.watch(authControllerProvider);
+    
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -50,7 +121,6 @@ class LoginScreen extends ConsumerWidget {
                       vertical: TSizes.spaceBtwSections),
                   child: Column(
                     children: [
-                      // Email
                       TextFormField(
                         controller: emailController,
                         validator: (value) {
@@ -68,7 +138,6 @@ class LoginScreen extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: TSizes.spaceBtwinputFields),
-                      // Password
                       TextFormField(
                         controller: passwordController,
                         obscureText: true,
@@ -77,7 +146,7 @@ class LoginScreen extends ConsumerWidget {
                             return 'please enter your password';
                           }
                           if (value.length < 8) {
-                            return ' Password must be alteast 8 characters';
+                            return 'Password must be at least 8 characters';
                           }
                           return null;
                         },
@@ -88,66 +157,60 @@ class LoginScreen extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: TSizes.spaceBtwinputFields / 2),
-                      // Remember Me & Forgot Password
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          // Remember Me
                           Row(
                             children: [
-                              Checkbox(value: true, onChanged: (value) {}),
+                              Checkbox(
+                                value: rememberMe,
+                                onChanged: (value) {
+                                  setState(() {
+                                    rememberMe = value ?? false;
+                                  });
+                                },
+                              ),
                               const Text(TTexts.rememberMe),
                             ],
                           ),
-                          // Forgot Password
                           TextButton(
-                              onPressed: () {},
-                              child: const Text(TTexts.forgetPassword)),
+                            onPressed: _showForgotPasswordDialog,
+                            child: const Text(TTexts.forgetPassword),
+                          ),
                         ],
                       ),
-                      // Sign In Button
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
                             final email = emailController.text.trim();
                             final password = passwordController.text.trim();
 
-                            if (email.isNotEmpty && password.isNotEmpty) {
+                            if (formKey.currentState!.validate()) {
+                              await AuthPreferences.saveLoginCredentials(
+                                  email, password, rememberMe);
+
                               ref
                                   .read(authControllerProvider.notifier)
                                   .signInWithEmailAndPassword(
                                       context, email, password)
                                   .then((_) {
-                                Routemaster.of(context).replace('/homeScreen');
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => MainLayout()));
                               }).catchError((error) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text(error.toString())),
+                                  SnackBar(
+                                      content:
+                                          Text(_getErrorMessage(error.toString()))),
                                 );
                               });
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text("Please fill in all fields")),
-                              );
                             }
                           },
                           child: const Text(TTexts.logInTitle),
                         ),
                       ),
-                      const SizedBox(height: TSizes.spaceBtwItems),
-                      // Create Account Button
-                      // SizedBox(
-                      //   width: double.infinity,
-                      //   child: OutlinedButton(
-                      //     onPressed: () {
-                      //       Navigator.pushNamed(
-                      //           context, '/signup'); // Update with your route
-                      //     },
-                      //     child: const Text(TTexts.createAccount),
-                      //   ),
-                      // ),
-                      // Replace the existing Create Account Button section in LoginScreen
                       const SizedBox(height: TSizes.spaceBtwItems),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -168,7 +231,6 @@ class LoginScreen extends ConsumerWidget {
                   ),
                 ),
               ),
-              // Divider
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -201,13 +263,14 @@ class LoginScreen extends ConsumerWidget {
     );
   }
 }
+
 String _getErrorMessage(String error) {
-    if (error.contains('user-not-found')) {
-      return 'No user found with this email';
-    } else if (error.contains('wrong-password')) {
-      return 'Wrong password provided';
-    } else if (error.contains('invalid-email')) {
-      return 'Invalid email address';
-    }
-    return 'An error occurred during sign in';
+  if (error.contains('user-not-found')) {
+    return 'No user found with this email';
+  } else if (error.contains('wrong-password')) {
+    return 'Wrong password provided';
+  } else if (error.contains('invalid-email')) {
+    return 'Invalid email address';
   }
+  return 'An error occurred during sign in';
+}

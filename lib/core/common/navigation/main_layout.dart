@@ -5,6 +5,7 @@ import 'package:devotion/features/audio/presentation/screens/audio_list_page.dar
 import 'package:devotion/features/auth/presentation/screen/home_screen.dart';
 import 'package:devotion/features/books/presentation/screen/book_screen.dart';
 import 'package:devotion/widget/app_drawer.dart';
+import 'package:devotion/widget/custom_App_Bar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -74,28 +75,10 @@ class _MainLayoutState extends State<MainLayout> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: AppDrawer(),
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Theme.of(context).primaryColor,
-        title: Text(
-          _selectedIndex == 0
-              ? "Welcome Home"
-              : _screens[_selectedIndex].runtimeType.toString(),
-          style: GoogleFonts.poppins(
-            fontSize: 24,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.notifications),
-            onPressed: () {},
-          ),
-        ],
+      appBar: CustomAppBar(
+        title:"Welcome Home",
+        screens:_screens,
+        selectedIndex:_selectedIndex,
       ),
       body: Container(
         decoration: BoxDecoration(
