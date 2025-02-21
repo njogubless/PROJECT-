@@ -3,7 +3,7 @@ import 'package:devotion/core/error/error_text.dart';
 import 'package:devotion/features/auth/controller/auth_controller.dart';
 import 'package:devotion/features/auth/data/models/user_models.dart';
 import 'package:devotion/firebase_options.dart';
-import 'package:devotion/router.dart';
+import 'package:devotion/config/routes/router.dart';
 import 'package:devotion/services/bookmark_provider.dart';
 import 'package:devotion/theme/pallete.dart';
 import 'package:firebase_auth/firebase_auth.dart';
