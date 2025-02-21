@@ -31,7 +31,7 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
     namespace "com.example.devotion"
-    compileSdk 34  // Changed back to 34 since 35 has resource issues
+    compileSdk 35  // Changed back to 34 since 35 has resource issues
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8  // Changed back to 1.8
