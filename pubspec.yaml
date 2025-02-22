@@ -60,9 +60,11 @@ dev_dependencies:
   flutter_lints: ^5.0.0
 
 flutter_launcher_icons:
-  android: true
+  android: "launcher_icon"
   ios: true
-  image_path: "assets/icons/ROF.webp"
+  image_path: "assets/images/ROF.webp"
+  adaptive_icon_background: '#ffffff'
+  adaptive_icon_foreground: "assets/images/ROF.webp"
   remove_alpha_ios: true
 
 flutter:
