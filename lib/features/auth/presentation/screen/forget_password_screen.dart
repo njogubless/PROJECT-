@@ -13,6 +13,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   final emailController = TextEditingController();
   final formKey = GlobalKey<FormState>();
   bool isLoading = false;
+  bool emailSent = false;
 
   @override
   void dispose() {
@@ -26,13 +27,38 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
         isLoading = true;
       });
 
-      await ref
-          .read(authControllerProvider.notifier)
-          .resetPassword(context, emailController.text.trim());
+      try {
+        await ref
+            .read(authControllerProvider.notifier)
+            .resetPassword(context, emailController.text.trim());
+        
+        setState(() {
+          emailSent = true;
+        });
 
-      setState(() {
-        isLoading = false;
-      });
+        // Show success message
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Password reset link sent. Check your email.'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error: ${e.toString()}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } finally {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 
@@ -42,50 +68,90 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       appBar: AppBar(
         title: const Text('Reset Password'),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              const SizedBox(height: 40),
+              const Icon(
+                Icons.lock_reset,
+                size: 80,
+                color: Colors.blue,
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Forgot Your Password?',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 20),
               const Text(
                 'Enter your email address and we\'ll send you a link to reset your password.',
                 style: TextStyle(fontSize: 16),
+                textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 30),
               TextFormField(
                 controller: emailController,
                 keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
+                enabled: !emailSent && !isLoading,
+                decoration: InputDecoration(
                   labelText: 'Email',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.email),
+                  border: const OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.email),
+                  filled: emailSent,
+                  fillColor: emailSent ? Colors.grey[200] : null,
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your email';
                   }
-                  if (!value.contains('@')) {
+                  if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
                     return 'Please enter a valid email';
                   }
                   return null;
                 },
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 30),
               ElevatedButton(
-                onPressed: isLoading ? null : _resetPassword,
+                onPressed: (isLoading || emailSent) ? null : _resetPassword,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: Colors.blue,
+                  disabledBackgroundColor: emailSent ? Colors.green : null,
                 ),
                 child: isLoading
-                    ? const CircularProgressIndicator()
-                    : const Text(
-                        'Send Reset Link',
-                        style: TextStyle(fontSize: 16),
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(color: Colors.white),
+                      )
+                    : Text(
+                        emailSent ? 'Email Sent ✓' : 'Send Reset Link',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                        ),
                       ),
               ),
+              if (emailSent) ...[
+                const SizedBox(height: 20),
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      emailSent = false;
+                      emailController.clear();
+                    });
+                  },
+                  child: const Text('Send to different email'),
+                ),
+              ],
             ],
           ),
         ),

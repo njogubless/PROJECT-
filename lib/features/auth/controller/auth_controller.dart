@@ -30,6 +30,8 @@ final getUserDataProvider = StreamProvider.family((ref, String uid) {
 class AuthController extends StateNotifier<bool> {
   final AuthRepository _authRepository;
   final Ref _ref;
+  final Map<String, DateTime> _lastEmailSent = {};
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   AuthController({required AuthRepository authRepository, required Ref ref})
       : _authRepository = authRepository,
@@ -126,6 +128,57 @@ class AuthController extends StateNotifier<bool> {
     } finally {
       state = false;
     }
+  }
+
+    Future<void> resendVerificationEmail(BuildContext context) async {
+    try {
+      User? user = _auth.currentUser;
+      if (user != null && !user.emailVerified) {
+        // Check if enough time has passed since last email
+        final lastSent = _lastEmailSent[user.email];
+        if (lastSent != null) {
+          final difference = DateTime.now().difference(lastSent);
+          if (difference.inSeconds < 60) {
+            throw 'Please wait ${60 - difference.inSeconds} seconds before requesting another email';
+          }
+        }
+
+        await user.sendEmailVerification();
+        _lastEmailSent[user.email!] = DateTime.now();
+        
+        if (context.mounted) {
+          showSnackBar(
+            context, 
+            'Verification email resent successfully',
+            isError: false,
+          );
+        }
+      } else {
+        throw 'User not found or already verified';
+      }
+    } on FirebaseAuthException catch (e) {
+      if (context.mounted) {
+        showSnackBar(context, e.message ?? 'An error occurred', isError: true);
+      }
+    } catch (e) {
+      if (context.mounted) {
+        showSnackBar(context, e.toString(), isError: true);
+      }
+    }
+  }
+
+  void showSnackBar(BuildContext context, String message, {bool isError = true}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError ? Colors.red : Colors.green,
+        behavior: SnackBarBehavior.floating,
+        margin: EdgeInsets.all(16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+    );
   }
 
   // Sign out the user
