@@ -1,6 +1,0 @@
--keep class * extends java.lang.annotation.Annotation { *; }
--keep class * implements java.io.Serializable { *; }
--keep class kotlin.** { *; }
--keep class kotlinx.** { *; }
--dontwarn kotlin.**
--dontwarn kotlinx.**
