@@ -1,3 +1,4 @@
+import 'package:devotion/features/Notification/notification_screen.dart';
 import 'package:devotion/services/search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -81,6 +82,10 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
               icon: const Icon(Icons.notifications),
               onPressed: () {
                 // Handle notifications
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => NotificationScreen()));
               },
             ),
             Positioned(

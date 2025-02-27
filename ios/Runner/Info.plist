@@ -69,4 +69,8 @@
 </array>
 <!-- End of the Google Sign-in Section -->
 </dict>
+<key>UIBackgroundModes</key>
+<array>
+    <string>remote-notification</string>
+</array>
 </plist>
