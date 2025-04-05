@@ -82,23 +82,7 @@ class _SettingsPageState extends State<SettingsPage> {
     });
   }
 
-  void _showNotificationEnabledSnackbar() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Notifications enabled successfully'),
-        backgroundColor: Colors.green,
-      ),
-    );
-  }
 
-  void _showNotificationDeniedSnackbar() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Please enable notifications in system settings'),
-        backgroundColor: Colors.orange,
-      ),
-    );
-  }
 
   Future<void> _handleDarkModeChange(bool value) async {
     final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
@@ -306,7 +290,7 @@ class _SettingsPageState extends State<SettingsPage> {
 }
 
 class AccountSettingsPage extends StatefulWidget {
-  const AccountSettingsPage({Key? key}) : super(key: key);
+  const AccountSettingsPage({super.key});
 
   @override
   State<AccountSettingsPage> createState() => _AccountSettingsPageState();

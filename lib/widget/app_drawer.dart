@@ -260,8 +260,8 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
                   leading: const Icon(Icons.settings),
                   title: const Text("Settings"),
                   onTap: () {
-                    // Navigator.pop(context);
-                    // Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsPage()));
+                    Navigator.pop(context);
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsPage()));
                   },
                 ),
                 ListTile(
