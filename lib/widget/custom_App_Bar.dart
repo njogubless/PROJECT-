@@ -76,39 +76,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
             }
           },
         ),
-        Stack(
-          children: [
-            IconButton(
-              icon: const Icon(Icons.notifications),
-              onPressed: () {
-            
-              },
-            ),
-            Positioned(
-              right: 8,
-              top: 8,
-              child: Container(
-                padding: const EdgeInsets.all(2),
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                constraints: const BoxConstraints(
-                  minWidth: 12,
-                  minHeight: 12,
-                ),
-                child: const Text(
-                  '1',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 8,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-          ],
-        ),
+     
       ],
     );
   }

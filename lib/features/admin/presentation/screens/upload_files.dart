@@ -32,14 +32,14 @@ class UploadFiles {
   //       'uploadedAt': FieldValue.serverTimestamp(),
   //     });
 
-  //     print('File uploaded successfully to $storagePath');
+  //     debugPrint('File uploaded successfully to $storagePath');
   //   } catch (e) {
-  //     print('Error uploading file: $e');
+  //     debugPrint('Error uploading file: $e');
   //     rethrow;
   //   }
   // }
 
-  static Future<void> uploadFileToFirebase(String collectionPath, String storagePath) async {
+ static Future<void> uploadFileToFirebase(String collectionPath, String storagePath) async {
   try {
     // Customize file picker options based on storage path
     FileType fileType = FileType.any;
@@ -66,10 +66,23 @@ class UploadFiles {
     
     // Create storage reference - ensure this path exists
     Reference storageRef = FirebaseStorage.instance.ref();
+    
+    // Add this new code to ensure the directory exists
+    try {
+      // Try to list items in the directory to check if it exists
+      await storageRef.child(storagePath).listAll();
+      debugPrint('Storage path exists: $storagePath');
+    } catch (e) {
+      // If directory doesn't exist, create an empty placeholder file
+      debugPrint('Creating directory structure: $storagePath');
+      await storageRef.child('$storagePath/.placeholder').putString('');
+    }
+    
+    // Now create reference to the actual file
     Reference fileRef = storageRef.child('$storagePath/$fileName');
     
     // Debug information
-    print('Attempting to upload to: $storagePath/$fileName');
+    debugPrint('Attempting to upload to: $storagePath/$fileName');
     
     // Start the upload task
     UploadTask uploadTask = fileRef.putFile(file);
@@ -77,13 +90,13 @@ class UploadFiles {
     // Monitor upload progress
     uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
       double progress = snapshot.bytesTransferred / snapshot.totalBytes;
-      print('Upload progress: ${(progress * 100).toStringAsFixed(2)}%');
+      debugPrint('Upload progress: ${(progress * 100).toStringAsFixed(2)}%');
     }, onError: (e) {
-      print('Upload task error: $e');
+      debugPrint('Upload task error: $e');
     });
     
     // Wait for upload to complete
-    await uploadTask.whenComplete(() => print('Upload completed'));
+    await uploadTask.whenComplete(() => debugPrint('Upload completed'));
     
     // Get download URL
     String downloadUrl = await fileRef.getDownloadURL();
@@ -97,18 +110,18 @@ class UploadFiles {
       'fileSize': file.lengthSync(), // Store file size in bytes
     });
     
-    print('File uploaded successfully to $storagePath');
+    debugPrint('File uploaded successfully to $storagePath');
   } catch (e) {
-    print('Error uploading file: $e');
+    debugPrint('Error uploading file: $e');
     // More detailed error information
     if (e is FirebaseException) {
-      print('Firebase error code: ${e.code}');
-      print('Firebase error message: ${e.message}');
+      debugPrint('Firebase error code: ${e.code}');
+      debugPrint('Firebase error message: ${e.message}');
       
       if (e.code == 'object-not-found') {
-        print('The storage path does not exist. You may need to create it first in Firebase Console.');
+        debugPrint('The storage path does not exist. You may need to create it first in Firebase Console.');
       } else if (e.code == 'unauthorized') {
-        print('Check your Firebase Storage rules to ensure write access is allowed.');
+        debugPrint('Check your Firebase Storage rules to ensure write access is allowed.');
       }
     }
     rethrow;
