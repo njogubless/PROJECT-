@@ -53,7 +53,7 @@ dependencies:
   record: ^5.2.0
   #flutter_local_notifications: ^18.0.1
   provider: ^6.1.2
-  awesome_notifications: ^0.10.0
+  #awesome_notifications: ^0.10.0
 
 dev_dependencies:
   flutter_test:
