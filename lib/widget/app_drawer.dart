@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:devotion/features/Profile/Presentation/screens/profile_screen.dart';
 import 'package:devotion/features/admin/presentation/screens/admin_log_in.dart';
 import 'package:devotion/features/auth/Repository/auth_repository.dart';
 import 'package:devotion/services/bookmark_screen.dart';
@@ -26,7 +27,8 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
 
   Future<void> launchLink(String link) async {
     try {
-      if (!await launchUrl(Uri.parse(link), mode: LaunchMode.externalApplication)) {
+      if (!await launchUrl(Uri.parse(link),
+          mode: LaunchMode.externalApplication)) {
         throw 'Could not launch $link';
       }
     } catch (error) {
@@ -42,7 +44,7 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
     if (_isLoading) return;
 
     setState(() => _isLoading = true);
-    
+
     try {
       final picker = ImagePicker();
       final ImageSource? source = await showDialog<ImageSource>(
@@ -83,9 +85,9 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
         final user = FirebaseAuth.instance.currentUser;
 
         if (user != null) {
-          final storageRef = FirebaseStorage.instance
-              .ref('user_avatars/${user.uid}_${DateTime.now().millisecondsSinceEpoch}.jpg');
-          
+          final storageRef = FirebaseStorage.instance.ref(
+              'user_avatars/${user.uid}_${DateTime.now().millisecondsSinceEpoch}.jpg');
+
           await storageRef.putFile(imageFile);
           final downloadUrl = await storageRef.getDownloadURL();
 
@@ -99,7 +101,8 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
 
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Profile picture updated successfully')),
+              const SnackBar(
+                  content: Text('Profile picture updated successfully')),
             );
           }
         }
@@ -202,38 +205,45 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
                     leading: const Icon(Icons.person),
                     title: const Text('Profile'),
                     onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const ProfileScreen()));
                       // Navigate to profile page
                       Navigator.pop(context);
                       // Add your navigation logic here
                     },
                   ),
-                  ListTile(
-                    leading: const Icon(Icons.notifications),
-                    title: const Text('Notifications'),
-                    trailing: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Text(
-                        '3',
-                        style: TextStyle(color: Colors.white, fontSize: 12),
-                      ),
-                    ),
-                    onTap: () {
-                      // Navigate to notifications page
-                      Navigator.pop(context);
-                      // Add your navigation logic here
-                    },
-                  ),
+                  // ListTile(
+                  //   leading: const Icon(Icons.notifications),
+                  //   title: const Text('Notifications'),
+                  //   trailing: Container(
+                  //     padding: const EdgeInsets.all(6),
+                  //     decoration: BoxDecoration(
+                  //       color: Colors.red,
+                  //       borderRadius: BorderRadius.circular(8),
+                  //     ),
+                  //     child: const Text(
+                  //       '3',
+                  //       style: TextStyle(color: Colors.white, fontSize: 12),
+                  //     ),
+                  //   ),
+                  //   onTap: () {
+                  //     // Navigate to notifications page
+                  //     Navigator.pop(context);
+                  //     // Add your navigation logic here
+                  //   },
+                  // ),
                 ],
                 ListTile(
                   leading: const Icon(Icons.lock),
                   title: const Text("Admin Login"),
                   onTap: () {
                     Navigator.pop(context);
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => AdminLoginPage()));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AdminLoginPage()));
                   },
                 ),
                 ListTile(
@@ -250,9 +260,12 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
                 ListTile(
                   leading: Icon(Icons.bookmark),
                   title: Text('Bookmarks'),
-                  onTap: (){
+                  onTap: () {
                     Navigator.pop(context);
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => BookmarksScreen()));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => BookmarksScreen()));
                   },
                 ),
                 const Divider(),
@@ -261,7 +274,10 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
                   title: const Text("Settings"),
                   onTap: () {
                     Navigator.pop(context);
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsPage()));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SettingsPage()));
                   },
                 ),
                 ListTile(
@@ -269,7 +285,10 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
                   title: const Text("Help & Support"),
                   onTap: () {
                     Navigator.pop(context);
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => HelpSupportPage()));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => HelpSupportPage()));
                   },
                 ),
                 if (user != null)
@@ -281,7 +300,8 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
                         context: context,
                         builder: (context) => AlertDialog(
                           title: const Text('Sign Out'),
-                          content: const Text('Are you sure you want to sign out?'),
+                          content:
+                              const Text('Are you sure you want to sign out?'),
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(context, false),
