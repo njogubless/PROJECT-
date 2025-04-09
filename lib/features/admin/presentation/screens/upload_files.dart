@@ -8,36 +8,6 @@ import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 
 class UploadFiles {
-  /// Uploads a file to Firebase Storage and saves metadata to Firestore.
-  // static Future<void> uploadFileToFirebase(String collectionPath, String storagePath) async {
-  //   try {
-  //     // Pick file using file picker
-  //     FilePickerResult? result = await FilePicker.platform.pickFiles();
-  //     if (result == null) return;
-
-  //     File file = File(result.files.single.path!);
-  //     String fileName = result.files.single.name;
-
-  //     // Upload file to Firebase Storage
-  //     Reference ref = FirebaseStorage.instance.ref('$storagePath/$fileName');
-  //     UploadTask uploadTask = ref.putFile(file);
-
-  //     await uploadTask.whenComplete(() => {});
-  //     String downloadUrl = await ref.getDownloadURL();
-
-  //     // Save file metadata in Firestore
-  //     await FirebaseFirestore.instance.collection(collectionPath).add({
-  //       'fileName': fileName,
-  //       'downloadUrl': downloadUrl,
-  //       'uploadedAt': FieldValue.serverTimestamp(),
-  //     });
-
-  //     debugPrint('File uploaded successfully to $storagePath');
-  //   } catch (e) {
-  //     debugPrint('Error uploading file: $e');
-  //     rethrow;
-  //   }
-  // }
 
  static Future<void> uploadFileToFirebase(String collectionPath, String storagePath) async {
   try {
