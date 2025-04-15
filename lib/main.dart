@@ -4,8 +4,6 @@ import 'package:devotion/features/auth/controller/auth_controller.dart';
 import 'package:devotion/features/auth/data/models/user_models.dart';
 import 'package:devotion/firebase_options.dart';
 import 'package:devotion/config/routes/router.dart';
-import 'package:devotion/services/bookmark_provider.dart';
-import 'package:devotion/theme/pallete.dart';
 import 'package:devotion/theme/theme_notifier.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';

@@ -1,7 +1,6 @@
 import 'package:devotion/features/audio/data/models/audio_model.dart';
 import 'package:devotion/features/audio/presentation/providers/audio_player_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AudioPlayerPage extends ConsumerStatefulWidget {
