@@ -57,35 +57,6 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Article Details'),
-        actions: widget.isAdminView ? [
-          // Edit button for admin view
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => EditArticleScreen(
-                    articleId: widget.articleId,
-                    title: widget.title,
-                    content: widget.content,
-                  ),
-                ),
-              ).then((_) => Navigator.pop(context));
-            },
-          ),
-          // Toggle publish status button for admin view
-          IconButton(
-            icon: Icon(
-              widget.isPublished ? Icons.visibility : Icons.visibility_off,
-              color: widget.isPublished ? Colors.green : Colors.grey,
-            ),
-            onPressed: () {
-              _togglePublishStatus(!widget.isPublished);
-            },
-            tooltip: widget.isPublished ? 'Unpublish' : 'Publish',
-          ),
-        ] : [],
       ),
       body: SingleChildScrollView(
         child: Padding(
