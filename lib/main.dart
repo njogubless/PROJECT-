@@ -6,6 +6,7 @@ import 'package:devotion/firebase_options.dart';
 import 'package:devotion/config/routes/router.dart';
 import 'package:devotion/services/bookmark_provider.dart';
 import 'package:devotion/theme/pallete.dart';
+import 'package:devotion/theme/theme_notifier.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -58,6 +59,8 @@ class _MyAppState extends ConsumerState<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    final themeState = ref.watch(themeProvider);
+
     return ref.watch(authStateChangeProvider).when(
           data: (data) {
             if (isByPassLogin) {
@@ -65,7 +68,7 @@ class _MyAppState extends ConsumerState<MyApp> {
               return MaterialApp.router(
                 debugShowCheckedModeBanner: false,
                 title: 'Reflection On Faith',
-                theme: Pallete.lightModeAppTheme,
+                theme: themeState.theme,
                 routerDelegate:
                     RoutemasterDelegate(routesBuilder: (_) => loggedInRoute),
                 routeInformationParser: const RoutemasterParser(),
@@ -77,7 +80,7 @@ class _MyAppState extends ConsumerState<MyApp> {
                   return MaterialApp.router(
                     debugShowCheckedModeBanner: false,
                     title: 'Reflection On Faith',
-                    theme: Pallete.lightModeAppTheme,
+                    theme: themeState.theme,
                     routerDelegate: RoutemasterDelegate(
                         routesBuilder: (_) => loggedInRoute),
                     routeInformationParser: const RoutemasterParser(),
@@ -88,7 +91,7 @@ class _MyAppState extends ConsumerState<MyApp> {
               return MaterialApp.router(
                 debugShowCheckedModeBanner: false,
                 title: 'Reflection On Faith',
-                theme: Pallete.lightModeAppTheme,
+                theme: themeState.theme,
                 routerDelegate:
                     RoutemasterDelegate(routesBuilder: (_) => loggedOutRoute),
                 routeInformationParser: const RoutemasterParser(),

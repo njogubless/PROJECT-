@@ -1,55 +1,23 @@
+import 'package:devotion/theme/theme_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 //import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// Theme provider with additional customization options
-class ThemeProvider with ChangeNotifier {
-  bool _isDarkMode = false;
-  Color _primaryColor = Colors.blue;
-  
-  bool get isDarkMode => _isDarkMode;
-  Color get primaryColor => _primaryColor;
-  
-  ThemeData get theme => ThemeData(
-    primaryColor: _primaryColor,
-    brightness: _isDarkMode ? Brightness.dark : Brightness.light,
-    useMaterial3: true,
-    cardTheme: CardTheme(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-    ),
-    appBarTheme: AppBarTheme(
-      elevation: 0,
-      backgroundColor: _isDarkMode ? Colors.grey[900] : _primaryColor,
-      foregroundColor: _isDarkMode ? Colors.white : Colors.white,
-    ),
-  );
-
-  void toggleTheme(bool value) {
-    _isDarkMode = value;
-    notifyListeners();
-  }
-
-  void setPrimaryColor(Color color) {
-    _primaryColor = color;
-    notifyListeners();
-  }
-}
-
-class SettingsPage extends StatefulWidget {
+class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
 
   @override
-  State<SettingsPage> createState() => _SettingsPageState();
+  ConsumerState<SettingsPage> createState() => _SettingsPageState();
 }
 
-class _SettingsPageState extends State<SettingsPage> {
+class _SettingsPageState extends ConsumerState<SettingsPage> {
   bool _notificationsEnabled = true;
   bool _darkModeEnabled = false;
   String _selectedLanguage = 'English';
-  // final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = 
+  // final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
   //   FlutterLocalNotificationsPlugin();
   late SharedPreferences _prefs;
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -68,28 +36,29 @@ class _SettingsPageState extends State<SettingsPage> {
     super.initState();
     _loadSettings();
     //_initializeNotifications();
+    Future.delayed(Duration.zero, () {
+      _darkModeEnabled = ref.read(themeProvider).isDarkMode;
+    });
   }
-
- 
 
   Future<void> _loadSettings() async {
     _prefs = await SharedPreferences.getInstance();
+    bool savedDarkMode = _prefs.getBool('darkMode') ?? false;
     setState(() {
       _notificationsEnabled = _prefs.getBool('notifications') ?? true;
       _darkModeEnabled = _prefs.getBool('darkMode') ?? false;
       _selectedLanguage = _prefs.getString('language') ?? 'English';
       _isLoading = false;
     });
+
+    ref.read(themeProvider.notifier).toggleTheme(savedDarkMode);
   }
 
-
-
   Future<void> _handleDarkModeChange(bool value) async {
-    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
     setState(() {
       _darkModeEnabled = value;
     });
-    themeProvider.toggleTheme(value);
+    ref.read(themeProvider.notifier).toggleTheme(value);
     await _prefs.setBool('darkMode', value);
   }
 
@@ -99,7 +68,7 @@ class _SettingsPageState extends State<SettingsPage> {
         _selectedLanguage = language;
       });
       await _prefs.setString('language', language);
-      
+
       // Show confirmation dialog
       showDialog(
         context: context,
@@ -136,6 +105,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeState = ref.watch(themeProvider);
+    _darkModeEnabled = themeState.isDarkMode;
     if (_isLoading) {
       return const Scaffold(
         body: Center(
@@ -233,7 +204,8 @@ class _SettingsPageState extends State<SettingsPage> {
                 // const Divider(),
                 ListTile(
                   leading: const Icon(Icons.logout, color: Colors.red),
-                  title: const Text('Sign Out', 
+                  title: const Text(
+                    'Sign Out',
                     style: TextStyle(color: Colors.red),
                   ),
                   onTap: _signOut,
@@ -328,12 +300,13 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
       final user = _auth.currentUser;
       if (user != null) {
         await user.updateDisplayName(_nameController.text);
-        
+
         if (_emailController.text != user.email) {
           await user.verifyBeforeUpdateEmail(_emailController.text);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Verification email sent. Please verify to update email.'),
+              content: Text(
+                  'Verification email sent. Please verify to update email.'),
             ),
           );
         }
@@ -352,7 +325,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
   }
 
   Future<void> _updatePassword() async {
-    if (_currentPasswordController.text.isEmpty || 
+    if (_currentPasswordController.text.isEmpty ||
         _newPasswordController.text.isEmpty) return;
 
     setState(() => _isLoading = true);
@@ -542,8 +515,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
         return AlertDialog(
           title: const Text('Delete Account'),
           content: const Text(
-            'Are you sure you want to delete your account? This action cannot be undone.'
-          ),
+              'Are you sure you want to delete your account? This action cannot be undone.'),
           actions: [
             TextButton(
               child: const Text('Cancel'),
@@ -573,7 +545,8 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
       if (user != null) {
         await user.delete();
         // Navigate to login screen
-        Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil('/login', (route) => false);
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
