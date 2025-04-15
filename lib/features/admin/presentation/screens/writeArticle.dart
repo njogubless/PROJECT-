@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:devotion/core/constants/firebase_constants.dart';
+import 'package:flutter/material.dart';
 
 class WriteArticleScreen extends StatefulWidget {
   const WriteArticleScreen({Key? key}) : super(key: key);
@@ -12,8 +12,9 @@ class WriteArticleScreen extends StatefulWidget {
 class _WriteArticleScreenState extends State<WriteArticleScreen> {
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
+  bool _publishImmediately = false;
 
-  Future<int> _getSermonCount() async {
+  Future<int> _getArticleCount() async {
     final snapshot = await FirebaseFirestore.instance
         .collection(FirebaseConstants.articleCollection)
         .get();
@@ -24,30 +25,48 @@ class _WriteArticleScreenState extends State<WriteArticleScreen> {
     final title = _titleController.text.trim();
     final content = _contentController.text.trim();
 
-    if (title.isNotEmpty && content.isNotEmpty) {
-      try {
-        final sermonCount = await _getSermonCount();
-        final today = DateTime.now().toLocal();
-        final formattedDate = '${today.day}/${today.month}/${today.year}';
-        final dynamicTitle = 'Article for Sermon ${sermonCount + 1}, on $formattedDate';
-
-        await FirebaseFirestore.instance.collection(FirebaseConstants.articleCollection).add({
-          'title': dynamicTitle,
-          'content': content,
-          'timestamp': FieldValue.serverTimestamp(),
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Article submitted successfully!')),
-        );
-        _titleController.clear();
-        _contentController.clear();
-      } catch (e) {
-        debugPrint('Error submitting article: $e');
-      }
-    } else {
+    if (title.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in both fields.')),
+        const SnackBar(content: Text('Please enter a title')),
+      );
+      return;
+    }
+    
+    if (content.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter content')),
+      );
+      return;
+    }
+
+    try {
+      final articleCount = await _getArticleCount();
+      final today = DateTime.now().toLocal();
+      final formattedDate = '${today.day}/${today.month}/${today.year}';
+      
+      await FirebaseFirestore.instance.collection(FirebaseConstants.articleCollection).add({
+        'title': title,
+        'content': content,
+        'timestamp': FieldValue.serverTimestamp(),
+        'isPublished': _publishImmediately,
+        'createdAt': formattedDate,
+        'articleNumber': articleCount + 1,
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(_publishImmediately 
+              ? 'Article published successfully!' 
+              : 'Article saved as draft!'
+          ),
+          backgroundColor: _publishImmediately ? Colors.green : Colors.orange,
+        ),
+      );
+      
+      Navigator.pop(context);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error submitting article: $e')),
       );
     }
   }
@@ -55,25 +74,54 @@ class _WriteArticleScreenState extends State<WriteArticleScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Write Article')),
+      appBar: AppBar(title: const Text('Write New Article')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             TextField(
               controller: _titleController,
-              decoration: const InputDecoration(labelText: 'Article Title'),
+              decoration: const InputDecoration(
+                labelText: 'Article Title',
+                border: OutlineInputBorder(),
+              ),
             ),
-            const SizedBox(height: 10),
-            TextField(
-              controller: _contentController,
-              decoration: const InputDecoration(labelText: 'Article Content'),
-              maxLines: 5,
+            const SizedBox(height: 16),
+            Expanded(
+              child: TextField(
+                controller: _contentController,
+                decoration: const InputDecoration(
+                  labelText: 'Article Content',
+                  alignLabelWithHint: true,
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: null,
+                expands: true,
+                textAlignVertical: TextAlignVertical.top,
+              ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Checkbox(
+                  value: _publishImmediately,
+                  onChanged: (value) {
+                    setState(() {
+                      _publishImmediately = value ?? false;
+                    });
+                  },
+                ),
+                const Text('Publish immediately'),
+              ],
+            ),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _submitArticle,
-              child: const Text('Submit Article'),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+              ),
+              child: Text(_publishImmediately ? 'Publish Article' : 'Save as Draft'),
             ),
           ],
         ),

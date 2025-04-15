@@ -37,7 +37,13 @@ class ArticleListScreen extends StatelessWidget {
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ArticleDetailScreen(articleId: article.id, articleTitle: article['title'],),
+                      builder: (context) => ArticleDetailScreen(
+                        articleId: article.id,
+                        // Removed the undefined parameter
+                        title: article['title'],
+                        content: article['content'],
+                        isPublished: article['isPublished'],
+                      ),
                     ),
                   ),
                 ),

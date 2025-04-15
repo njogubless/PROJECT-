@@ -2,6 +2,7 @@ import 'package:devotion/features/admin/presentation/screens/Adminquestionscreen
 import 'package:devotion/features/admin/presentation/screens/file_management_screen.dart';
 import 'package:devotion/features/admin/presentation/screens/upload_files.dart';
 import 'package:devotion/features/admin/presentation/screens/writeArticle.dart';
+import 'package:devotion/features/articles/presentation/screens/aricle_management_screen.dart';
 import 'package:devotion/features/auth/presentation/screen/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:devotion/core/constants/firebase_constants.dart';
@@ -204,12 +205,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
         ),
         _buildDashboardTile(
           context,
-          title: 'Write Article',
+          title: 'Articles Management',
           icon: Icons.article,
           color: Colors.orange,
           onTap: () => Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => WriteArticleScreen()),
+            MaterialPageRoute(builder: (context) => ArticleManagementScreen()),
           ),
         ),
         _buildDashboardTile(

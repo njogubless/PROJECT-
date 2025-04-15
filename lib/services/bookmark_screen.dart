@@ -42,7 +42,13 @@ class BookmarksScreen extends ConsumerWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ArticleDetailScreen(articleId: article.id, articleTitle: article.title),
+                      builder: (context) => ArticleDetailScreen(
+                        articleId: article.id,
+                        //articleTitle: article.title,
+                        title: article.title,
+                        content: article.content,
+                        isPublished: article.isPublished,
+                      ),
                     ),
                   );
                 },

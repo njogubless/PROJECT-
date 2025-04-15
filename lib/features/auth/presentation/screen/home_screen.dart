@@ -433,8 +433,11 @@ Widget _buildArticleCard(Map<String, dynamic> article) {
                   context, 
                   MaterialPageRoute(
                     builder: (context) => ArticleDetailScreen(
-                      articleId: article['id'], 
-                      articleTitle: article['title']
+                      articleId: article['id'],
+                      //articleTitle: article['title'],
+                      title: article['title'] ?? 'Untitled',
+                      content: article['content'] ?? 'No content available',
+                      isPublished: article['isPublished'] ?? false,
                     )
                   )
                 );

@@ -69,7 +69,9 @@ class _ArticlePageState extends ConsumerState<ArticlePage> {
                     MaterialPageRoute(
                       builder: (context) => ArticleDetailScreen(
                         articleId: article.id,
-                        articleTitle: article.title,
+                        title: article.title,
+                        content: article.content,
+                        isPublished: true, // Added required parameter
                       ),
                     ),
                   );
@@ -127,7 +129,9 @@ class ArticleSearchDelegate extends SearchDelegate {
                 MaterialPageRoute(
                     builder: (context) => ArticleDetailScreen(
                           articleId: article.id,
-                          articleTitle: article.title,
+                          title: article.title,
+                          content: article.content,
+                          isPublished: true,
                         )));
           },
         );
