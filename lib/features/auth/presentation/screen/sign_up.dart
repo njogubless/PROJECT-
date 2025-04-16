@@ -14,6 +14,7 @@ class SignUpScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final signUpController = ref.watch(signUpControllerProvider.notifier);
     final signUpState = ref.watch(signUpControllerProvider);
+    final passwordController = TextEditingController();
 
     return Scaffold(
       appBar: AppBar(),
@@ -83,13 +84,18 @@ class SignUpScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: TSizes.spaceBtwinputFields),
                     _buildTextField(
-                      controller: signUpController.password,
+                      controller: passwordController,
                       label: TTexts.password,
                       icon: Icons.password_rounded,
                       obscureText: true,
-                      validator: (value) => value!.isEmpty
-                          ? 'Please enter your password'
-                          : null,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter your password';
+                        } else if (value.length < 8) {
+                          return 'Password must be at least 6 characters';
+                        }
+                        return null;
+                      }
                     ),
                     const SizedBox(height: TSizes.spaceBtwSections),
 

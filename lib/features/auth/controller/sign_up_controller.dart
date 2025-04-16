@@ -59,7 +59,7 @@ class SignUpController extends StateNotifier<SignUpState> {
           'updatedAt': FieldValue.serverTimestamp(),
         });
       } catch (firestoreError) {
-        print('Firestore error: $firestoreError');
+        debugPrint('Firestore error: $firestoreError');
       }
 
       // Clear form
