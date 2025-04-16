@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:devotion/features/Profile/Presentation/screens/profile_screen.dart';
 import 'package:devotion/features/admin/presentation/screens/admin_log_in.dart';
 import 'package:devotion/features/auth/Repository/auth_repository.dart';
 import 'package:devotion/services/bookmark_screen.dart';
@@ -16,7 +15,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:share_plus/share_plus.dart';
 
 class AppDrawer extends ConsumerStatefulWidget {
-  const AppDrawer({Key? key}) : super(key: key);
+  const AppDrawer({super.key});
 
   @override
   _AppDrawerState createState() => _AppDrawerState();
@@ -205,11 +204,11 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
                     leading: const Icon(Icons.person),
                     title: const Text('Profile'),
                     onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const ProfileScreen()));
+                      // Navigator.pop(context);
+                      // Navigator.push(
+                      //     context,
+                      //     MaterialPageRoute(
+                      //         builder: (context) => const ProfileScreen()));
                     },
                   ),
                 ],
