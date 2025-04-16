@@ -48,12 +48,14 @@ class ProfileScreen extends ConsumerWidget {
             return const Center(child: Text('Please sign in to view your profile'));
           }
           
-          return Column(
-            children: [
-              ProfileHeader(profile: profile),
-              ProfileStats(profile: profile),
-              const Expanded(child: ProfileTabs()),
-            ],
+          return SafeArea(
+            child: Column(
+              children: [
+                ProfileHeader(profile: profile),
+                ProfileStats(profile: profile),
+                const Expanded(child: ProfileTabs()),
+              ],
+            ),
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
