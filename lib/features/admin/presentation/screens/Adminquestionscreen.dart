@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:devotion/core/constants/firebase_constants.dart';
 
 class AdminQuestionScreen extends StatefulWidget {
-  const AdminQuestionScreen({Key? key}) : super(key: key);
+  const AdminQuestionScreen({super.key});
 
   @override
   _AdminQuestionScreenState createState() => _AdminQuestionScreenState();

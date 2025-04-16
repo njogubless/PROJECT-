@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 class AudioWidget extends StatelessWidget {
   final AudioFile audio;
-  const AudioWidget({required this.audio});
+  const AudioWidget({super.key, required this.audio});
 
   @override
   Widget build(BuildContext context) {

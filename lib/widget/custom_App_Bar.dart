@@ -10,11 +10,11 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final int selectedIndex;
 
   const CustomAppBar({
-    Key? key,
+    super.key,
     required this.title,
     required this.screens,
     required this.selectedIndex,
-  }) : super(key: key);
+  });
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);

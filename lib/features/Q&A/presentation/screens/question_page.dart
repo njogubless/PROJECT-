@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:devotion/core/constants/firebase_constants.dart';
 
 class QuestionPage extends StatefulWidget {
-  const QuestionPage({Key? key}) : super(key: key);
+  const QuestionPage({super.key});
 
   @override
   _QuestionScreenState createState() => _QuestionScreenState();

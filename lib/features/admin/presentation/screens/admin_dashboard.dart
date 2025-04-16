@@ -8,7 +8,7 @@ import 'package:devotion/core/constants/firebase_constants.dart';
 // ... other imports remain same
 
 class AdminDashboard extends StatefulWidget {
-  const AdminDashboard({Key? key}) : super(key: key);
+  const AdminDashboard({super.key});
 
   @override
   State<AdminDashboard> createState() => _AdminDashboardState();

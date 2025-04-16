@@ -7,10 +7,10 @@ class FileManagementScreen extends StatelessWidget {
   final String title;
 
   const FileManagementScreen({
-    Key? key,
+    super.key,
     required this.collectionPath,
     required this.title,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

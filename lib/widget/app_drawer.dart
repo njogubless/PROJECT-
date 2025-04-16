@@ -205,35 +205,13 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
                     leading: const Icon(Icons.person),
                     title: const Text('Profile'),
                     onTap: () {
+                      Navigator.pop(context);
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => const ProfileScreen()));
-                      // Navigate to profile page
-                      Navigator.pop(context);
-                      // Add your navigation logic here
                     },
                   ),
-                  // ListTile(
-                  //   leading: const Icon(Icons.notifications),
-                  //   title: const Text('Notifications'),
-                  //   trailing: Container(
-                  //     padding: const EdgeInsets.all(6),
-                  //     decoration: BoxDecoration(
-                  //       color: Colors.red,
-                  //       borderRadius: BorderRadius.circular(8),
-                  //     ),
-                  //     child: const Text(
-                  //       '3',
-                  //       style: TextStyle(color: Colors.white, fontSize: 12),
-                  //     ),
-                  //   ),
-                  //   onTap: () {
-                  //     // Navigate to notifications page
-                  //     Navigator.pop(context);
-                  //     // Add your navigation logic here
-                  //   },
-                  // ),
                 ],
                 ListTile(
                   leading: const Icon(Icons.lock),
