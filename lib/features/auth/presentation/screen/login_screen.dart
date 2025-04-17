@@ -5,6 +5,7 @@ import 'package:devotion/core/common/styles/text_strings.dart';
 import 'package:devotion/core/constants/sizes.dart';
 import 'package:devotion/features/auth/controller/auth_controller.dart';
 import 'package:devotion/features/auth/controller/auth_preferences.dart';
+import 'package:devotion/features/auth/presentation/screen/sign_up.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:icons_plus/icons_plus.dart';
@@ -73,7 +74,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ),
           ElevatedButton(
             onPressed: () {
-              ref.read(authControllerProvider.notifier)
+              ref
+                  .read(authControllerProvider.notifier)
                   .resetPassword(context, emailController.text.trim());
               Navigator.pop(context);
             },
@@ -87,7 +89,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     ref.watch(authControllerProvider);
-    
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -202,8 +204,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               }).catchError((error) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                      content:
-                                          Text(_getErrorMessage(error.toString()))),
+                                      content: Text(
+                                          _getErrorMessage(error.toString()))),
                                 );
                               });
                             }
@@ -218,7 +220,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           const Text("Don't have an account?"),
                           TextButton(
                             onPressed: () {
-                              Routemaster.of(context).replace('/signup');
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => SignUpScreen(),
+                                  ));
                             },
                             child: const Text(
                               TTexts.createAccount,
