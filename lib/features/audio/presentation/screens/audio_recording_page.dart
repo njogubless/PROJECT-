@@ -1,4 +1,4 @@
-
+ 
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -55,7 +55,7 @@ class _RecordAudioPageState extends ConsumerState<RecordAudioPage> {
       // 1. Upload audio file to Firebase Storage
       final storageRef = FirebaseStorage.instance
           .ref()
-          .child('Devotion')
+          .child('audio')
           .child('${DateTime.now().millisecondsSinceEpoch}.m4a');
 
       final audioFile = File(recordingState.recordedFilePath!);

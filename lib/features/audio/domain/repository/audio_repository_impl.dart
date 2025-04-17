@@ -30,27 +30,64 @@ class AudioRepositoryImpl implements AudioRepository {
     }
   }
 
-  @override
-  Future<List<AudioFile>> fetchAudioFiles() async {
+@override
+Future<List<AudioFile>> fetchAudioFiles() async {
     try {
-      // Fetch the audio files metadata from Firestore
-      final snapshot = await _firestore.collection('audioFiles').get();
-
-      return snapshot.docs.map((doc) {
-        final data = doc.data();
-        return AudioFile(
-          id: data['id'],
-          title: data['title'],
-          url: data['url'],
-          uploaderId: data['id'],
-          uploadDate: data['date'], 
-          coverUrl: data['coverUrl'], 
-          setUrl:data['setUrl'], 
-          duration: data['duration'],
-          scripture: data['scripture'],
-        );
-      }).toList();
+      // Try fetching from Firestore first
+      final firestoreSnapshot = await _firestore.collection('audioFiles').get();
+      
+      // If we have documents in Firestore, use them
+      if (firestoreSnapshot.docs.isNotEmpty) {
+        return firestoreSnapshot.docs.map((doc) {
+          final data = doc.data();
+          return AudioFile(
+            id: data['id'] ?? doc.id,
+            title: data['title'] ?? 'Untitled Audio',
+            url: data['url'] ?? '',
+            uploaderId: data['uploaderId'] ?? '',
+            uploadDate: data['uploadDate'] != null 
+                ? (data['uploadDate'] as Timestamp).toDate() 
+                : DateTime.now(),
+            coverUrl: data['coverUrl'] ?? '',
+            setUrl: data['setUrl'] ?? '',
+            duration: data['duration'] ?? 0,
+            scripture: data['scripture'] ?? '',
+          );
+        }).toList();
+      } 
+      // If no Firestore documents, try to list files directly from Storage
+      else {
+        // Reference to your audios folder in Storage
+        final storageRef = _storage.ref().child('audios');
+        final listResult = await storageRef.listAll();
+        
+        // Create AudioFile objects from the storage items
+        List<AudioFile> audioFiles = [];
+        for (var item in listResult.items) {
+          // Get the download URL
+          final url = await item.getDownloadURL();
+          
+          // Extract a title from the file name
+          final fileName = item.name;
+          final title = fileName.replaceAll('.mp3', '').replaceAll('_', ' ');
+          
+          audioFiles.add(AudioFile(
+            id: item.name,
+            title: title,
+            url: url,
+            uploaderId: '',
+            uploadDate: DateTime.now(),
+            coverUrl: '',
+            setUrl: '',
+            duration: Duration.zero,
+            scripture: '',
+          ));
+        }
+        
+        return audioFiles;
+      }
     } catch (e) {
+      print('Error fetching audio files: $e');
       throw Exception('Failed to fetch audio files: $e');
     }
   }

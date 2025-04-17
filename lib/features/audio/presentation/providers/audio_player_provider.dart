@@ -1,52 +1,52 @@
-
-import 'package:just_audio/just_audio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:just_audio/just_audio.dart';
+
 class AudioPlayerState {
+  final bool isPlaying;
+  final String currentAudioId;
+  final String currentTitle;
   final Duration position;
   final Duration duration;
-  final bool isPlaying;
-  final bool isBuffering;
-  final String? error;
-  
+  final ProcessingState processingState;
+
   AudioPlayerState({
+    this.isPlaying = false,
+    this.currentAudioId = '',
+    this.currentTitle = '',
     this.position = Duration.zero,
     this.duration = Duration.zero,
-    this.isPlaying = false,
-    this.isBuffering = false,
-    this.error,
+    this.processingState = ProcessingState.idle,
   });
 
   AudioPlayerState copyWith({
+    bool? isPlaying,
+    String? currentAudioId,
+    String? currentTitle,
     Duration? position,
     Duration? duration,
-    bool? isPlaying,
-    bool? isBuffering,
-    String? error,
+    ProcessingState? processingState,
   }) {
     return AudioPlayerState(
+      isPlaying: isPlaying ?? this.isPlaying,
+      currentAudioId: currentAudioId ?? this.currentAudioId,
+      currentTitle: currentTitle ?? this.currentTitle,
       position: position ?? this.position,
       duration: duration ?? this.duration,
-      isPlaying: isPlaying ?? this.isPlaying,
-      isBuffering: isBuffering ?? this.isBuffering,
-      error: error ?? this.error,
+      processingState: processingState ?? this.processingState,
     );
   }
 }
 
 class AudioPlayerNotifier extends StateNotifier<AudioPlayerState> {
-  final AudioPlayer _player;
-  bool _hasInitialized = false;
-
-  AudioPlayerNotifier() : _player = AudioPlayer(), super(AudioPlayerState()) {
-    _init();
-  }
-
-  void _init() {
+  final AudioPlayer _player = AudioPlayer();
+  
+  AudioPlayerNotifier() : super(AudioPlayerState()) {
     // Listen to player state changes
     _player.playerStateStream.listen((playerState) {
       state = state.copyWith(
         isPlaying: playerState.playing,
-        isBuffering: playerState.processingState == ProcessingState.buffering,
+        processingState: playerState.processingState,
       );
     });
 
@@ -61,64 +61,43 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState> {
         state = state.copyWith(duration: duration);
       }
     });
+  }
 
-    // Listen to errors
-    _player.playbackEventStream.listen(
-      (event) {},
-      onError: (Object e, StackTrace st) {
-        state = state.copyWith(error: e.toString());
-      },
+  Future<void> playAudio(String audioId, String url, String title) async {
+    try {
+      if (state.currentAudioId != audioId) {
+        // Load and play new audio
+        await _player.stop();
+        await _player.setUrl(url);
+        state = state.copyWith(
+          currentAudioId: audioId,
+          currentTitle: title,
+          position: Duration.zero,
+        );
+      }
+      await _player.play();
+    } catch (e) {
+      debugPrint('Error playing audio: $e');
+    }
+  }
+
+  Future<void> pauseAudio() async {
+    await _player.pause();
+  }
+
+  Future<void> stopAudio() async {
+    await _player.stop();
+    state = state.copyWith(
+      isPlaying: false,
+      currentAudioId: '',
+      currentTitle: '',
+      position: Duration.zero,
+      duration: Duration.zero,
     );
   }
 
-  Future<void> loadAudio(String url) async {
-    try {
-      state = state.copyWith(isBuffering: true, error: null);
-      await _player.setUrl(url);
-      state = state.copyWith(isBuffering: false);
-      _hasInitialized = true;
-    } catch (e) {
-      state = state.copyWith(
-        isBuffering: false,
-        error: 'Error loading audio: ${e.toString()}',
-      );
-    }
-  }
-
-  Future<void> play() async {
-    try {
-      if (!_hasInitialized) return;
-      await _player.play();
-    } catch (e) {
-      state = state.copyWith(error: 'Error playing audio: ${e.toString()}');
-    }
-  }
-
-  Future<void> pause() async {
-    try {
-      if (!_hasInitialized) return;
-      await _player.pause();
-    } catch (e) {
-      state = state.copyWith(error: 'Error pausing audio: ${e.toString()}');
-    }
-  }
-
   Future<void> seekTo(Duration position) async {
-    try {
-      if (!_hasInitialized) return;
-      await _player.seek(position);
-    } catch (e) {
-      state = state.copyWith(error: 'Error seeking audio: ${e.toString()}');
-    }
-  }
-
-  Future<void> stop() async {
-    try {
-      if (!_hasInitialized) return;
-      await _player.stop();
-    } catch (e) {
-      state = state.copyWith(error: 'Error stopping audio: ${e.toString()}');
-    }
+    await _player.seek(position);
   }
 
   @override
@@ -128,8 +107,7 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState> {
   }
 }
 
-final audioPlayerProvider = StateNotifierProvider<AudioPlayerNotifier, AudioPlayerState>((ref) {
+final audioPlayerProvider =
+    StateNotifierProvider<AudioPlayerNotifier, AudioPlayerState>((ref) {
   return AudioPlayerNotifier();
-
 });
-

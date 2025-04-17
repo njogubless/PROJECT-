@@ -79,8 +79,12 @@ class _AudioPlayerPageState extends ConsumerState<AudioPlayerPage> {
                         ),
                         FloatingActionButton(
                           onPressed: () => playerState.isPlaying
-                            ? ref.read(audioPlayerProvider.notifier).pause()
-                            : ref.read(audioPlayerProvider.notifier).play(),
+                            ? ref.read(audioPlayerProvider.notifier).pauseAudio()
+                            : ref.read(audioPlayerProvider.notifier).playAudio(
+                                widget.audioFile.url,
+                                widget.audioFile.title,
+                                widget.audioFile.scripture,
+                              ),
                           child: Icon(
                             playerState.isPlaying ? Icons.pause : Icons.play_arrow,
                           ),

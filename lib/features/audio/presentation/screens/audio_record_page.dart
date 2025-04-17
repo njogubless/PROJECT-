@@ -35,84 +35,85 @@ class _RecordAudioPageState extends ConsumerState<RecordAudioPage> {
     return '$minutes:$seconds';
   }
 
-  Future<void> _submitRecording() async {
-    final recordingState = ref.read(audioRecorderProvider);
+ Future<void> _submitRecording() async {
+  final recordingState = ref.read(audioRecorderProvider);
 
-    if (recordingState.recordedFilePath == null) {
+  if (recordingState.recordedFilePath == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('No recording available')),
+    );
+    return;
+  }
+
+  if (_titleController.text.isEmpty || 
+      _scriptureController.text.isEmpty || 
+      _ministerController.text.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Please fill all fields')),
+    );
+    return;
+  }
+
+  try {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+
+    // Use the correct storage path structure to match your Firebase console
+    final storageRef = FirebaseStorage.instance
+        .ref()
+        .child('audio')  // Updated path to match your storage structure
+        .child('${DateTime.now().millisecondsSinceEpoch}.m4a');
+
+    final audioFile = File(recordingState.recordedFilePath!);
+    final uploadTask = await storageRef.putFile(audioFile);
+    final downloadUrl = await uploadTask.ref.getDownloadURL();
+
+    final devotionDoc = AudioFile(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      title: _titleController.text,
+      url: downloadUrl,
+      coverUrl: '',
+      duration: recordingState.recordingDuration,
+      setUrl: '',
+      uploaderId: FirebaseAuth.instance.currentUser?.uid ?? 'anonymous',
+      uploadDate: DateTime.now(),
+      scripture: _scriptureController.text,
+      //minister: _ministerController.text,  // Make sure this field is properly included
+    );
+
+    await FirebaseFirestore.instance
+        .collection('audio')  // Consider standardizing to 'audio' for consistency
+        .doc(devotionDoc.id)
+        .set(devotionDoc.toJson());
+
+    if (mounted) {
+      Navigator.pop(context); // Close loading dialog
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No recording available')),
+        const SnackBar(
+          content: Text('Recording uploaded successfully'),
+          backgroundColor: Colors.green,
+        ),
       );
-      return;
-    }
 
-    if (_titleController.text.isEmpty || 
-        _scriptureController.text.isEmpty || 
-        _ministerController.text.isEmpty) {
+      Navigator.pop(context); // Navigate back
+    }
+  } catch (e) {
+    if (mounted) {
+      Navigator.pop(context); // Close loading dialog
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all fields')),
+        SnackBar(
+          content: Text('Error uploading recording: $e'),
+          backgroundColor: Colors.red,
+        ),
       );
-      return;
-    }
-
-    try {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => const Center(child: CircularProgressIndicator()),
-      );
-
-      final storageRef = FirebaseStorage.instance
-          .ref()
-          .child('Devotion')
-          .child('${DateTime.now().millisecondsSinceEpoch}.m4a');
-
-      final audioFile = File(recordingState.recordedFilePath!);
-      final uploadTask = await storageRef.putFile(audioFile);
-      final downloadUrl = await uploadTask.ref.getDownloadURL();
-
-      final devotionDoc = AudioFile(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        title: _titleController.text,
-        url: downloadUrl,
-        coverUrl: '',
-        duration: recordingState.recordingDuration,
-        setUrl: '',
-        uploaderId: FirebaseAuth.instance.currentUser?.uid ?? 'anonymous',
-        uploadDate: DateTime.now(),
-        scripture: _scriptureController.text,
-        //minister: _ministerController.text, // Added minister field
-      );
-
-      await FirebaseFirestore.instance
-          .collection('Devotion')
-          .doc(devotionDoc.id)
-          .set(devotionDoc.toJson());
-
-      if (mounted) {
-        Navigator.pop(context); // Close loading dialog
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Recording uploaded successfully'),
-            backgroundColor: Colors.green,
-          ),
-        );
-
-        Navigator.pop(context); // Navigate back
-      }
-    } catch (e) {
-      if (mounted) {
-        Navigator.pop(context); // Close loading dialog
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error uploading recording: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
     }
   }
+}
 
   @override
   Widget build(BuildContext context) {

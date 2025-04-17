@@ -42,7 +42,7 @@ class MyApp extends ConsumerStatefulWidget {
 
 class _MyAppState extends ConsumerState<MyApp> {
   UserModel? userModel;
-  bool isByPassLogin = false; // Set to true to bypass login for UI testing
+  bool isByPassLogin = true; // Set to true to bypass login for UI testing
 
   void fetchDataOnce(User data) async {
     if (userModel == null) {
