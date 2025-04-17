@@ -1,11 +1,12 @@
+import 'package:devotion/features/auth/presentation/screen/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:routemaster/routemaster.dart';
 import 'package:devotion/core/common/styles/login_Signup_widgets/form_divider.dart';
 import 'package:devotion/core/common/styles/login_Signup_widgets/social_button.dart';
 import 'package:devotion/core/common/styles/text_strings.dart';
 import 'package:devotion/core/constants/sizes.dart';
 import 'package:devotion/features/auth/controller/sign_up_controller.dart';
+import 'package:routemaster/routemaster.dart';
 
 class SignUpScreen extends ConsumerWidget {
   const SignUpScreen({super.key});
@@ -24,14 +25,14 @@ class SignUpScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-                Text(
+              Text(
                 TTexts.signUpTitle,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blueAccent,
-                  ),
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blueAccent,
+                    ),
                 textAlign: TextAlign.center,
-                ),
+              ),
               const SizedBox(height: TSizes.spaceBtwSections),
 
               // Form Section
@@ -69,9 +70,8 @@ class SignUpScreen extends ConsumerWidget {
                       controller: signUpController.email,
                       label: TTexts.email,
                       icon: Icons.email_rounded,
-                      validator: (value) => value!.isEmpty
-                          ? 'Please enter your email'
-                          : null,
+                      validator: (value) =>
+                          value!.isEmpty ? 'Please enter your email' : null,
                     ),
                     const SizedBox(height: TSizes.spaceBtwinputFields),
                     _buildTextField(
@@ -84,68 +84,64 @@ class SignUpScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: TSizes.spaceBtwinputFields),
                     _buildTextField(
-                      controller: passwordController,
-                      label: TTexts.password,
-                      icon: Icons.password_rounded,
-                      obscureText: true,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return 'Please enter your password';
-                        } else if (value.length < 8) {
-                          return 'Password must be at least 6 characters';
-                        }
-                        return null;
-                      }
-                    ),
+                        controller: passwordController,
+                        label: TTexts.password,
+                        icon: Icons.password_rounded,
+                        obscureText: true,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter your password';
+                          } else if (value.length < 8) {
+                            return 'Password must be at least 6 characters';
+                          }
+                          return null;
+                        }),
                     const SizedBox(height: TSizes.spaceBtwSections),
-
                     // Sign-Up Button
                     SizedBox(
-  width: double.infinity,
-  child: ElevatedButton(
-    onPressed: signUpState.isLoading
-        ? null
-        : () async {
-            try {
-              await signUpController.signUp(context);
-              if (context.mounted) {
-                // Show success message
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Account created successfully! Please login."),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-                // Navigate to login page
-                Routemaster.of(context).replace('/login');
-              }
-            } catch (e) {
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(e.toString()),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-              }
-            }
-          },
-    child: signUpState.isLoading
-        ? const CircularProgressIndicator()
-        : const Text(TTexts.createAccount),
-  ),
-),
-                    // SizedBox(
-                    //   width: double.infinity,
-                    //   child: ElevatedButton(
-                    //     onPressed: signUpState.isLoading
-                    //         ? null
-                    //         : () => signUpController.signUp(context),
-                    //     child: signUpState.isLoading
-                    //         ? const CircularProgressIndicator()
-                    //         : const Text(TTexts.createAccount),
-                    //   ),
-                    // ),
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: signUpState.isLoading
+                            ? null
+                            : () async {
+                                // First validate the form
+                                if (signUpController.signupformKey.currentState!
+                                    .validate()) {
+                                  try {
+                                    await signUpController.signUp(context);
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                              "Account created successfully! Please login."),
+                                          backgroundColor: Colors.green,
+                                        ),
+                                      );
+                                      Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  LoginScreen()));
+                                    }
+                                  } catch (e) {
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content: Text(e.toString()),
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      );
+                                    }
+                                  }
+                                }
+                              },
+                        child: signUpState.isLoading
+                            ? const CircularProgressIndicator()
+                            : const Text(TTexts.createAccount),
+                      ),
+                    )
                   ],
                 ),
               ),
@@ -163,7 +159,7 @@ class SignUpScreen extends ConsumerWidget {
                     onPressed: () =>
                         Routemaster.of(context).replace('/login'),
                     child: const Text(
-                      'Sign In',
+                      'Log In',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   )
