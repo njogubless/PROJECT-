@@ -1,4 +1,6 @@
 import 'package:devotion/features/books/data/models/book_model.dart';
+import 'package:devotion/features/books/data/repository/firebase_storage.dart';
+import 'package:devotion/features/books/presentation/screen/book_reader_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:devotion/features/books/presentation/providers/book_providers.dart';
@@ -48,31 +50,42 @@ class BookScreen extends ConsumerWidget {
   }
 }
 
-class BookCard extends StatelessWidget {
+class BookCard extends ConsumerWidget {
   final BookModel book;
 
   const BookCard({super.key, required this.book});
 
-  Future<void> _downloadBook(BuildContext context) async {
+  Future<void> _downloadBook(BuildContext context, WidgetRef ref) async {
     try {
-      final directory = await getApplicationDocumentsDirectory();
-      final file = File('${directory.path}/${book.title}.pdf');
+      final storageService = ref.read(storageServiceProvider);
       
-      // Download logic here
-      // await file.writeAsBytes(await downloadBytes(book.downloadUrl));
-
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Book downloaded successfully!')),
+        const SnackBar(content: Text('Downloading book...')),
+      );
+      
+      final file = await storageService.downloadFile(
+        book.storagePath, 
+        '${book.title}.pdf'
+      );
+      
+      // Update downloaded books tracking
+      final downloadedBooks = ref.read(downloadedBooksProvider.notifier);
+      downloadedBooks.update((state) => {...state, book.id});
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Book downloaded successfully!')),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to download book')),
+        SnackBar(content: Text('Failed to download book: $e')),
       );
     }
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDownloaded = ref.watch(downloadedBooksProvider).contains(book.id);
+    
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -139,8 +152,11 @@ class BookCard extends StatelessWidget {
                         label: const Text('Read'),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.download),
-                        onPressed: () => _downloadBook(context),
+                        icon: Icon(
+                          isDownloaded ? Icons.check_circle : Icons.download,
+                          color: isDownloaded ? Colors.green : null,
+                        ),
+                        onPressed: () => _downloadBook(context, ref),
                       ),
                     ],
                   ),
@@ -154,27 +170,3 @@ class BookCard extends StatelessWidget {
   }
 }
 
-class BookReaderScreen extends StatelessWidget {
-  final BookModel book;
-
-  const BookReaderScreen({super.key, required this.book});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(book.title),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.download),
-            onPressed: () => BookCard(book: book)._downloadBook(context),
-          ),
-        ],
-      ),
-      body: const Center(
-        child: Text('PDF Viewer will be implemented here'),
-        // Implement PDF viewer here using packages like flutter_pdfview
-      ),
-    );
-  }
-}

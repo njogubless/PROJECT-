@@ -6,6 +6,7 @@ class BookModel {
   final String fileUrl;
   final String coverUrl;
   final String downloadUrl;
+  final String storagePath;
 
   // Constructor
   BookModel({
@@ -16,6 +17,7 @@ class BookModel {
     required this.fileUrl,
     required this.coverUrl,
     required this.downloadUrl,
+    required this.storagePath,
   });
 
   // Factory method to create a BookModel from a map
@@ -28,6 +30,7 @@ class BookModel {
       fileUrl: map['fileUrl'] as String,
       coverUrl: map['coverUrl'] as String,
       downloadUrl: map['downloadUrl'] as String,
+      storagePath: map['storagePath'] as String,
     );
   }
 
@@ -41,6 +44,7 @@ class BookModel {
       fileUrl: json['fileUrl'] as String? ?? '',
       coverUrl: json['coverUrl'] as String? ?? '',
       downloadUrl: json['downloadUrl'] as String? ?? '',
+      storagePath: json['storagePath'] as String? ?? '',
     );
   }
 
@@ -54,17 +58,19 @@ class BookModel {
       'fileUrl': fileUrl,
       'downloadUrl': downloadUrl,
       'coverUrl': coverUrl,
+      'storagePath': storagePath,
     };
   }
 
   // Method to convert the BookModel to JSON
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'title': title,
-    'author': author,
-    'description': description,
-    'fileUrl': fileUrl,
-    'coverUrl': coverUrl,
-    'downloadUrl': downloadUrl,
-  };
+        'id': id,
+        'title': title,
+        'author': author,
+        'description': description,
+        'fileUrl': fileUrl,
+        'coverUrl': coverUrl,
+        'downloadUrl': downloadUrl,
+        'storagePath': storagePath,
+      };
 }
