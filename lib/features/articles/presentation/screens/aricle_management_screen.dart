@@ -68,7 +68,7 @@ class _ArticleManagementScreenState extends State<ArticleManagementScreen> {
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Publish/Unpublish button
+                    
                       IconButton(
                         icon: Icon(
                           isPublished ? Icons.visibility : Icons.visibility_off,
@@ -79,7 +79,7 @@ class _ArticleManagementScreenState extends State<ArticleManagementScreen> {
                         },
                         tooltip: isPublished ? 'Unpublish' : 'Publish',
                       ),
-                      // Edit button
+              
                       IconButton(
                         icon: const Icon(Icons.edit, color: Colors.blue),
                         onPressed: () {
@@ -95,7 +95,7 @@ class _ArticleManagementScreenState extends State<ArticleManagementScreen> {
                           );
                         },
                       ),
-                      // Delete button
+                   
                       IconButton(
                         icon: const Icon(Icons.delete, color: Colors.red),
                         onPressed: () {

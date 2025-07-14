@@ -34,7 +34,6 @@ class AuthRepository {
 
   Stream<User?> get authStateChange => _auth.authStateChanges();
 
-  // Sign in with Google
   FutureEither<UserModel> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
@@ -51,7 +50,7 @@ class AuthRepository {
 
         late UserModel userModel;
 
-        // Save new user to Firestore if they are a new user
+     
         if (userCredential.additionalUserInfo!.isNewUser) {
           userModel = UserModel(
             uid: userCredential.user!.uid,
@@ -75,7 +74,6 @@ class AuthRepository {
     }
   }
 
-  // Sign in with Email and Password
   FutureEither<UserModel> signInWithEmailAndPassword(
       String email, String password) async {
     try {
@@ -107,7 +105,7 @@ class AuthRepository {
     }
   }
 
-  // Get user data from Firestore
+
   Stream<UserModel> getUserData(String uid) {
     return _users.doc(uid).snapshots().map((event) {
       final data = event.data() as Map<String, dynamic>?;
@@ -119,7 +117,6 @@ class AuthRepository {
     });
   }
 
-  // Sign out the user
   Future<void> signOutUser() async {
     await _googleSignIn.signOut();
     await _auth.signOut();

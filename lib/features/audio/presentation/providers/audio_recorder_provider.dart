@@ -1,4 +1,4 @@
-// lib/features/audio/presentation/providers/audio_recorder_provider.dart
+
 import 'package:devotion/features/audio/presentation/screens/audio_recoding_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:record/record.dart';
@@ -29,14 +29,14 @@ class AudioRecorderNotifier extends StateNotifier<AudioRecordingState> {
 
   Future<void> startRecording() async {
     try {
-      // Check and request permissions
+  
       final hasPermission = await _audioRecorder.hasPermission();
       if (!hasPermission) return;
 
-      // Get the path for saving the recording
+
       final path = await _getRecordingPath();
 
-      // Start recording
+   
       await _audioRecorder.start(
         RecordConfig(
           encoder: AudioEncoder.aacLc,
@@ -68,7 +68,7 @@ class AudioRecorderNotifier extends StateNotifier<AudioRecordingState> {
     _timer = Timer.periodic(const Duration(milliseconds: 100), (_) async {
       try {
         final amplitude = await _audioRecorder.getAmplitude();
-        // Convert amplitude to waveform data (normalized between 0 and 1)
+
         final normalized = (amplitude.current + 160) / 160;
         state = state.copyWith(
           waveformData: [...state.waveformData, normalized],

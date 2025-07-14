@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-// Define the search state class
 class SearchState {
   final List<Map<String, dynamic>> searchResults;
   final bool isSearching;
@@ -31,7 +29,7 @@ class SearchState {
   }
 }
 
-// Define the search notifier
+
 class SearchNotifier extends StateNotifier<SearchState> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -58,23 +56,20 @@ class SearchNotifier extends StateNotifier<SearchState> {
     state = state.copyWith(isLoading: true, searchQuery: query.toLowerCase());
 
     try {
-      // Search in articles collection
+
       final articleResults = await _searchCollection('articles', query);
       
-      // Search in audio collection
+
       final audioResults = await _searchCollection('audio', query);
-      
-      // Search in books collection
+
       final bookResults = await _searchCollection('books', query);
 
-      // Combine all results
       final allResults = [
         ...articleResults,
         ...audioResults,
         ...bookResults,
       ];
 
-      // Sort results by date
       allResults.sort((a, b) {
         final aDate = (a['createdAt'] as Timestamp).toDate();
         final bDate = (b['createdAt'] as Timestamp).toDate();
@@ -131,12 +126,11 @@ class SearchNotifier extends StateNotifier<SearchState> {
   }
 }
 
-// Define the provider
 final searchProvider = StateNotifierProvider<SearchNotifier, SearchState>((ref) {
   return SearchNotifier();
 });
 
-// SearchResultCard remains the same
+
 class SearchResultCard extends StatelessWidget {
   final Map<String, dynamic> result;
   
@@ -186,7 +180,7 @@ class SearchResultCard extends StatelessWidget {
   }
 }
 
-// Updated Search Results Screen
+
 class SearchResultsScreen extends ConsumerWidget {
   const SearchResultsScreen({Key? key}) : super(key: key);
 

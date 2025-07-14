@@ -131,187 +131,185 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
     final user = FirebaseAuth.instance.currentUser;
     final theme = Theme.of(context);
 
-    return Drawer(
-      child: Column(
-        children: [
-          UserAccountsDrawerHeader(
-            decoration: BoxDecoration(
-              color: theme.primaryColor,
-              image: const DecorationImage(
-                image: AssetImage('assets/images/ROF.webp'),
-                fit: BoxFit.cover,
-                opacity: 0.7,
+    return PopScope(
+      canPop: true,
+      child: Drawer(
+        child: Column(
+          children: [
+            UserAccountsDrawerHeader(
+              decoration: BoxDecoration(
+                color: theme.primaryColor,
+                image: const DecorationImage(
+                  image: AssetImage('assets/images/ROF.webp'),
+                  fit: BoxFit.cover,
+                  opacity: 0.7,
+                ),
+              ),
+              accountName: Text(
+                user?.displayName ?? 'Guest User',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+              accountEmail: Text(
+                user?.email ?? 'Sign in to access all features',
+                style: const TextStyle(fontSize: 14),
+              ),
+              currentAccountPicture: GestureDetector(
+                onTap: _uploadProfilePicture,
+                child: Stack(
+                  alignment: Alignment.bottomRight,
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: Colors.white,
+                      radius: 32,
+                      child: _isLoading
+                          ? const CircularProgressIndicator()
+                          : ClipOval(
+                              child: user?.photoURL != null
+                                  ? CachedNetworkImage(
+                                      imageUrl: user!.photoURL!,
+                                      placeholder: (context, url) =>
+                                          const CircularProgressIndicator(),
+                                      errorWidget: (context, url, error) =>
+                                          const Icon(Icons.person, size: 40),
+                                      fit: BoxFit.cover,
+                                      width: 60,
+                                      height: 60,
+                                    )
+                                  : const Icon(Icons.person, size: 40),
+                            ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: theme.primaryColor,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.edit,
+                        color: Colors.white,
+                        size: 16,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-            accountName: Text(
-              user?.displayName ?? 'Guest User',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
-            accountEmail: Text(
-              user?.email ?? 'Sign in to access all features',
-              style: const TextStyle(fontSize: 14),
-            ),
-            currentAccountPicture: GestureDetector(
-              onTap: _uploadProfilePicture,
-              child: Stack(
-                alignment: Alignment.bottomRight,
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.zero,
                 children: [
-                  CircleAvatar(
-                    backgroundColor: Colors.white,
-                    radius: 32,
-                    child: _isLoading
-                        ? const CircularProgressIndicator()
-                        : ClipOval(
-                            child: user?.photoURL != null
-                                ? CachedNetworkImage(
-                                    imageUrl: user!.photoURL!,
-                                    placeholder: (context, url) =>
-                                        const CircularProgressIndicator(),
-                                    errorWidget: (context, url, error) =>
-                                        const Icon(Icons.person, size: 40),
-                                    fit: BoxFit.cover,
-                                    width: 60,
-                                    height: 60,
-                                  )
-                                : const Icon(Icons.person, size: 40),
+                  if (user != null) ...[
+                    ListTile(
+                      leading: const Icon(Icons.person),
+                      title: const Text('Profile'),
+                      onTap: () {},
+                    ),
+                  ],
+                  ListTile(
+                    leading: const Icon(Icons.lock),
+                    title: const Text("Admin Login"),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AdminLoginPage()));
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.public),
+                    title: const Text("Website"),
+                    subtitle: const Text("Visit Reflection On Faith"),
+                    onTap: () => launchLink("https://andrewcphiri.com/"),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.share),
+                    title: const Text("Share App"),
+                    onTap: _shareApp,
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.bookmark),
+                    title: Text('Bookmarks'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => BookmarksScreen()));
+                    },
+                  ),
+                  const Divider(),
+                  ListTile(
+                    leading: const Icon(Icons.settings),
+                    title: const Text("Settings"),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => SettingsPage()));
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.help),
+                    title: const Text("Help & Support"),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => HelpSupportPage()));
+                    },
+                  ),
+                  if (user != null)
+                    ListTile(
+                      leading: const Icon(Icons.logout),
+                      title: const Text('Sign Out'),
+                      onTap: () async {
+                        final shouldLogout = await showDialog<bool>(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Sign Out'),
+                            content: const Text(
+                                'Are you sure you want to sign out?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, false),
+                                child: const Text('Cancel'),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, true),
+                                child: const Text('Sign Out'),
+                              ),
+                            ],
                           ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: theme.primaryColor,
-                      shape: BoxShape.circle,
+                        );
+
+                        if (shouldLogout == true) {
+                          final authRepository =
+                              ref.read(authRepositoryProvider);
+                          await authRepository.signOutUser();
+                          if (mounted) {
+                            Navigator.pushReplacementNamed(context, '/');
+                          }
+                        }
+                      },
                     ),
-                    child: const Icon(
-                      Icons.edit,
-                      color: Colors.white,
-                      size: 16,
-                    ),
-                  ),
                 ],
               ),
             ),
-          ),
-          Expanded(
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: [
-                if (user != null) ...[
-                  ListTile(
-                    leading: const Icon(Icons.person),
-                    title: const Text('Profile'),
-                    onTap: () {
-                      // Navigator.pop(context);
-                      // Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //         builder: (context) => const ProfileScreen()));
-                    },
-                  ),
-                ],
-                ListTile(
-                  leading: const Icon(Icons.lock),
-                  title: const Text("Admin Login"),
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => AdminLoginPage()));
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.public),
-                  title: const Text("Website"),
-                  subtitle: const Text("Visit Reflection On Faith"),
-                  onTap: () => launchLink("https://andrewcphiri.com/"),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.share),
-                  title: const Text("Share App"),
-                  onTap: _shareApp,
-                ),
-                ListTile(
-                  leading: Icon(Icons.bookmark),
-                  title: Text('Bookmarks'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => BookmarksScreen()));
-                  },
-                ),
-                const Divider(),
-                ListTile(
-                  leading: const Icon(Icons.settings),
-                  title: const Text("Settings"),
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => SettingsPage()));
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.help),
-                  title: const Text("Help & Support"),
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => HelpSupportPage()));
-                  },
-                ),
-                if (user != null)
-                  ListTile(
-                    leading: const Icon(Icons.logout),
-                    title: const Text('Sign Out'),
-                    onTap: () async {
-                      final shouldLogout = await showDialog<bool>(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Sign Out'),
-                          content:
-                              const Text('Are you sure you want to sign out?'),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context, false),
-                              child: const Text('Cancel'),
-                            ),
-                            TextButton(
-                              onPressed: () => Navigator.pop(context, true),
-                              child: const Text('Sign Out'),
-                            ),
-                          ],
-                        ),
-                      );
-
-                      if (shouldLogout == true) {
-                        final authRepository = ref.read(authRepositoryProvider);
-                        await authRepository.signOutUser();
-                        if (mounted) {
-                          Navigator.pushReplacementNamed(context, '/');
-                        }
-                      }
-                    },
-                  ),
-              ],
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                'App Version 1.0.0',
+                style: theme.textTheme.bodySmall,
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'App Version 1.0.0',
-              style: theme.textTheme.bodySmall,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

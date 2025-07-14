@@ -35,7 +35,6 @@ class SignUpScreen extends ConsumerWidget {
               ),
               const SizedBox(height: TSizes.spaceBtwSections),
 
-              // Form Section
               Form(
                 key: signUpController.signupformKey,
                 child: Column(
@@ -97,14 +96,14 @@ class SignUpScreen extends ConsumerWidget {
                           return null;
                         }),
                     const SizedBox(height: TSizes.spaceBtwSections),
-                    // Sign-Up Button
+                    
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: signUpState.isLoading
                             ? null
                             : () async {
-                                // First validate the form
+                             
                                 if (signUpController.signupformKey.currentState!
                                     .validate()) {
                                   try {
@@ -150,7 +149,6 @@ class SignUpScreen extends ConsumerWidget {
               const TSocialButton(),
               const SizedBox(height: TSizes.spaceBtwItems),
 
-              // Sign-In Link
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -172,7 +170,6 @@ class SignUpScreen extends ConsumerWidget {
     );
   }
 
-  // Custom Text Field Builder
   Widget _buildTextField({
     required TextEditingController controller,
     required String label,

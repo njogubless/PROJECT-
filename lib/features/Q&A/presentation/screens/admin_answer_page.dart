@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/question_provider.dart';
 
 class AdminAnswerForm extends ConsumerWidget {
-  final String questionId; // The ID of the question to answer
-  final String currentAnswerText; // Existing answer text (if any)
+  final String questionId;
+  final String currentAnswerText;
 
   AdminAnswerForm({
     super.key,
@@ -17,7 +17,6 @@ class AdminAnswerForm extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Pre-populate the controller if there is an existing answer
     if (currentAnswerText.isNotEmpty) {
       _answerController.text = currentAnswerText;
     }
@@ -46,13 +45,12 @@ class AdminAnswerForm extends ConsumerWidget {
               if (_formKey.currentState!.validate()) {
                 final answerText = _answerController.text;
 
-                // Call the answerQuestion method from the provider
+           
                 await ref.read(questionProvider.notifier).answerQuestion(questionId, answerText);
 
-                // Clear the text field after submission
+          
                 _answerController.clear();
 
-                // Show a success message (optional)
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Answer submitted successfully!')),
                 );

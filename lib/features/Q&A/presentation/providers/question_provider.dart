@@ -40,10 +40,9 @@ final questionProvider = StateNotifierProvider<QuestionNotifier, List<Question>>
   ),
 );
 
-// Provider Definitions
-// Provider Definitions
+
 final questionRepositoryProvider = Provider<QuestionRepositoryImpl>((ref) {
-  final firestore = FirebaseFirestore.instance; // Ensure you get the Firestore instance
+  final firestore = FirebaseFirestore.instance;
   return QuestionRepositoryImpl(firestore);
 }); 
 

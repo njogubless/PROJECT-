@@ -12,14 +12,14 @@ class AudioRepositoryImpl implements AudioRepository {
   @override
   Future<void> uploadAudioFile(AudioFile audioFile, String filePath) async {
     try {
-      // Upload audio to Firebase Storage
+     
       final ref = _storage.ref().child('audios/${audioFile.id}.mp3');
       final uploadTask = await ref.putFile(File(filePath));
 
-      // Get the download URL of the uploaded file
+
       final downloadUrl = await uploadTask.ref.getDownloadURL();
 
-      // Save the audio metadata to Firestore
+
       await _firestore.collection('audioFiles').doc(audioFile.id).set({
         'id': audioFile.id,
         'title': audioFile.title,
@@ -33,10 +33,10 @@ class AudioRepositoryImpl implements AudioRepository {
 @override
 Future<List<AudioFile>> fetchAudioFiles() async {
     try {
-      // Try fetching from Firestore first
+
       final firestoreSnapshot = await _firestore.collection('audioFiles').get();
       
-      // If we have documents in Firestore, use them
+
       if (firestoreSnapshot.docs.isNotEmpty) {
         return firestoreSnapshot.docs.map((doc) {
           final data = doc.data();
@@ -55,19 +55,18 @@ Future<List<AudioFile>> fetchAudioFiles() async {
           );
         }).toList();
       } 
-      // If no Firestore documents, try to list files directly from Storage
+
       else {
-        // Reference to your audios folder in Storage
+ 
         final storageRef = _storage.ref().child('audios');
         final listResult = await storageRef.listAll();
         
-        // Create AudioFile objects from the storage items
+ 
         List<AudioFile> audioFiles = [];
         for (var item in listResult.items) {
-          // Get the download URL
+      
           final url = await item.getDownloadURL();
-          
-          // Extract a title from the file name
+
           final fileName = item.name;
           final title = fileName.replaceAll('.mp3', '').replaceAll('_', ' ');
           
@@ -95,11 +94,10 @@ Future<List<AudioFile>> fetchAudioFiles() async {
   @override
   Future<void> deleteAudioFile(String audioId) async {
     try {
-      // Delete audio from Firebase Storage
+     
       final ref = _storage.ref().child('audios/$audioId.mp3');
       await ref.delete();
 
-      // Delete metadata from Firestore
       await _firestore.collection('audioFiles').doc(audioId).delete();
     } catch (e) {
       throw Exception('Failed to delete audio file: $e');
@@ -109,7 +107,7 @@ Future<List<AudioFile>> fetchAudioFiles() async {
   @override
   Future<String> downloadAudio(String audioId) async {
     try {
-      // Fetch the download URL from Firestore
+   
       final doc = await _firestore.collection('audioFiles').doc(audioId).get();
       final data = doc.data();
 

@@ -61,10 +61,10 @@ class _RecordAudioPageState extends ConsumerState<RecordAudioPage> {
       builder: (context) => const Center(child: CircularProgressIndicator()),
     );
 
-    // Use the correct storage path structure to match your Firebase console
+  
     final storageRef = FirebaseStorage.instance
         .ref()
-        .child('audio')  // Updated path to match your storage structure
+        .child('audio') 
         .child('${DateTime.now().millisecondsSinceEpoch}.m4a');
 
     final audioFile = File(recordingState.recordedFilePath!);
@@ -81,16 +81,16 @@ class _RecordAudioPageState extends ConsumerState<RecordAudioPage> {
       uploaderId: FirebaseAuth.instance.currentUser?.uid ?? 'anonymous',
       uploadDate: DateTime.now(),
       scripture: _scriptureController.text,
-      //minister: _ministerController.text,  // Make sure this field is properly included
+  
     );
 
     await FirebaseFirestore.instance
-        .collection('audio')  // Consider standardizing to 'audio' for consistency
+        .collection('audio') 
         .doc(devotionDoc.id)
         .set(devotionDoc.toJson());
 
     if (mounted) {
-      Navigator.pop(context); // Close loading dialog
+      Navigator.pop(context); 
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -99,11 +99,11 @@ class _RecordAudioPageState extends ConsumerState<RecordAudioPage> {
         ),
       );
 
-      Navigator.pop(context); // Navigate back
+      Navigator.pop(context); 
     }
   } catch (e) {
     if (mounted) {
-      Navigator.pop(context); // Close loading dialog
+      Navigator.pop(context);
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

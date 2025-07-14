@@ -28,29 +28,7 @@ class TDeviceUtils {
         enable ? SystemUiMode.immersiveSticky : SystemUiMode.edgeToEdge);
   }
 
-  // static double getScreenHeight() {
-  //   return MediaQuery.of(Get.context!).size.height;
-  // }
-
-  // static double getScreenWidth(BuildContext context) {
-  //   return MediaQuery.of(context).size.width;
-  // }
-
-  // static double getPixelRatio() {
-  //   return MediaQuery.of(Get.context!).devicePixelRatio;
-  // }
-
-  // static double getStatusBarHeight() {
-  //   return MediaQuery.of(Get.context!).padding.top;
-  // }
-
-  // static bool isIos() {
-  //   return Platform.isIos;
-  // }
-
-  //  static bool isndroid() {
-  //   return Platform.isAndroid;
-  // }
+ 
 
   static void launchUrl(String url) async {
     if (await canLaunchUrlString(url)) {

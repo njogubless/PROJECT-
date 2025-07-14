@@ -36,7 +36,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           emailSent = true;
         });
 
-        // Show success message
+       
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(

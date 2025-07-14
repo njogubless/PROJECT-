@@ -8,7 +8,6 @@ class BookModel {
   final String downloadUrl;
   final String storagePath;
 
-  // Constructor
   BookModel({
     required this.id,
     required this.title,
@@ -20,7 +19,6 @@ class BookModel {
     required this.storagePath,
   });
 
-  // Factory method to create a BookModel from a map
   factory BookModel.fromMap(Map<String, dynamic> map) {
     return BookModel(
       id: map['id'] as String,
@@ -34,7 +32,6 @@ class BookModel {
     );
   }
 
-  // Factory method to create a BookModel from JSON
   factory BookModel.fromJson(Map<String, dynamic> json) {
     return BookModel(
       id: json['id'] as String? ?? '',
@@ -48,7 +45,6 @@ class BookModel {
     );
   }
 
-  // Method to convert the BookModel to a map
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -62,7 +58,6 @@ class BookModel {
     };
   }
 
-  // Method to convert the BookModel to JSON
   Map<String, dynamic> toJson() => {
         'id': id,
         'title': title,

@@ -15,8 +15,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   bool _notificationsEnabled = true;
   bool _darkModeEnabled = false;
   String _selectedLanguage = 'English';
-  // final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  //   FlutterLocalNotificationsPlugin();
+
   late SharedPreferences _prefs;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   bool _isLoading = true;
@@ -33,7 +32,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   void initState() {
     super.initState();
     _loadSettings();
-    //_initializeNotifications();
+
     Future.delayed(Duration.zero, () {
       _darkModeEnabled = ref.read(themeProvider).isDarkMode;
     });
@@ -67,7 +66,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       });
       await _prefs.setString('language', language);
 
-      // Show confirmation dialog
+  
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -89,7 +88,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   Future<void> _signOut() async {
     try {
       await _auth.signOut();
-      // Navigate to login screen
+    
       Navigator.of(context).pushReplacementNamed('/login');
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -113,113 +112,98 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       );
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Settings'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.help_outline),
-            onPressed: () => _showHelpDialog(),
-          ),
-        ],
-      ),
-      body: ListView(
-        children: [
-          const Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Text(
-              'Preferences',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+    return PopScope(
+      canPop: true,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Settings'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.help_outline),
+              onPressed: () => _showHelpDialog(),
+            ),
+          ],
+        ),
+        body: ListView(
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text(
+                'Preferences',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          ),
-          Card(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Column(
-              children: [
-                // SwitchListTile(
-                //   title: const Text('Enable Notifications'),
-                //   subtitle: const Text('Receive alerts and updates'),
-                //   value: _notificationsEnabled,
-                //   onChanged: _handleNotificationChange,
-                //   secondary: const Icon(Icons.notifications),
-                // ),
-                const Divider(),
-                SwitchListTile(
-                  title: const Text('Dark Mode'),
-                  subtitle: const Text('Toggle dark/light theme'),
-                  value: _darkModeEnabled,
-                  onChanged: _handleDarkModeChange,
-                  secondary: const Icon(Icons.dark_mode),
-                ),
-                const Divider(),
-                ListTile(
-                  leading: const Icon(Icons.language),
-                  title: const Text('Language'),
-                  subtitle: Text(_selectedLanguage),
-                  trailing: DropdownButton<String>(
-                    value: _selectedLanguage,
-                    items: _supportedLanguages.map((String language) {
-                      return DropdownMenuItem<String>(
-                        value: language,
-                        child: Text(language),
-                      );
-                    }).toList(),
-                    onChanged: _handleLanguageChange,
+            Card(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Column(
+                children: [
+                  
+                  const Divider(),
+                  SwitchListTile(
+                    title: const Text('Dark Mode'),
+                    subtitle: const Text('Toggle dark/light theme'),
+                    value: _darkModeEnabled,
+                    onChanged: _handleDarkModeChange,
+                    secondary: const Icon(Icons.dark_mode),
                   ),
-                ),
-              ],
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Text(
-              'Account',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+                  const Divider(),
+                  ListTile(
+                    leading: const Icon(Icons.language),
+                    title: const Text('Language'),
+                    subtitle: Text(_selectedLanguage),
+                    trailing: DropdownButton<String>(
+                      value: _selectedLanguage,
+                      items: _supportedLanguages.map((String language) {
+                        return DropdownMenuItem<String>(
+                          value: language,
+                          child: Text(language),
+                        );
+                      }).toList(),
+                      onChanged: _handleLanguageChange,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
-          Card(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Column(
-              children: [
-                // ListTile(
-                //   leading: const Icon(Icons.person),
-                //   title: const Text('Edit Profile'),
-                //   subtitle: Text(_auth.currentUser?.email ?? ''),
-                //   onTap: () => _navigateToAccountSettings(),
-                // ),
-                // const Divider(),
-                // ListTile(
-                //   leading: const Icon(Icons.security),
-                //   title: const Text('Privacy Policy'),
-                //   onTap: () => _showPrivacyPolicy(),
-                // ),
-                // const Divider(),
-                ListTile(
-                  leading: const Icon(Icons.logout, color: Colors.red),
-                  title: const Text(
-                    'Sign Out',
-                    style: TextStyle(color: Colors.red),
-                  ),
-                  onTap: _signOut,
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text(
+                'Account',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
                 ),
-              ],
+              ),
             ),
-          ),
-          const SizedBox(height: 24),
-          Center(
-            child: Text(
-              'App Version 1.0.0',
-              style: Theme.of(context).textTheme.bodySmall,
+            Card(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Column(
+                children: [
+                
+                  ListTile(
+                    leading: const Icon(Icons.logout, color: Colors.red),
+                    title: const Text(
+                      'Sign Out',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                    onTap: _signOut,
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 24),
-        ],
+            const SizedBox(height: 24),
+            Center(
+              child: Text(
+                'App Version 1.0.0',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ),
+            const SizedBox(height: 24),
+          ],
+        ),
       ),
     );
   }
@@ -542,7 +526,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
       final user = _auth.currentUser;
       if (user != null) {
         await user.delete();
-        // Navigate to login screen
+    
         Navigator.of(context)
             .pushNamedAndRemoveUntil('/login', (route) => false);
       }

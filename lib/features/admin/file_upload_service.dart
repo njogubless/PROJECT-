@@ -1,7 +1,7 @@
 import 'dart:async';
 
 class FileUploadService {
-  // Mock method to simulate file upload with progress
+ 
   Future<void> uploadFile({
     required String filePath,
     required Function(double progress) onProgress,

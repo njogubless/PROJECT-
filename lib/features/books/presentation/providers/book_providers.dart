@@ -2,12 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:devotion/features/books/data/models/book_model.dart';
 
-// Firestore provider
 final firestoreProvider = Provider<FirebaseFirestore>((ref) {
   return FirebaseFirestore.instance;
 });
 
-// Books provider - directly fetches from Firestore
+
 final booksProvider = FutureProvider<List<BookModel>>((ref) async {
   final firestore = ref.watch(firestoreProvider);
   
@@ -22,7 +21,7 @@ final booksProvider = FutureProvider<List<BookModel>>((ref) async {
   }
 });
 
-// Book upload provider
+
 final bookUploadProvider = FutureProvider.family<void, BookModel>((ref, book) async {
   final firestore = ref.watch(firestoreProvider);
   
@@ -33,8 +32,8 @@ final bookUploadProvider = FutureProvider.family<void, BookModel>((ref, book) as
   }
 });
 
-// Simple download tracking
+
 final downloadedBooksProvider = StateProvider<Set<String>>((ref) => {});
 
-// Selected book provider (optional - for book details view)
+
 final selectedBookProvider = StateProvider<BookModel?>((ref) => null);

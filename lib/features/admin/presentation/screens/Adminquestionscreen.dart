@@ -95,7 +95,7 @@ class _AnswerScreenState extends State<AnswerScreen> {
         });
 
         await FirebaseFirestore.instance.collection(FirebaseConstants.questionsCollection).doc(widget.questionId).update({
-          'isAnswered': true, // Mark the question as answered
+          'isAnswered': true, 
         });
 
         ScaffoldMessenger.of(context).showSnackBar(

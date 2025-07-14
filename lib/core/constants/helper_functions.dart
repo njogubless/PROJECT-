@@ -20,18 +20,7 @@ class THelperFunctions {
     return Theme.of(context).brightness == Brightness.dark;
   }
 
-  // static Size screenSize() {
-  //   return MediaQuery.of(Get.context!).size;
-  // }
-
-
-  // static Size screenHeight() {
-  //   return MediaQuery.of(Get.context!).size.height;
-  // }
-
-  // static Size screenWidth() {
-  //   return MediaQuery.of(Get.context!).size.width;
-  // }
+  
 
  
 }

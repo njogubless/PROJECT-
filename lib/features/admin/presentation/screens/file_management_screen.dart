@@ -97,9 +97,9 @@ class FileManagementScreen extends StatelessWidget {
 
   Future<void> _deleteFile(BuildContext context, String docId, String fileUrl) async {
     try {
-      // Delete from Storage
+     
       await FirebaseStorage.instance.refFromURL(fileUrl).delete();
-      // Delete from Firestore
+      
       await FirebaseFirestore.instance
           .collection(collectionPath)
           .doc(docId)

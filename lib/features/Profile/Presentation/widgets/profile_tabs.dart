@@ -54,7 +54,7 @@ class _ProfileTabsState extends State<ProfileTabs> with SingleTickerProviderStat
   Widget _buildPlaylistsTab() {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: 3, // Placeholder count - later replace with actual data
+      itemCount: 3, 
       itemBuilder: (context, index) {
         return _buildPlaylistItem(
           title: 'My Playlist ${index + 1}',
@@ -68,7 +68,7 @@ class _ProfileTabsState extends State<ProfileTabs> with SingleTickerProviderStat
   Widget _buildRecentlyPlayedTab() {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: 5, // Placeholder count - later replace with actual data
+      itemCount: 5, 
       itemBuilder: (context, index) {
         return _buildTrackItem(
           title: 'Recently Played Track ${index + 1}',
@@ -83,7 +83,7 @@ class _ProfileTabsState extends State<ProfileTabs> with SingleTickerProviderStat
   Widget _buildFavoritesTab() {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: 5, // Placeholder count - later replace with actual data
+      itemCount: 5, 
       itemBuilder: (context, index) {
         return _buildTrackItem(
           title: 'Favorite Track ${index + 1}',
@@ -126,7 +126,7 @@ class _ProfileTabsState extends State<ProfileTabs> with SingleTickerProviderStat
         subtitle: Text(description),
         trailing: const Icon(Icons.play_circle_filled),
         onTap: () {
-          // Navigate to playlist detail
+         
         },
       ),
     );
@@ -175,7 +175,7 @@ class _ProfileTabsState extends State<ProfileTabs> with SingleTickerProviderStat
           ],
         ),
         onTap: () {
-          // Play track or navigate to track detail
+        
         },
       ),
     );

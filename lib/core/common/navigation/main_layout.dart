@@ -21,7 +21,7 @@ class _MainLayoutState extends State<MainLayout> with TickerProviderStateMixin {
   late AnimationController _controller;
   late List<Animation<double>> _animations;
 
-  // List of screens
+
   final List<Widget> _screens = [
     const HomeScreen(),
     AudioScreen(),
@@ -176,7 +176,7 @@ class _MainLayoutState extends State<MainLayout> with TickerProviderStateMixin {
         child: Stack(
           children: [
             Icon(icons[index]),
-            if (index == 3) // Articles tab with notification badge
+            if (index == 3) 
               Positioned(
                 right: -2,
                 top: -2,
@@ -209,7 +209,6 @@ class _MainLayoutState extends State<MainLayout> with TickerProviderStateMixin {
   }
 }
 
-// Add these theme configurations to your main.dart
 ThemeData appTheme() {
   return ThemeData(
     primaryColor: const Color.fromARGB(255, 82, 169, 240),

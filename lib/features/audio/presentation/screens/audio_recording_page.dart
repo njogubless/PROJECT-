@@ -36,7 +36,7 @@ class _RecordAudioPageState extends ConsumerState<RecordAudioPage> {
       return;
     }
 
-    //validate form fields
+
     if(_titleController.text.isEmpty || _scriptureController.text.isEmpty || _ministerController.text.isEmpty){
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill all fields')),
@@ -45,14 +45,14 @@ class _RecordAudioPageState extends ConsumerState<RecordAudioPage> {
     }
 
     try {
-      // Show loading indicator
+    
       showDialog(
         context: context,
         barrierDismissible: false,
         builder: (context) => const Center(child: CircularProgressIndicator()),
       );
 
-      // 1. Upload audio file to Firebase Storage
+    
       final storageRef = FirebaseStorage.instance
           .ref()
           .child('audio')
@@ -62,41 +62,39 @@ class _RecordAudioPageState extends ConsumerState<RecordAudioPage> {
       final uploadTask = await storageRef.putFile(audioFile);
       final downloadUrl = await uploadTask.ref.getDownloadURL();
 
-      // 2. Create Firestore document
+
       final devotionDoc = AudioFile(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         title: _titleController.text,
         url: downloadUrl,
-        coverUrl: '', // Optional cover image
+        coverUrl: '',
         duration: recordingState.recordingDuration,
-        setUrl: '', // Optional set URL
+        setUrl: '', 
         uploaderId: FirebaseAuth.instance.currentUser?.uid ?? 'anonymous',
         uploadDate: DateTime.now(),
         scripture: _scriptureController.text,
       );
 
-      // 3. Save to Firestore
+      
       await FirebaseFirestore.instance
           .collection('Devotion')
           .doc(devotionDoc.id)
           .set(devotionDoc.toJson());
 
-      // Close loading dialog
+     
       Navigator.pop(context);
 
-      // Show success message
+     
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Recording uploaded successfully'),
         backgroundColor: Colors.green,),
       );
 
-      // Navigate back
       Navigator.pop(context);
     } catch (e) {
-      // Close loading dialog
+      
       Navigator.pop(context);
 
-      // Show error message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error uploading recording: $e'),
         backgroundColor: Colors.red,),
@@ -260,81 +258,84 @@ Widget build(BuildContext context) {
   }
 
   
-  return Scaffold(
-    body: Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Theme.of(context).primaryColor.withOpacity(0.05),
-            Colors.white,
-          ],
+  return PopScope(
+    canPop: true,
+    child: Scaffold(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Theme.of(context).primaryColor.withOpacity(0.05),
+              Colors.white,
+            ],
+          ),
         ),
-      ),
-      child: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              title: const Text('Record Sermon'),
-              floating: true,
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              centerTitle: true,
-            ),
-            SliverPadding(
-              padding: const EdgeInsets.all(24),
-              sliver: SliverList(
-                delegate: SliverChildListDelegate([
-                  _buildInputField(
-                    controller: _titleController,
-                    label: 'Sermon Title',
-                    icon: Icons.title,
-                  ),
-                  _buildInputField(
-                    controller: _scriptureController,
-                    label: 'Scripture Reference',
-                    icon: Icons.book,
-                  ),
-                  _buildInputField(
-                    controller: _ministerController,
-                    label: 'Minister Name',
-                    icon: Icons.person,
-                  ),
-                  const SizedBox(height: 24),
-                  _buildRecordingSection(),
-                  if (recordingState.recordedFilePath != null) ...[
-                    const SizedBox(height: 24),
-                    ElevatedButton(
-                      onPressed: _submitRecording,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).primaryColor,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 4,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Icon(Icons.upload),
-                          SizedBox(width: 8),
-                          Text(
-                            'Submit Recording',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ]),
+        child: SafeArea(
+          child: CustomScrollView(
+            slivers: [
+              SliverAppBar(
+                title: const Text('Record Sermon'),
+                floating: true,
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                centerTitle: true,
               ),
-            ),
-          ],
+              SliverPadding(
+                padding: const EdgeInsets.all(24),
+                sliver: SliverList(
+                  delegate: SliverChildListDelegate([
+                    _buildInputField(
+                      controller: _titleController,
+                      label: 'Sermon Title',
+                      icon: Icons.title,
+                    ),
+                    _buildInputField(
+                      controller: _scriptureController,
+                      label: 'Scripture Reference',
+                      icon: Icons.book,
+                    ),
+                    _buildInputField(
+                      controller: _ministerController,
+                      label: 'Minister Name',
+                      icon: Icons.person,
+                    ),
+                    const SizedBox(height: 24),
+                    _buildRecordingSection(),
+                    if (recordingState.recordedFilePath != null) ...[
+                      const SizedBox(height: 24),
+                      ElevatedButton(
+                        onPressed: _submitRecording,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).primaryColor,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 4,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(Icons.upload),
+                            SizedBox(width: 8),
+                            Text(
+                              'Submit Recording',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ]),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     ),

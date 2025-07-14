@@ -42,7 +42,7 @@ class MyApp extends ConsumerStatefulWidget {
 
 class _MyAppState extends ConsumerState<MyApp> {
   UserModel? userModel;
-  bool isByPassLogin = true; // Set to true to bypass login for UI testing
+  bool isByPassLogin = true; 
 
   void fetchDataOnce(User data) async {
     if (userModel == null) {
@@ -62,7 +62,7 @@ class _MyAppState extends ConsumerState<MyApp> {
     return ref.watch(authStateChangeProvider).when(
           data: (data) {
             if (isByPassLogin) {
-              // Bypass login, directly go to logged-in route
+            
               return MaterialApp.router(
                 debugShowCheckedModeBanner: false,
                 title: 'Reflection On Faith',

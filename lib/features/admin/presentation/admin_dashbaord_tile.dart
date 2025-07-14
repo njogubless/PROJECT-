@@ -73,18 +73,16 @@ class DashboardTile extends ConsumerWidget {
     final uploadService = FileUploadService();
     final notifier = ref.read(uploadProgressProvider.notifier);
 
-    // Reset progress to 0 before starting
+ 
     notifier.state = 0.0;
 
-    // Simulate file upload and update progress
     await uploadService.uploadFile(
-      filePath: 'path/to/file', // Replace with actual file selection
+      filePath: 'path/to/file', 
       onProgress: (progress) {
         notifier.state = progress;
       },
     );
 
-    // Notify completion
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('File uploaded successfully!')),
     );

@@ -15,34 +15,37 @@ class BookScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final booksAsync = ref.watch(booksProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Library',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        elevation: 0,
-      ),
-      body: booksAsync.when(
-        data: (books) => GridView.builder(
-          padding: const EdgeInsets.all(16),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            childAspectRatio: 0.75,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
+    return PopScope(
+      canPop: true,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            'Library',
+            style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          itemCount: books.length,
-          itemBuilder: (context, index) {
-            final book = books[index];
-            return BookCard(book: book,);
-          },
+          elevation: 0,
         ),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(
-          child: Text(
-            'Error loading books: $err',
-            style: const TextStyle(color: Colors.red),
+        body: booksAsync.when(
+          data: (books) => GridView.builder(
+            padding: const EdgeInsets.all(16),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 0.75,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+            ),
+            itemCount: books.length,
+            itemBuilder: (context, index) {
+              final book = books[index];
+              return BookCard(book: book,);
+            },
+          ),
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (err, stack) => Center(
+            child: Text(
+              'Error loading books: $err',
+              style: const TextStyle(color: Colors.red),
+            ),
           ),
         ),
       ),
@@ -67,8 +70,7 @@ class BookCard extends ConsumerWidget {
         book.storagePath, 
         '${book.title}.pdf'
       );
-      
-      // Update downloaded books tracking
+
       final downloadedBooks = ref.read(downloadedBooksProvider.notifier);
       downloadedBooks.update((state) => {...state, book.id});
       
@@ -91,7 +93,7 @@ class BookCard extends ConsumerWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: () {
-          // Navigate to book reader screen
+         
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -140,7 +142,7 @@ class BookCard extends ConsumerWidget {
                     children: [
                       TextButton.icon(
                         onPressed: () {
-                          // Navigate to reader
+                      
                           Navigator.push(
                             context,
                             MaterialPageRoute(

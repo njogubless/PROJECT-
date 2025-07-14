@@ -14,7 +14,7 @@ class ThemeNotifier extends StateNotifier<ThemeState> {
   }
 }
 
-// ThemeState class to hold theme data
+
 class ThemeState {
   final bool isDarkMode;
   final Color primaryColor;
@@ -47,7 +47,7 @@ class ThemeState {
   }
 }
 
-// Create a provider for the theme
+
 final themeProvider = StateNotifierProvider<ThemeNotifier, ThemeState>((ref) {
   return ThemeNotifier();
 });

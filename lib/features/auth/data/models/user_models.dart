@@ -5,7 +5,7 @@ class UserModel {
   final bool isAuthenticated;
   final String userName;
   final String userEmail;
-  //final String profilePic;
+
   bool isAdmin = false;
 
   UserModel({
@@ -13,7 +13,7 @@ class UserModel {
     required this.isAuthenticated,
     required this.userEmail,
     required this.userName,
-    //required this.profilePic,
+  
     this.isAdmin = false,
   });
 
@@ -22,7 +22,7 @@ class UserModel {
     bool? isAuthenticated,
     String? userName,
     String? userEmail,
-    //String? profilePic,
+  
     String? role,
   }) {
     return UserModel(
@@ -30,7 +30,7 @@ class UserModel {
       isAuthenticated: isAuthenticated ?? this.isAuthenticated,
       userName: userName ?? this.userName,
       userEmail: userEmail ?? this.userEmail,
-      //profilePic: profilePic ?? this.profilePic,
+   
       isAdmin: isAdmin,
     );
   }
@@ -41,7 +41,7 @@ class UserModel {
       'isAuthenticated': isAuthenticated,
       'userName': userName,
       'userEmail': userEmail,
-      //profilePic: profilePic,
+     
       'isAdmin': isAdmin,
     };
   }
@@ -52,7 +52,7 @@ class UserModel {
       isAuthenticated: map['isAuthenticated'] as bool,
       userName: map['userName'] as String,
       userEmail: map['userEmail'] as String,
-      //profilePic: map['profilePic'] as String,
+     
       isAdmin: map['isAdmin'] as bool,
     );
   }

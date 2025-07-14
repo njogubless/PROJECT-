@@ -38,20 +38,20 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
       final file = File(filePath);
 
       if (await file.exists()) {
-        // File already downloaded
+      
         setState(() {
           _pdfFile = file;
           _isLoading = false;
         });
       } else {
-        // Need to download it first
+       
         final storageService = ref.read(storageServiceProvider);
         final downloadedFile = await storageService.downloadFile(
           widget.book.storagePath,
           '${widget.book.title}.pdf',
         );
 
-        // Update downloaded books tracking
+       
         final downloadedBooks = ref.read(downloadedBooksProvider.notifier);
         downloadedBooks.update((state) => {...state, widget.book.id});
 
@@ -114,7 +114,7 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
                       },
                       onRender: (_pages) {
                         setState(() {
-                          // PDF rendered successfully
+                   
                         });
                       },
                     )

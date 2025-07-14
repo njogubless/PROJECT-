@@ -1,4 +1,3 @@
-// auth_controller.dart
 import 'package:devotion/core/util/utils.dart';
 import 'package:devotion/features/auth/data/models/user_models.dart';
 import 'package:devotion/features/auth/Repository/auth_repository.dart';
@@ -7,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:routemaster/routemaster.dart';
 
-//use the userProvider to update user information
 final userProvider = StateProvider<UserModel?>((ref) => null);
 
 final authControllerProvider = StateNotifierProvider<AuthController, bool>(
@@ -36,11 +34,10 @@ class AuthController extends StateNotifier<bool> {
   AuthController({required AuthRepository authRepository, required Ref ref})
       : _authRepository = authRepository,
         _ref = ref,
-        super(false); //loading
+        super(false);
 
   Stream<User?> get authStateChange => _authRepository.authStateChange;
 
-  // Sign in with Google
   Future<void> signInWithGoogle(BuildContext context) async {
     state = true;
     final user = await _authRepository.signInWithGoogle();
@@ -53,7 +50,6 @@ class AuthController extends StateNotifier<bool> {
     Routemaster.of(context).replace('/homeScreen');
   }
 
-//signinWithEmailandPassword
   Future<void> signInWithEmailAndPassword(
       BuildContext context, String email, String password) async {
     state = true;
@@ -130,11 +126,10 @@ class AuthController extends StateNotifier<bool> {
     }
   }
 
-    Future<void> resendVerificationEmail(BuildContext context) async {
+  Future<void> resendVerificationEmail(BuildContext context) async {
     try {
       User? user = _auth.currentUser;
       if (user != null && !user.emailVerified) {
-        // Check if enough time has passed since last email
         final lastSent = _lastEmailSent[user.email];
         if (lastSent != null) {
           final difference = DateTime.now().difference(lastSent);
@@ -145,10 +140,10 @@ class AuthController extends StateNotifier<bool> {
 
         await user.sendEmailVerification();
         _lastEmailSent[user.email!] = DateTime.now();
-        
+
         if (context.mounted) {
           showSnackBar(
-            context, 
+            context,
             'Verification email resent successfully',
             isError: false,
           );
@@ -167,7 +162,8 @@ class AuthController extends StateNotifier<bool> {
     }
   }
 
-  void showSnackBar(BuildContext context, String message, {bool isError = true}) {
+  void showSnackBar(BuildContext context, String message,
+      {bool isError = true}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -181,10 +177,8 @@ class AuthController extends StateNotifier<bool> {
     );
   }
 
-  // Sign out the user
   void signOut(BuildContext context) async {
     await _authRepository.signOutUser();
-    Navigator.pushReplacementNamed(
-        context, '/login'); // Update to navigate back to the login screen
+    Navigator.pushReplacementNamed(context, '/login');
   }
 }

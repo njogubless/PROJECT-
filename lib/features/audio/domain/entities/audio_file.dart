@@ -1,13 +1,13 @@
 class Audio {
-  final String id;                 // Unique identifier for the audio file
-  final String title;              // Title of the audio
-  final String audioUrl;           // URL for the audio file itself
-  final String coverUrl;           // URL for the cover image of the audio
-  final Duration duration;         // Duration of the audio in seconds/minutes
-  final String setUrl;             // URL for the audio set if applicable
-  final bool isPlaying;            // Boolean to indicate if the audio is playing
-  final String uploaderId;         // ID of the user who uploaded the audio
-  final DateTime uploadDate;       // Date when the audio was uploaded
+  final String id;               
+  final String title;            
+  final String audioUrl;          
+  final String coverUrl;        
+  final Duration duration;         
+  final String setUrl;          
+  final bool isPlaying;            
+  final String uploaderId;        
+  final DateTime uploadDate;      
 
   const Audio({
     required this.id,
@@ -16,7 +16,7 @@ class Audio {
     required this.coverUrl,
     required this.duration,
     required this.setUrl,
-    this.isPlaying = false,        // Defaults to not playing
+    this.isPlaying = false,       
     required this.uploaderId,
     required this.uploadDate,
   });

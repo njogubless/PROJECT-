@@ -27,12 +27,12 @@ class QuestionRepositoryImpl implements QuestionRepository {
   Future<List<Question>> getQuestions({String? userId}) async {
     QuerySnapshot query;
     if (userId != null) {
-      // If userId is provided, get only the questions of that user.
+     
       query = await firestore.collection('questions')
           .where('userId', isEqualTo: userId)
           .get();
     } else {
-      // Admins get all questions
+     
       query = await firestore.collection('questions').get();
     }
 

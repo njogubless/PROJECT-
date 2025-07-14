@@ -95,19 +95,48 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<Map<String, dynamic>>(
-      future: _fetchUserData(),
-      builder: (context, snapshot) {
-        return CustomScrollView(
-          slivers: [
-            _buildUserHeader(snapshot.data),
-            _buildFeaturedContent(),
-            _buildLatestAudioSection(),
-            _buildLatestArticlesSection(),
-            _buildLatestQuestionsSection(),
-          ],
-        );
+    return PopScope(
+      canPop: true,
+      onPopInvoked: (didPop) {
+        if (didPop) {
+          return;
+        }
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Exit App !'),
+            content: Text(' Do you want to exit the app?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text('No'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: Text('Yes'),
+              ),
+            ],
+          ),
+        ).then((value) {
+          if (value ?? false) {
+            Navigator.of(context).pop();
+          }
+        });
       },
+      child: FutureBuilder<Map<String, dynamic>>(
+        future: _fetchUserData(),
+        builder: (context, snapshot) {
+          return CustomScrollView(
+            slivers: [
+              _buildUserHeader(snapshot.data),
+              _buildFeaturedContent(),
+              _buildLatestAudioSection(),
+              _buildLatestArticlesSection(),
+              _buildLatestQuestionsSection(),
+            ],
+          );
+        },
+      ),
     );
   }
 
@@ -338,130 +367,130 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       ),
     );
   }
-Widget _buildLatestArticlesSection() {
-  return SliverToBoxAdapter(
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          child: Text(
-            'Latest Articles',
-            style: GoogleFonts.poppins(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+
+  Widget _buildLatestArticlesSection() {
+    return SliverToBoxAdapter(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: Text(
+              'Latest Articles',
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
-        ),
-        SizedBox(
-          height: 180,
-          child: StreamBuilder<List<Map<String, dynamic>>>(
-            stream: _getLatestArticles(),
-            builder: (context, snapshot) {
-              if (snapshot.hasError) {
-                return const Center(child: Text('Error loading articles'));
-              }
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
+          SizedBox(
+            height: 180,
+            child: StreamBuilder<List<Map<String, dynamic>>>(
+              stream: _getLatestArticles(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return const Center(child: Text('Error loading articles'));
+                }
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-              final articles = snapshot.data ?? [];
-              return ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                scrollDirection: Axis.horizontal,
-                itemCount: articles.length,
-                itemBuilder: (context, index) {
-                  final article = articles[index];
-                  return _buildArticleCard(article);
-                },
-              );
-            },
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-Widget _buildArticleCard(Map<String, dynamic> article) {
-  return Container(
-    width: 160,
-    margin: const EdgeInsets.all(5),
-    child: Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.orange.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.article_rounded,
-                size: 32,
-                color: Colors.orange,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    article['title'] ?? 'Article ${article['id'] ?? ""}',
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.poppins(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context, 
-                  MaterialPageRoute(
-                    builder: (context) => ArticleDetailScreen(
-                      articleId: article['id'],
-                      //articleTitle: article['title'],
-                      title: article['title'] ?? 'Untitled',
-                      content: article['content'] ?? 'No content available',
-                      isPublished: article['isPublished'] ?? false,
-                    )
-                  )
+                final articles = snapshot.data ?? [];
+                return ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  scrollDirection: Axis.horizontal,
+                  itemCount: articles.length,
+                  itemBuilder: (context, index) {
+                    final article = articles[index];
+                    return _buildArticleCard(article);
+                  },
                 );
               },
-              style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-              child: Text(
-                'Read More',
-                style: GoogleFonts.poppins(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildArticleCard(Map<String, dynamic> article) {
+    return Container(
+      width: 160,
+      margin: const EdgeInsets.all(5),
+      child: Card(
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.orange.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.article_rounded,
+                  size: 32,
                   color: Colors.orange,
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 8),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      article['title'] ?? 'Article ${article['id'] ?? ""}',
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.poppins(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ArticleDetailScreen(
+                                articleId: article['id'],
+                               
+                                title: article['title'] ?? 'Untitled',
+                                content: article['content'] ??
+                                    'No content available',
+                                isPublished: article['isPublished'] ?? false,
+                              )));
+                },
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: Text(
+                  'Read More',
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.orange,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildLatestQuestionsSection() {
     return SliverToBoxAdapter(
@@ -507,9 +536,8 @@ Widget _buildArticleCard(Map<String, dynamic> article) {
   }
 
   Widget _buildQuestionCard(Map<String, dynamic> question) {
-  
-  final questionText = question['question'] ?? 'No question text available';
-  final questionId = question['id'] ?? '';
+    final questionText = question['question'] ?? 'No question text available';
+    final questionId = question['id'] ?? '';
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
@@ -554,8 +582,7 @@ Widget _buildArticleCard(Map<String, dynamic> article) {
               context,
               MaterialPageRoute(
                   builder: (context) => QuestionDetailPage(
-                      questionId: questionId,
-              questionText: questionText)));
+                      questionId: questionId, questionText: questionText)));
         },
       ),
     );

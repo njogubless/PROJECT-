@@ -42,7 +42,7 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState> {
   final AudioPlayer _player = AudioPlayer();
   
   AudioPlayerNotifier() : super(AudioPlayerState()) {
-    // Listen to player state changes
+
     _player.playerStateStream.listen((playerState) {
       state = state.copyWith(
         isPlaying: playerState.playing,
@@ -50,12 +50,12 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState> {
       );
     });
 
-    // Listen to position changes
+
     _player.positionStream.listen((position) {
       state = state.copyWith(position: position);
     });
 
-    // Listen to duration changes
+
     _player.durationStream.listen((duration) {
       if (duration != null) {
         state = state.copyWith(duration: duration);
@@ -66,7 +66,7 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState> {
   Future<void> playAudio(String audioId, String url, String title) async {
     try {
       if (state.currentAudioId != audioId) {
-        // Load and play new audio
+  
         await _player.stop();
         await _player.setUrl(url);
         state = state.copyWith(

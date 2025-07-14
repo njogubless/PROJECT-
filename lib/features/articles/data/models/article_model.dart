@@ -1,4 +1,4 @@
-// article_model.dart (Data Layer)
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ArticleModel {
@@ -16,7 +16,7 @@ class ArticleModel {
     required this.isPublished,
   });
 
-  // To map from Firebase
+ 
   factory ArticleModel.fromMap(Map<String, dynamic> map) {
     return ArticleModel(
       id: map['id'] ?? '',
@@ -29,7 +29,6 @@ class ArticleModel {
     );
   }
 
-  // To map to Firebase
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -40,13 +39,13 @@ class ArticleModel {
   }
 }
 
-// article_remote_datasource.dart
+
 abstract class ArticleRemoteDatasource {
   Future<void> createArticle(ArticleModel article);
   Future<List<ArticleModel>> getArticles();
 }
 
-// firebase_article_datasource.dart (implements ArticleRemoteDatasource)
+
 class FirebaseArticleDatasource implements ArticleRemoteDatasource {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 

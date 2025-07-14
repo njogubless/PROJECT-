@@ -18,11 +18,11 @@ class AudioWidget extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Row(
           children: [
-            // Audio Cover Image (placeholder or fetched from network)
+         
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: Image.network(
-               audio.coverUrl, // Replace with actual audio cover URL
+               audio.coverUrl,
                 width: 80,
                 height: 80,
                 fit: BoxFit.cover,
@@ -30,7 +30,6 @@ class AudioWidget extends StatelessWidget {
             ),
             const SizedBox(width: 16),
 
-            // Audio Title and Duration
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,7 +43,7 @@ class AudioWidget extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '${audio.duration.toString()} mins', // Display the duration of the audio
+                    '${audio.duration.toString()} mins',
                     style: const TextStyle(
                       fontSize: 14,
                       color: Colors.grey,
@@ -54,7 +53,7 @@ class AudioWidget extends StatelessWidget {
               ),
             ),
 
-            // Play Button
+            
             IconButton(
               icon: const Icon(
                 Icons.play_circle_fill,
@@ -62,7 +61,7 @@ class AudioWidget extends StatelessWidget {
                 color: Colors.teal,
               ),
               onPressed: () {
-                // Trigger audio playback
+              
                 _playAudio(audio);
               },
             ),
@@ -73,7 +72,7 @@ class AudioWidget extends StatelessWidget {
   }
 
   void _playAudio(AudioFile audio) {
-    // Handle audio playback functionality here
+ 
     debugPrint('Playing audio: ${audio.title}');
   }
 }

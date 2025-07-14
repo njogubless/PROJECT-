@@ -16,7 +16,7 @@ class AudioTile extends ConsumerWidget {
     final isCurrentlyPlaying = audioPlayer.currentAudioId == audioFile.id && audioPlayer.isPlaying;
     final downloadState = ref.watch(downloadProvider(audioFile.id));
     
-    // Format date if available
+    
     final formattedDate = audioFile.uploadDate != null 
         ? DateFormat('MMM d, yyyy').format(audioFile.uploadDate!)
         : 'Unknown date';
@@ -93,7 +93,7 @@ class AudioTile extends ConsumerWidget {
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Play button
+               
                   IconButton(
                     icon: Icon(
                       isCurrentlyPlaying ? Icons.pause : Icons.play_arrow,
@@ -120,13 +120,12 @@ class AudioTile extends ConsumerWidget {
                     },
                   ),
                   
-                  // Download button
                   _buildDownloadButton(context, ref, downloadState),
                 ],
               ),
             ),
             
-            // Show progress if currently playing this audio
+            
             if (isCurrentlyPlaying)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),

@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-// State notifier to handle loading state
+
 class SignUpState {
   final bool isLoading;
   final String? error;
@@ -11,7 +11,7 @@ class SignUpState {
   SignUpState({this.isLoading = false, this.error});
 }
 
-// Create a StateNotifier instead of a regular provider
+
 final signUpControllerProvider =
     StateNotifierProvider<SignUpController, SignUpState>(
         (ref) => SignUpController());
@@ -19,7 +19,7 @@ final signUpControllerProvider =
 class SignUpController extends StateNotifier<SignUpState> {
   SignUpController() : super(SignUpState());
 
-  // Variables
+
   final email = TextEditingController();
   final password = TextEditingController();
   final firstName = TextEditingController();
@@ -27,28 +27,26 @@ class SignUpController extends StateNotifier<SignUpState> {
   final phoneNumber = TextEditingController();
   final signupformKey = GlobalKey<FormState>();
 
-  // Firebase instances
+
   final _auth = FirebaseAuth.instance;
   final _firestore = FirebaseFirestore.instance;
 
- 
-  // Sign up method
+
   Future<void> signUp(BuildContext context) async {
     try {
-      // Check if form is valid
+    
       if (!signupformKey.currentState!.validate()) {
         return;
       }
       
       state = SignUpState(isLoading: true);
 
-      // Create user in Firebase Auth
+
       final userCredential = await _auth.createUserWithEmailAndPassword(
         email: email.text.trim(),
         password: password.text.trim(),
       );
 
-      // Save additional user data in Firestore
       try {
         await _firestore.collection('users').doc(userCredential.user!.uid).set({
           'firstName': firstName.text.trim(),
@@ -62,10 +60,9 @@ class SignUpController extends StateNotifier<SignUpState> {
         debugPrint('Firestore error: $firestoreError');
       }
 
-      // Clear form
+
       _clearForm();
 
-      // Show success message
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -73,12 +70,12 @@ class SignUpController extends StateNotifier<SignUpState> {
             backgroundColor: Colors.green,
           ),
         );
-        // Navigate to login or home screen
+       
         Navigator.pushNamedAndRemoveUntil(
-            context, '/home',(route) => false); // Or '/home' depending on your flow
+            context, '/home',(route) => false); 
       }
 
-      // Reset loading state
+     
       state = SignUpState();
     } on FirebaseAuthException catch (e) {
       String errorMessage;
@@ -104,7 +101,7 @@ class SignUpController extends StateNotifier<SignUpState> {
     }
   }
 
-  // Handle errors
+
   void _handleError(BuildContext context, String errorMessage) {
     state = SignUpState(error: errorMessage);
     if (context.mounted) {
@@ -117,7 +114,7 @@ class SignUpController extends StateNotifier<SignUpState> {
     }
   }
 
-  // Clear form
+ 
   void _clearForm() {
     email.clear();
     password.clear();
@@ -126,7 +123,7 @@ class SignUpController extends StateNotifier<SignUpState> {
     phoneNumber.clear();
   }
 
-  // Dispose controllers
+ 
   @override
   void dispose() {
     email.dispose();

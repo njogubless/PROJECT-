@@ -1,14 +1,14 @@
 class AudioFile {
   final String id;
   final String title;
-  final String url;             // URL for audio file itself
-  final String coverUrl;         // URL for audio cover image
-  final Duration duration;       // Duration of audio
-  final String setUrl;           // URL for audio set, if available
-  final bool isPlaying;          // Status to indicate if audio is playing
+  final String url;           
+  final String coverUrl;      
+  final Duration duration;       
+  final String setUrl;           
+  final bool isPlaying;          
   final String uploaderId;
   final DateTime uploadDate;
-  final String scripture;        // Scripture for audio
+  final String scripture;        
 
 
   AudioFile({
@@ -18,7 +18,7 @@ class AudioFile {
     required this.coverUrl,
     required this.duration,
     required this.setUrl,
-    this.isPlaying = false,      // Default value for audio play status
+    this.isPlaying = false,    
     required this.uploaderId,
     required this.uploadDate,
     required this.scripture,
@@ -30,12 +30,12 @@ class AudioFile {
       'title': title,
       'url': url,
       'coverUrl': coverUrl,
-      'duration': duration.inSeconds,  // Convert Duration to seconds
+      'duration': duration.inSeconds,  
       'setUrl': setUrl,
       'isPlaying': isPlaying,
       'uploaderId': uploaderId,
       'uploadDate': uploadDate.toIso8601String(),
-      'scripture': scripture,  // Convert DateTime to ISO string
+      'scripture': scripture,  
       
     };
   }

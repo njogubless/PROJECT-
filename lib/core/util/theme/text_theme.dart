@@ -2,9 +2,9 @@ import 'package:devotion/core/constants/colors.dart';
 import 'package:flutter/material.dart';
 
 class TTextTheme {
-  TTextTheme._(); //to avoid creaing instances
+  TTextTheme._();
 
-  // Customizable LIght Text Theme
+  
   static TextTheme lightTextTheme = TextTheme(
     headlineLarge: const TextStyle().copyWith(
         fontSize: 32.0, fontWeight: FontWeight.bold, color: TColors.dark),
@@ -35,10 +35,9 @@ class TTextTheme {
         fontSize: 12.0,
         fontWeight: FontWeight.w500,
         color: TColors.dark.withOpacity(0.5)),
-    //labelSmall: const TextStyle().copyWith(fontSize: 14.0,fontWeight: FontWeight.w500, color: TColors.dark),
+ 
   );
 
-  //Cusyomizable Dark Text THEME
 
   static TextTheme darkTheme = TextTheme(
     headlineLarge: const TextStyle().copyWith(

@@ -1,4 +1,5 @@
-// lib/features/audio/presentation/widgets/waveform_painter.dart
+
+
 import 'package:flutter/material.dart';
 
 class WaveformPainter extends CustomPainter {

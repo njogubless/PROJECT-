@@ -8,7 +8,7 @@ class SearchService {
 
     List<SearchResult> results = [];
     
-    // Search in products collection
+   
     final productsSnapshot = await _firestore
         .collection('products')
         .where('searchKeywords', arrayContains: query.toLowerCase())
@@ -27,8 +27,7 @@ class SearchService {
       );
     }
 
-    // Add more collections to search through as needed
-    // Example: orders, categories, etc.
+    
 
     return results;
   }

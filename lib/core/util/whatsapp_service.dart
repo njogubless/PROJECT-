@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-// Custom typedef for error handling
+
 typedef WhatsAppErrorHandler = void Function(String errorMessage);
 
 class WhatsAppService {
@@ -16,19 +16,18 @@ class WhatsAppService {
     late Uri whatsappUrl;
 
     try {
-      // Validate phone number format
+
       if (!_isValidPhoneNumber(phoneNumber)) {
         throw Exception('Invalid phone number format');
       }
 
-      // Determine URL based on group or direct chat
+      
       if (groupCode != null && groupCode!.isNotEmpty) {
         whatsappUrl = Uri.parse("https://chat.whatsapp.com/$groupCode");
       } else {
         whatsappUrl = Uri.parse("https://wa.me/$phoneNumber");
       }
 
-      // Launch WhatsApp
       if (await canLaunchUrl(whatsappUrl)) {
         await launchUrl(whatsappUrl, mode: LaunchMode.externalApplication);
       } else {
@@ -39,26 +38,23 @@ class WhatsAppService {
     }
   }
 
-  // Private method to validate phone number
+  
   bool _isValidPhoneNumber(String phoneNumber) {
-    // Basic phone number validation
+
     final phoneRegex = RegExp(r'^[+]?[0-9]{10,14}$');
     return phoneRegex.hasMatch(phoneNumber);
   }
 }
 
-// Enhanced WhatsApp Button with multiple icon options
 class WhatsAppButton extends StatelessWidget {
   final String phoneNumber;
   final String? groupCode;
   final WhatsAppErrorHandler? onError;
 
-  // Icon Customization
   final IconData? iconData;
   final Color? iconColor;
   final double? iconSize;
 
-  // Button Styling
   final ButtonStyle? buttonStyle;
   final Widget? customChild;
   final double? width;
@@ -66,7 +62,7 @@ class WhatsAppButton extends StatelessWidget {
   final BoxDecoration? decoration;
   final Alignment buttonAlignment;
 
-  // Optional text
+  
   final String? buttonText;
   final TextStyle? textStyle;
 
@@ -76,12 +72,11 @@ class WhatsAppButton extends StatelessWidget {
     this.groupCode,
     this.onError,
 
-    // Icon customization
+  
     this.iconData,
     this.iconColor,
     this.iconSize,
 
-    // Button styling
     this.buttonStyle,
     this.customChild,
     this.width,
@@ -89,14 +84,13 @@ class WhatsAppButton extends StatelessWidget {
     this.decoration,
     this.buttonAlignment = Alignment.center,
 
-    // Text options
     this.buttonText,
     this.textStyle,
   });
 
   @override
   Widget build(BuildContext context) {
-    // Determine icon to use
+    
     Widget iconWidget = customChild ?? _buildDefaultIcon();
 
     return Container(
@@ -119,7 +113,6 @@ class WhatsAppButton extends StatelessWidget {
     );
   }
 
-  // Build default icon
   Widget _buildDefaultIcon() {
     return Icon(
       iconData ?? FontAwesomeIcons.whatsapp,
@@ -128,7 +121,6 @@ class WhatsAppButton extends StatelessWidget {
     );
   }
 
-  // Build button content (icon or icon with text)
   Widget _buildButtonContent(Widget iconWidget) {
     if (buttonText == null) return iconWidget;
 
@@ -145,7 +137,7 @@ class WhatsAppButton extends StatelessWidget {
     );
   }
 
-  // Default decoration
+
   BoxDecoration _buildDefaultDecoration() {
     return const BoxDecoration(
         color: Colors.green,
@@ -159,7 +151,6 @@ class WhatsAppButton extends StatelessWidget {
         ]);
   }
 
-  // Default button style
   ButtonStyle _buildDefaultButtonStyle() {
     return ElevatedButton.styleFrom(
       backgroundColor: Colors.transparent,
@@ -169,7 +160,6 @@ class WhatsAppButton extends StatelessWidget {
   }
 }
 
-// Example Usage Page
 class WhatsAppIntegrationPage extends StatelessWidget {
   const WhatsAppIntegrationPage({super.key});
 
@@ -181,14 +171,13 @@ class WhatsAppIntegrationPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Default WhatsApp Button
+   
             const WhatsAppButton(
               phoneNumber: '+254712345678',
             ),
 
             const SizedBox(height: 20),
 
-            // Customized WhatsApp Button with custom icon
             const WhatsAppButton(
               phoneNumber: '+254787654321',
               iconData: Icons.message,
@@ -199,7 +188,7 @@ class WhatsAppIntegrationPage extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            // WhatsApp Button with text
+ 
             WhatsAppButton(
               phoneNumber: '+254723456789',
               buttonText: 'Chat Now',
@@ -215,11 +204,10 @@ class WhatsAppIntegrationPage extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            // WhatsApp Button with error handling
             WhatsAppButton(
-              phoneNumber: '+254', // Invalid number to test error handling
+              phoneNumber: '+254', 
               onError: (errorMessage) {
-                // Custom error handling
+             
                 showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
