@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -14,7 +13,6 @@ class ThemeNotifier extends StateNotifier<ThemeState> {
   }
 }
 
-
 class ThemeState {
   final bool isDarkMode;
   final Color primaryColor;
@@ -22,19 +20,21 @@ class ThemeState {
   ThemeState({this.isDarkMode = false, this.primaryColor = Colors.blue});
 
   ThemeData get theme => ThemeData(
-    primaryColor: primaryColor,
-    brightness: isDarkMode ? Brightness.dark : Brightness.light,
-    useMaterial3: true,
-    cardTheme: CardTheme(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-    ),
-    appBarTheme: AppBarTheme(
-      elevation: 0,
-      backgroundColor: isDarkMode ? Colors.grey[900] : primaryColor,
-      foregroundColor: isDarkMode ? Colors.white : Colors.white,
-    ),
-  );
+        primaryColor: primaryColor,
+        brightness: isDarkMode ? Brightness.dark : Brightness.light,
+        useMaterial3: true,
+        cardTheme: CardThemeData(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        appBarTheme: AppBarTheme(
+          elevation: 0,
+          backgroundColor: isDarkMode ? Colors.grey[900] : primaryColor,
+          foregroundColor: isDarkMode ? Colors.white : Colors.white,
+        ),
+      );
 
   ThemeState copyWith({
     bool? isDarkMode,
@@ -46,7 +46,6 @@ class ThemeState {
     );
   }
 }
-
 
 final themeProvider = StateNotifierProvider<ThemeNotifier, ThemeState>((ref) {
   return ThemeNotifier();
