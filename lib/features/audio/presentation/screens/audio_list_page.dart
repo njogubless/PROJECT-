@@ -6,6 +6,7 @@ import 'package:devotion/features/audio/presentation/screens/audio_player_page.d
 import 'package:devotion/features/audio/presentation/screens/audio_recording_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:routemaster/routemaster.dart';
 
 class DevotionPage extends ConsumerWidget {
   const DevotionPage({super.key});
@@ -67,6 +68,7 @@ class DevotionPage extends ConsumerWidget {
                             builder: (_) => AudioPlayerPage(audioFile: recording),
                           ),
                         );
+                       
                       },
                     ),
                   ),

@@ -67,7 +67,7 @@ class _MyAppState extends ConsumerState<MyApp> {
                 debugShowCheckedModeBanner: false,
                 title: 'Reflection On Faith',
                 theme: themeState.theme,
-                routerDelegate:
+                routerDelegate: 
                     RoutemasterDelegate(routesBuilder: (_) => loggedInRoute),
                 routeInformationParser: const RoutemasterParser(),
               );
