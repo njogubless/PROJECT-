@@ -41,7 +41,6 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
         ),
         body: Column(
           children: [
-        
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextField(
@@ -87,18 +86,21 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                 },
               ),
             ),
-      
- 
             Expanded(
               child: audioState.when(
                 data: (audioFiles) {
-                 
                   final filteredAudioFiles = _searchQuery.isEmpty
                       ? audioFiles
-                      : audioFiles.where((audio) =>
-                          audio.title.toLowerCase().contains(_searchQuery) ||
-                          (audio.scripture.toLowerCase().contains(_searchQuery))).toList();
-      
+                      : audioFiles
+                          .where((audio) =>
+                              audio.title
+                                  .toLowerCase()
+                                  .contains(_searchQuery) ||
+                              (audio.scripture
+                                  .toLowerCase()
+                                  .contains(_searchQuery)))
+                          .toList();
+
                   if (filteredAudioFiles.isEmpty) {
                     return Center(
                       child: Column(
@@ -124,17 +126,18 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                             ElevatedButton.icon(
                               icon: const Icon(Icons.refresh),
                               label: const Text('Refresh'),
-                              onPressed: () => ref.read(audioProvider.notifier).refresh(),
+                              onPressed: () =>
+                                  ref.read(audioProvider.notifier).refresh(),
                             ),
                         ],
                       ),
                     );
                   }
-      
+
                   return RefreshIndicator(
                     onRefresh: () => ref.read(audioProvider.notifier).refresh(),
                     child: ListView.builder(
-                      padding: const EdgeInsets.only(bottom: 100), 
+                      padding: const EdgeInsets.only(bottom: 100),
                       itemCount: filteredAudioFiles.length,
                       itemBuilder: (context, index) {
                         final audioFile = filteredAudioFiles[index];
@@ -179,7 +182,8 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                       ElevatedButton.icon(
                         icon: const Icon(Icons.refresh),
                         label: const Text('Try Again'),
-                        onPressed: () => ref.read(audioProvider.notifier).refresh(),
+                        onPressed: () =>
+                            ref.read(audioProvider.notifier).refresh(),
                       ),
                     ],
                   ),
@@ -188,7 +192,6 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
             ),
           ],
         ),
-  
         bottomSheet: currentPlayingState.currentAudioId.isNotEmpty
             ? _buildMiniPlayer(context, currentPlayingState)
             : null,
@@ -201,27 +204,27 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
       height: 70,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor.withOpacity(0.05),
+        color: Theme.of(context).primaryColor.withValues(alpha: 0.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.5),
             blurRadius: 8,
             offset: const Offset(0, -2),
           ),
         ],
         border: Border(
           top: BorderSide(
-            color: Theme.of(context).primaryColor.withOpacity(0.2),
+            color: Theme.of(context).primaryColor.withValues(alpha: 0.5),
             width: 1,
           ),
         ),
       ),
       child: Column(
         children: [
-         
           LinearProgressIndicator(
             value: playerState.duration.inSeconds > 0
-                ? playerState.position.inSeconds / playerState.duration.inSeconds
+                ? playerState.position.inSeconds /
+                    playerState.duration.inSeconds
                 : 0,
             backgroundColor: Colors.grey[300],
             valueColor: AlwaysStoppedAnimation<Color>(
@@ -229,16 +232,16 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
             ),
             minHeight: 2,
           ),
-        
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
-            
                   IconButton(
                     icon: Icon(
-                      playerState.isPlaying ? Icons.pause_circle_filled : Icons.play_circle_filled,
+                      playerState.isPlaying
+                          ? Icons.pause_circle_filled
+                          : Icons.play_circle_filled,
                       color: Theme.of(context).primaryColor,
                       size: 36,
                     ),
@@ -248,14 +251,13 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                       } else {
                         ref.read(audioPlayerProvider.notifier).playAudio(
                               playerState.currentAudioId,
-                              '', 
+                              '',
                               playerState.currentTitle,
                             );
                       }
                     },
                   ),
                   const SizedBox(width: 8),
-                
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -281,7 +283,6 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                       ],
                     ),
                   ),
-               
                   IconButton(
                     icon: const Icon(Icons.close),
                     onPressed: () {

@@ -1,3 +1,4 @@
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
@@ -40,9 +41,8 @@ class AudioPlayerState {
 
 class AudioPlayerNotifier extends StateNotifier<AudioPlayerState> {
   final AudioPlayer _player = AudioPlayer();
-  
-  AudioPlayerNotifier() : super(AudioPlayerState()) {
 
+  AudioPlayerNotifier() : super(AudioPlayerState()) {
     _player.playerStateStream.listen((playerState) {
       state = state.copyWith(
         isPlaying: playerState.playing,
@@ -50,11 +50,9 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState> {
       );
     });
 
-
     _player.positionStream.listen((position) {
       state = state.copyWith(position: position);
     });
-
 
     _player.durationStream.listen((duration) {
       if (duration != null) {
@@ -66,9 +64,15 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState> {
   Future<void> playAudio(String audioId, String url, String title) async {
     try {
       if (state.currentAudioId != audioId) {
-  
+        print("URL: $url");
+        final storageRef = FirebaseStorage.instance.ref().child("Audios");
+        print("${await storageRef.listAll()}");
+        // .child("Audios/$url")
+        // .getDownloadURL();
+
         await _player.stop();
-        await _player.setUrl(url);
+        await _player.setUrl(
+            "https://firebasestorage.googleapis.com/v0/b/reflection-of-faith.firebasestorage.app/o/Audios%2Fjaci.mp3?alt=media&token=307d2abf-766d-4b0f-9541-224a65d64e85");
         state = state.copyWith(
           currentAudioId: audioId,
           currentTitle: title,

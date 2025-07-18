@@ -6,10 +6,6 @@
             "type": "dart",
             "request": "launch",
             "program": "lib/main.dart",
-            
-
-            
         }
     ],
-    
 }
