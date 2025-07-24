@@ -33,13 +33,13 @@ class AudioRepositoryImpl implements AudioRepository {
     try {
       final firestoreSnapshot = await _firestore.collection('audioFiles').get();
 
-      print(
+      debugPrint(
           " fetching audio file successfully ---------------- ${firestoreSnapshot.docs.length}");
 
       if (firestoreSnapshot.docs.isNotEmpty) {
         return firestoreSnapshot.docs.map((doc) {
           final data = doc.data();
-          print("Audio data ------------------: $data");
+          debugPrint("Audio data ------------------: $data");
           return AudioFile(
             id: data['id'] ?? doc.id,
             title: data['title'] ?? 'Untitled Audio',
@@ -81,7 +81,7 @@ class AudioRepositoryImpl implements AudioRepository {
         return audioFiles;
       }
     } catch (e) {
-      print('Error fetching audio files: $e');
+      debugPrint('Error fetching audio files: $e');
       throw Exception('Failed to fetch audio files: $e');
     }
   }

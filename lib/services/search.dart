@@ -81,7 +81,7 @@ class SearchNotifier extends StateNotifier<SearchState> {
         isLoading: false,
       );
     } catch (e) {
-      print('Search error: $e');
+      debugPrint('Search error: $e');
       state = state.copyWith(
         searchResults: [],
         isLoading: false,

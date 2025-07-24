@@ -1,5 +1,6 @@
 
 import 'package:devotion/features/audio/presentation/screens/audio_recoding_state.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:record/record.dart';
 import 'dart:async';
@@ -50,7 +51,7 @@ class AudioRecorderNotifier extends StateNotifier<AudioRecordingState> {
       _startAmplitudeListener();
       state = state.copyWith(isRecording: true, isPaused: false);
     } catch (e) {
-      print('Error starting recording: $e');
+      debugPrint('Error starting recording: $e');
     }
   }
 
@@ -74,7 +75,7 @@ class AudioRecorderNotifier extends StateNotifier<AudioRecordingState> {
           waveformData: [...state.waveformData, normalized],
         );
       } catch (e) {
-        print('Error getting amplitude: $e');
+        debugPrint('Error getting amplitude: $e');
       }
     });
   }

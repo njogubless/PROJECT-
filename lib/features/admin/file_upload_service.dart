@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 
 class FileUploadService {
@@ -24,15 +25,15 @@ class FileUploadService {
       final TaskSnapshot snapshot = await uploadTask;
 
       final String downloadUrl = await snapshot.ref.getDownloadURL();
-      print('File uploaded successfully! Download URL: $downloadUrl');
+      debugPrint('File uploaded successfully! Download URL: $downloadUrl');
       return downloadUrl;
     } on FirebaseException catch (e) {
-      print("Firebase Storage upload error: ${e.code} - ${e.message}");
+      debugPrint("Firebase Storage upload error: ${e.code} - ${e.message}");
 
       onProgress(-1.0);
       return null;
     } catch (e) {
-      print("General upload error: $e");
+      debugPrint("General upload error: $e");
       onProgress(-1.0);
       return null;
     }
