@@ -1,7 +1,8 @@
+import 'dart:io';
 import 'package:devotion/features/admin/file_upload_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:file_picker/file_picker.dart';
 
 final uploadProgressProvider = StateProvider<double>((ref) => 0.0);
 
@@ -12,12 +13,12 @@ class DashboardTile extends ConsumerWidget {
   final bool isPending;
 
   const DashboardTile({
-    Key? key,
+    super.key,
     required this.title,
     required this.iconPath,
     required this.route,
     this.isPending = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -45,7 +46,8 @@ class DashboardTile extends ConsumerWidget {
                 Text(
                   title,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.w600),
                 ),
               ],
             ),
@@ -60,7 +62,8 @@ class DashboardTile extends ConsumerWidget {
                 child: CircleAvatar(
                   radius: 10,
                   backgroundColor: Colors.red,
-                  child: const Icon(Icons.warning, size: 12, color: Colors.white),
+                  child:
+                      const Icon(Icons.warning, size: 12, color: Colors.white),
                 ),
               ),
           ],
@@ -73,18 +76,64 @@ class DashboardTile extends ConsumerWidget {
     final uploadService = FileUploadService();
     final notifier = ref.read(uploadProgressProvider.notifier);
 
- 
     notifier.state = 0.0;
 
-    await uploadService.uploadFile(
-      filePath: 'path/to/file', 
+    FilePickerResult? result;
+    String folderName = '';
+    FileType fileType = FileType.any;
+
+    if (title == "Upload Audio") {
+      fileType = FileType.audio;
+      folderName = 'Audios';
+    } else if (title == "Upload Book") {
+      fileType = FileType.custom;
+      folderName = 'Books';
+
+      result = await FilePicker.platform.pickFiles(
+        type: fileType,
+        allowedExtensions: ['pdf', 'doc', 'docx', 'txt', 'epub'],
+      );
+    } else {
+      fileType = FileType.any;
+      folderName = 'Others';
+    }
+
+    result ??= await FilePicker.platform.pickFiles(type: fileType);
+
+    if (result == null || result.files.single.path == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No file selected or picker canceled.')),
+      );
+      notifier.state = 0.0;
+      return;
+    }
+
+    File selectedFile = File(result.files.single.path!);
+
+    final downloadUrl = await uploadService.uploadFile(
+      file: selectedFile,
+      folderName: folderName,
       onProgress: (progress) {
         notifier.state = progress;
       },
     );
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('File uploaded successfully!')),
-    );
+    if (downloadUrl != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              'File uploaded successfully! URL: ${downloadUrl.substring(0, 50)}...'),
+          duration: const Duration(seconds: 5),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+              'File upload failed! Please check console for errors and Firebase Storage rules.'),
+          duration: Duration(seconds: 7),
+        ),
+      );
+    }
   }
 }
