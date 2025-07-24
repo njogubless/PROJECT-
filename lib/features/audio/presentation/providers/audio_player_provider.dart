@@ -61,29 +61,33 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState> {
     });
   }
 
-  Future<void> playAudio(String audioId, String url, String title) async {
-    try {
-      if (state.currentAudioId != audioId) {
-        print("URL: $url");
-        final storageRef = FirebaseStorage.instance.ref().child("Audios");
-        print("${await storageRef.listAll()}");
-        // .child("Audios/$url")
-        // .getDownloadURL();
 
-        await _player.stop();
-        await _player.setUrl(
-            "https://firebasestorage.googleapis.com/v0/b/reflection-of-faith.firebasestorage.app/o/Audios%2Fjaci.mp3?alt=media&token=307d2abf-766d-4b0f-9541-224a65d64e85");
-        state = state.copyWith(
-          currentAudioId: audioId,
-          currentTitle: title,
-          position: Duration.zero,
-        );
-      }
-      await _player.play();
-    } catch (e) {
-      debugPrint('Error playing audio: $e');
+Future<void> playAudio(String audioId, String url, String title) async {
+  try {
+    if (state.currentAudioId != audioId) {
+      debugPrint("Provided URL path (should be filename): $url");
+
+
+      final audioRef = FirebaseStorage.instance.ref().child("Audios").child(url);
+
+      final downloadUrl = await audioRef.getDownloadURL();
+      debugPrint("Fetched Download URL from Firebase: $downloadUrl");
+
+      await _player.stop();
+      await _player.setUrl(downloadUrl); 
+      state = state.copyWith(
+        currentAudioId: audioId,
+        currentTitle: title,
+        position: Duration.zero,
+      );
     }
+    await _player.play();
+  } catch (e) {
+    debugPrint('Error playing audio: $e');
+   
   }
+}
+
 
   Future<void> pauseAudio() async {
     await _player.pause();
