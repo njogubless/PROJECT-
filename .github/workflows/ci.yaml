@@ -1,0 +1,168 @@
+name: Flutter CI
+
+on:
+  push:
+    branches:
+      - main
+      - dev1
+  pull_request:
+    branches:
+      - main
+      - dev1
+  workflow_dispatch: 
+
+
+env:
+  FLUTTER_VERSION: "3.32.7"
+  JAVA_VERSION: "12.x"
+  ANDROID_APK_PATH: "build/app/outputs/flutter-apk/app-release.apk"
+  ANDROID_AAB_PATH: "build/app/outputs/bundle/release/app-release.aab"
+
+jobs:
+
+  analyze-and-test:
+    name: Analyze and Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30 
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Verify Code Formatting
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Analyze Project Source
+        run: flutter analyze
+
+      - name: Run Unit and Widget Tests with Coverage
+        run: flutter test --coverage
+
+      - name: Upload Test Coverage Reports to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: coverage/lcov.info
+
+  build-android:
+    name: Build Android App
+    needs: analyze-and-test 
+    runs-on: ubuntu-latest
+   
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Configure Keystore for Release Builds (Main Branch)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/keystore.jks
+          echo "storeFile=keystore.jks" > android/key.properties
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> android/key.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+
+      - name: Build Android App (APK/AAB)
+        run: |
+          if [[ ${{ github.ref }} == 'refs/heads/main' ]]; then
+            echo "Building release APK and App Bundle for main branch..."
+            flutter build apk --release
+            flutter build appbundle --release
+          else
+            echo "Building debug APK for develop branch..."
+            flutter build apk --debug
+          fi
+
+      - name: Upload Release APK as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: android-release-apk
+          path: ${{ env.ANDROID_APK_PATH }}
+          if-no-files-found: error
+
+      - name: Upload Release App Bundle (AAB) as Artifact
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v3
+        with:
+          name: android-release-aab
+          path: ${{ env.ANDROID_AAB_PATH }}
+          if-no-files-found: error
+
+
+  build-ios:
+    name: Build iOS App
+    needs: analyze-and-test 
+    runs-on: macos-latest
+   
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dependencies (Flutter & CocoaPods)
+        run: |
+          flutter pub get
+          cd ios && pod install && cd ..
+
+      - name: Build iOS App
+        run: |
+          if [[ ${{ github.ref }} == 'refs/heads/main' ]]; then
+            echo "Building release iOS app for main branch (no codesign on CI)..."
+            flutter build ios --release --no-codesign
+          else
+            echo "Building debug iOS app for develop branch..."
+            flutter build ios --debug --no-codesign
+          fi
+
+      - name: Upload iOS Build Output as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ios-build-output
+          path: build/ios/
+          if-no-files-found: warn
