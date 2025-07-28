@@ -18,9 +18,14 @@ final sharedPreferencesProvider =
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(
+
+  if (Firebase.apps.isEmpty) {
+    await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  }
+
+  
 
   final sharedPreferences = await SharedPreferences.getInstance();
   runApp(
