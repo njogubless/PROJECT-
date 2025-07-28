@@ -2,7 +2,7 @@
   "project_info": {
     "project_number": "975142255429",
     "project_id": "reflection-of-faith",
-    "storage_bucket": "reflection-of-faith.appspot.com"
+    "storage_bucket": "reflection-of-faith.firebasestorage.app"
   },
   "client": [
     {
@@ -12,7 +12,20 @@
           "package_name": "com.example.devotion"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "975142255429-15vk4mt5i6551htki32ccq1ofqqo7gl5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.devotion",
+            "certificate_hash": "063d07581a24b10e5d7c80ef5667e58b7e8da82f"
+          }
+        },
+        {
+          "client_id": "975142255429-oel86d6v9ppq831adjvhb8s6qbd518p6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBoTJ6Zw-IFa66bdQiL5aZdDpCSQ4mmLoQ"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "975142255429-oel86d6v9ppq831adjvhb8s6qbd518p6.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "975142255429-ut7rvdl9sa5j1thutc3ria6r2cubtf14.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.devotion"
+              }
+            }
+          ]
         }
       }
     }
