@@ -46,7 +46,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '975142255429',
     projectId: 'reflection-of-faith',
     authDomain: 'reflection-of-faith.firebaseapp.com',
-    storageBucket: 'reflection-of-faith.appspot.com',
+    storageBucket: 'reflection-of-faith.firebasestorage.app',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
@@ -54,7 +54,7 @@ class DefaultFirebaseOptions {
     appId: '1:975142255429:android:08429e1627b1354d8edc2c',
     messagingSenderId: '975142255429',
     projectId: 'reflection-of-faith',
-    storageBucket: 'reflection-of-faith.appspot.com',
+    storageBucket: 'reflection-of-faith.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
@@ -62,7 +62,9 @@ class DefaultFirebaseOptions {
     appId: '1:975142255429:ios:bc82bc899e1655698edc2c',
     messagingSenderId: '975142255429',
     projectId: 'reflection-of-faith',
-    storageBucket: 'reflection-of-faith.appspot.com',
+    storageBucket: 'reflection-of-faith.firebasestorage.app',
+    androidClientId: '975142255429-15vk4mt5i6551htki32ccq1ofqqo7gl5.apps.googleusercontent.com',
+    iosClientId: '975142255429-ut7rvdl9sa5j1thutc3ria6r2cubtf14.apps.googleusercontent.com',
     iosBundleId: 'com.example.devotion',
   );
 
@@ -71,7 +73,9 @@ class DefaultFirebaseOptions {
     appId: '1:975142255429:ios:bc82bc899e1655698edc2c',
     messagingSenderId: '975142255429',
     projectId: 'reflection-of-faith',
-    storageBucket: 'reflection-of-faith.appspot.com',
+    storageBucket: 'reflection-of-faith.firebasestorage.app',
+    androidClientId: '975142255429-15vk4mt5i6551htki32ccq1ofqqo7gl5.apps.googleusercontent.com',
+    iosClientId: '975142255429-ut7rvdl9sa5j1thutc3ria6r2cubtf14.apps.googleusercontent.com',
     iosBundleId: 'com.example.devotion',
   );
 
@@ -81,6 +85,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '975142255429',
     projectId: 'reflection-of-faith',
     authDomain: 'reflection-of-faith.firebaseapp.com',
-    storageBucket: 'reflection-of-faith.appspot.com',
+    storageBucket: 'reflection-of-faith.firebasestorage.app',
   );
+
 }
