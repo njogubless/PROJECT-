@@ -6,7 +6,7 @@ import 'package:devotion/features/audio/presentation/screens/audio_player_page.d
 import 'package:devotion/features/audio/presentation/screens/audio_recording_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:routemaster/routemaster.dart';
+
 
 class DevotionPage extends ConsumerWidget {
   const DevotionPage({super.key});
@@ -55,7 +55,7 @@ class DevotionPage extends ConsumerWidget {
                     child: Icon(Icons.audio_file),
                   ),
                   title: Text(recording.title),
-                  subtitle: Text(recording.scripture ?? ''),
+                  subtitle: Text(recording.scripture),
                   trailing: IconButton(
                     icon: const Icon(Icons.play_arrow),
                     onPressed: () {

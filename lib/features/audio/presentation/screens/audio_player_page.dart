@@ -49,7 +49,7 @@ class _AudioPlayerPageState extends ConsumerState<AudioPlayerPage> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      widget.audioFile.scripture ?? '',
+                      widget.audioFile.scripture,
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                     const SizedBox(height: 24),
