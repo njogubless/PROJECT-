@@ -1,4 +1,4 @@
-import 'package:devotion/features/audio/data/models/audio_model.dart';
+
 import 'package:devotion/features/audio/presentation/providers/audio_player_provider.dart';
 import 'package:devotion/features/audio/presentation/providers/audio_repository_provider.dart';
 import 'package:devotion/features/audio/presentation/widgets/audio_tile.dart';
@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AudioScreen extends ConsumerStatefulWidget {
-  const AudioScreen({Key? key}) : super(key: key);
+  const AudioScreen({super.key});
 
   @override
   ConsumerState<AudioScreen> createState() => _AudioScreenState();
