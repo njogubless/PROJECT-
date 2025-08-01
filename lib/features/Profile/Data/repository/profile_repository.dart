@@ -108,7 +108,7 @@ class ProfileRepository {
 
   
     final doc = await firestore.collection('users').doc(user.uid).get();
-    final data = doc.data() as Map<String, dynamic>?;
+    final data = doc.data();
     final currentCount = data?['playlistCount'] ?? 0;
 
     if (currentCount > 0) {
