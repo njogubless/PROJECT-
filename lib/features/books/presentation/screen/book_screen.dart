@@ -15,37 +15,34 @@ class BookScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final booksAsync = ref.watch(booksProvider);
 
-    return PopScope(
-      canPop: true,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            'Library',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          elevation: 0,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'Library',
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        body: booksAsync.when(
-          data: (books) => GridView.builder(
-            padding: const EdgeInsets.all(16),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio: 0.75,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-            ),
-            itemCount: books.length,
-            itemBuilder: (context, index) {
-              final book = books[index];
-              return BookCard(book: book,);
-            },
+        elevation: 0,
+      ),
+      body: booksAsync.when(
+        data: (books) => GridView.builder(
+          padding: const EdgeInsets.all(16),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            childAspectRatio: 0.75,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
           ),
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (err, stack) => Center(
-            child: Text(
-              'Error loading books: $err',
-              style: const TextStyle(color: Colors.red),
-            ),
+          itemCount: books.length,
+          itemBuilder: (context, index) {
+            final book = books[index];
+            return BookCard(book: book,);
+          },
+        ),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, stack) => Center(
+          child: Text(
+            'Error loading books: $err',
+            style: const TextStyle(color: Colors.red),
           ),
         ),
       ),

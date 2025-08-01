@@ -10,7 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -95,48 +95,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: true,
-      onPopInvoked: (didPop) {
-        if (didPop) {
-          return;
-        }
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text('Exit App !'),
-            content: Text(' Do you want to exit the app?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: Text('No'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: Text('Yes'),
-              ),
-            ],
-          ),
-        ).then((value) {
-          if (value ?? false) {
-            Navigator.of(context).pop();
-          }
-        });
+    return FutureBuilder<Map<String, dynamic>>(
+      future: _fetchUserData(),
+      builder: (context, snapshot) {
+        return CustomScrollView(
+          slivers: [
+            _buildUserHeader(snapshot.data),
+            _buildFeaturedContent(),
+            _buildLatestAudioSection(),
+            _buildLatestArticlesSection(),
+            _buildLatestQuestionsSection(),
+          ],
+        );
       },
-      child: FutureBuilder<Map<String, dynamic>>(
-        future: _fetchUserData(),
-        builder: (context, snapshot) {
-          return CustomScrollView(
-            slivers: [
-              _buildUserHeader(snapshot.data),
-              _buildFeaturedContent(),
-              _buildLatestAudioSection(),
-              _buildLatestArticlesSection(),
-              _buildLatestQuestionsSection(),
-            ],
-          );
-        },
-      ),
     );
   }
 
@@ -464,7 +435,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                       MaterialPageRoute(
                           builder: (context) => ArticleDetailScreen(
                                 articleId: article['id'],
-                               
                                 title: article['title'] ?? 'Untitled',
                                 content: article['content'] ??
                                     'No content available',
@@ -549,7 +519,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.green.withOpacity(0.1),
+            color: Colors.green.withValues(),
             shape: BoxShape.circle,
           ),
           child: const Icon(
@@ -586,21 +556,5 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         },
       ),
     );
-  }
-
-  List<String> _sampleAudioItems() {
-    return ["Motivation Talk", "Morning Devotion", "Peaceful Meditation"];
-  }
-
-  List<String> _sampleArticleItems() {
-    return ["Faith and Courage", "Steps to Overcome Fear", "Walking by Faith"];
-  }
-
-  List<String> _sampleQuestionItems() {
-    return [
-      "What is faith?",
-      "How to handle challenges?",
-      "Tips on prayer life"
-    ];
   }
 }

@@ -27,175 +27,172 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
     final audioState = ref.watch(audioProvider);
     final currentPlayingState = ref.watch(audioPlayerProvider);
 
-    return PopScope(
-      canPop: true,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Audio Library'),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.refresh),
-              onPressed: () => ref.read(audioProvider.notifier).refresh(),
-            ),
-          ],
-        ),
-        body: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: TextField(
-                controller: _searchController,
-                decoration: InputDecoration(
-                  hintText: 'Search audio files...',
-                  prefixIcon: const Icon(Icons.search),
-                  suffixIcon: _searchQuery.isNotEmpty
-                      ? IconButton(
-                          icon: const Icon(Icons.clear),
-                          onPressed: () {
-                            _searchController.clear();
-                            setState(() {
-                              _searchQuery = '';
-                            });
-                          },
-                        )
-                      : null,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor.withOpacity(0.5),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                      width: 2,
-                    ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Audio Library'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () => ref.read(audioProvider.notifier).refresh(),
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Search audio files...',
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: _searchQuery.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _searchController.clear();
+                          setState(() {
+                            _searchQuery = '';
+                          });
+                        },
+                      )
+                    : null,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: Theme.of(context).primaryColor,
                   ),
                 ),
-                onChanged: (value) {
-                  setState(() {
-                    _searchQuery = value.toLowerCase();
-                  });
-                },
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: Theme.of(context).primaryColor.withOpacity(0.5),
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: Theme.of(context).primaryColor,
+                    width: 2,
+                  ),
+                ),
               ),
+              onChanged: (value) {
+                setState(() {
+                  _searchQuery = value.toLowerCase();
+                });
+              },
             ),
-            Expanded(
-              child: audioState.when(
-                data: (audioFiles) {
-                  final filteredAudioFiles = _searchQuery.isEmpty
-                      ? audioFiles
-                      : audioFiles
-                          .where((audio) =>
-                              audio.title
-                                  .toLowerCase()
-                                  .contains(_searchQuery) ||
-                              (audio.scripture
-                                  .toLowerCase()
-                                  .contains(_searchQuery)))
-                          .toList();
-
-                  if (filteredAudioFiles.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.audio_file,
-                            size: 80,
-                            color: Colors.grey[400],
+          ),
+          Expanded(
+            child: audioState.when(
+              data: (audioFiles) {
+                final filteredAudioFiles = _searchQuery.isEmpty
+                    ? audioFiles
+                    : audioFiles
+                        .where((audio) =>
+                            audio.title
+                                .toLowerCase()
+                                .contains(_searchQuery) ||
+                            (audio.scripture
+                                .toLowerCase()
+                                .contains(_searchQuery)))
+                        .toList();
+    
+                if (filteredAudioFiles.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.audio_file,
+                          size: 80,
+                          color: Colors.grey[400],
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          _searchQuery.isEmpty
+                              ? 'No audio files found'
+                              : 'No matching audio files found',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.grey[600],
                           ),
-                          const SizedBox(height: 16),
-                          Text(
-                            _searchQuery.isEmpty
-                                ? 'No audio files found'
-                                : 'No matching audio files found',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.grey[600],
-                            ),
+                        ),
+                        const SizedBox(height: 8),
+                        if (_searchQuery.isEmpty)
+                          ElevatedButton.icon(
+                            icon: const Icon(Icons.refresh),
+                            label: const Text('Refresh'),
+                            onPressed: () =>
+                                ref.read(audioProvider.notifier).refresh(),
                           ),
-                          const SizedBox(height: 8),
-                          if (_searchQuery.isEmpty)
-                            ElevatedButton.icon(
-                              icon: const Icon(Icons.refresh),
-                              label: const Text('Refresh'),
-                              onPressed: () =>
-                                  ref.read(audioProvider.notifier).refresh(),
-                            ),
-                        ],
-                      ),
-                    );
-                  }
-
-                  return RefreshIndicator(
-                    onRefresh: () => ref.read(audioProvider.notifier).refresh(),
-                    child: ListView.builder(
-                      padding: const EdgeInsets.only(bottom: 100),
-                      itemCount: filteredAudioFiles.length,
-                      itemBuilder: (context, index) {
-                        final audioFile = filteredAudioFiles[index];
-                        return AudioTile(audioFile: audioFile);
-                      },
+                      ],
                     ),
                   );
-                },
-                loading: () => const Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircularProgressIndicator(),
-                      SizedBox(height: 16),
-                      Text('Loading audio files...'),
-                    ],
+                }
+    
+                return RefreshIndicator(
+                  onRefresh: () => ref.read(audioProvider.notifier).refresh(),
+                  child: ListView.builder(
+                    padding: const EdgeInsets.only(bottom: 100),
+                    itemCount: filteredAudioFiles.length,
+                    itemBuilder: (context, index) {
+                      final audioFile = filteredAudioFiles[index];
+                      return AudioTile(audioFile: audioFile);
+                    },
                   ),
+                );
+              },
+              loading: () => const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 16),
+                    Text('Loading audio files...'),
+                  ],
                 ),
-                error: (error, stack) => Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.error_outline,
-                        size: 60,
-                        color: Colors.red[300],
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Failed to load audio files',
-                        style: TextStyle(fontSize: 18, color: Colors.grey[800]),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        error.toString(),
-                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton.icon(
-                        icon: const Icon(Icons.refresh),
-                        label: const Text('Try Again'),
-                        onPressed: () =>
-                            ref.read(audioProvider.notifier).refresh(),
-                      ),
-                    ],
-                  ),
+              ),
+              error: (error, stack) => Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      size: 60,
+                      color: Colors.red[300],
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Failed to load audio files',
+                      style: TextStyle(fontSize: 18, color: Colors.grey[800]),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      error.toString(),
+                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton.icon(
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Try Again'),
+                      onPressed: () =>
+                          ref.read(audioProvider.notifier).refresh(),
+                    ),
+                  ],
                 ),
               ),
             ),
-          ],
-        ),
-        bottomSheet: currentPlayingState.currentAudioId.isNotEmpty
-            ? _buildMiniPlayer(context, currentPlayingState)
-            : null,
+          ),
+        ],
       ),
+      bottomSheet: currentPlayingState.currentAudioId.isNotEmpty
+          ? _buildMiniPlayer(context, currentPlayingState)
+          : null,
     );
   }
 

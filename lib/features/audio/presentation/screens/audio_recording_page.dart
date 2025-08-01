@@ -258,84 +258,81 @@ Widget build(BuildContext context) {
   }
 
   
-  return PopScope(
-    canPop: true,
-    child: Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Theme.of(context).primaryColor.withOpacity(0.05),
-              Colors.white,
-            ],
-          ),
+  return Scaffold(
+    body: Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Theme.of(context).primaryColor.withOpacity(0.05),
+            Colors.white,
+          ],
         ),
-        child: SafeArea(
-          child: CustomScrollView(
-            slivers: [
-              SliverAppBar(
-                title: const Text('Record Sermon'),
-                floating: true,
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                centerTitle: true,
-              ),
-              SliverPadding(
-                padding: const EdgeInsets.all(24),
-                sliver: SliverList(
-                  delegate: SliverChildListDelegate([
-                    _buildInputField(
-                      controller: _titleController,
-                      label: 'Sermon Title',
-                      icon: Icons.title,
-                    ),
-                    _buildInputField(
-                      controller: _scriptureController,
-                      label: 'Scripture Reference',
-                      icon: Icons.book,
-                    ),
-                    _buildInputField(
-                      controller: _ministerController,
-                      label: 'Minister Name',
-                      icon: Icons.person,
-                    ),
+      ),
+      child: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              title: const Text('Record Sermon'),
+              floating: true,
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              centerTitle: true,
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.all(24),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate([
+                  _buildInputField(
+                    controller: _titleController,
+                    label: 'Sermon Title',
+                    icon: Icons.title,
+                  ),
+                  _buildInputField(
+                    controller: _scriptureController,
+                    label: 'Scripture Reference',
+                    icon: Icons.book,
+                  ),
+                  _buildInputField(
+                    controller: _ministerController,
+                    label: 'Minister Name',
+                    icon: Icons.person,
+                  ),
+                  const SizedBox(height: 24),
+                  _buildRecordingSection(),
+                  if (recordingState.recordedFilePath != null) ...[
                     const SizedBox(height: 24),
-                    _buildRecordingSection(),
-                    if (recordingState.recordedFilePath != null) ...[
-                      const SizedBox(height: 24),
-                      ElevatedButton(
-                        onPressed: _submitRecording,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(context).primaryColor,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          elevation: 4,
+                    ElevatedButton(
+                      onPressed: _submitRecording,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).primaryColor,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Icon(Icons.upload),
-                            SizedBox(width: 8),
-                            Text(
-                              'Submit Recording',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
+                        elevation: 4,
                       ),
-                    ],
-                  ]),
-                ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Icon(Icons.upload),
+                          SizedBox(width: 8),
+                          Text(
+                            'Submit Recording',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ]),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     ),

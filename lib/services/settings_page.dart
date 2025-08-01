@@ -112,98 +112,95 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       );
     }
 
-    return PopScope(
-      canPop: true,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Settings'),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.help_outline),
-              onPressed: () => _showHelpDialog(),
-            ),
-          ],
-        ),
-        body: ListView(
-          children: [
-            const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text(
-                'Preferences',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Settings'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.help_outline),
+            onPressed: () => _showHelpDialog(),
+          ),
+        ],
+      ),
+      body: ListView(
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Text(
+              'Preferences',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
               ),
             ),
-            Card(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Column(
-                children: [
-                  
-                  const Divider(),
-                  SwitchListTile(
-                    title: const Text('Dark Mode'),
-                    subtitle: const Text('Toggle dark/light theme'),
-                    value: _darkModeEnabled,
-                    onChanged: _handleDarkModeChange,
-                    secondary: const Icon(Icons.dark_mode),
-                  ),
-                  const Divider(),
-                  ListTile(
-                    leading: const Icon(Icons.language),
-                    title: const Text('Language'),
-                    subtitle: Text(_selectedLanguage),
-                    trailing: DropdownButton<String>(
-                      value: _selectedLanguage,
-                      items: _supportedLanguages.map((String language) {
-                        return DropdownMenuItem<String>(
-                          value: language,
-                          child: Text(language),
-                        );
-                      }).toList(),
-                      onChanged: _handleLanguageChange,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text(
-                'Account',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Card(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Column(
-                children: [
+          ),
+          Card(
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Column(
+              children: [
                 
-                  ListTile(
-                    leading: const Icon(Icons.logout, color: Colors.red),
-                    title: const Text(
-                      'Sign Out',
-                      style: TextStyle(color: Colors.red),
-                    ),
-                    onTap: _signOut,
+                const Divider(),
+                SwitchListTile(
+                  title: const Text('Dark Mode'),
+                  subtitle: const Text('Toggle dark/light theme'),
+                  value: _darkModeEnabled,
+                  onChanged: _handleDarkModeChange,
+                  secondary: const Icon(Icons.dark_mode),
+                ),
+                const Divider(),
+                ListTile(
+                  leading: const Icon(Icons.language),
+                  title: const Text('Language'),
+                  subtitle: Text(_selectedLanguage),
+                  trailing: DropdownButton<String>(
+                    value: _selectedLanguage,
+                    items: _supportedLanguages.map((String language) {
+                      return DropdownMenuItem<String>(
+                        value: language,
+                        child: Text(language),
+                      );
+                    }).toList(),
+                    onChanged: _handleLanguageChange,
                   ),
-                ],
+                ),
+              ],
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Text(
+              'Account',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 24),
-            Center(
-              child: Text(
-                'App Version 1.0.0',
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
+          ),
+          Card(
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Column(
+              children: [
+              
+                ListTile(
+                  leading: const Icon(Icons.logout, color: Colors.red),
+                  title: const Text(
+                    'Sign Out',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                  onTap: _signOut,
+                ),
+              ],
             ),
-            const SizedBox(height: 24),
-          ],
-        ),
+          ),
+          const SizedBox(height: 24),
+          Center(
+            child: Text(
+              'App Version 1.0.0',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ),
+          const SizedBox(height: 24),
+        ],
       ),
     );
   }

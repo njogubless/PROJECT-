@@ -33,61 +33,58 @@ class _ArticlePageState extends ConsumerState<ArticlePage> {
   Widget build(BuildContext context) {
     final articleList = ref.watch(articleStreamProvider);
 
-    return PopScope(
-      canPop: true,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Articles'),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.search),
-              onPressed: () {
-                showSearch(
-                  context: context,
-                  delegate: ArticleSearchDelegate(),
-                );
-              },
-            ),
-          ],
-        ),
-        body: articleList.when(
-          data: (articles) {
-            final filteredArticles = articles
-                .where((article) => article.title
-                    .toLowerCase()
-                    .contains(searchQuery.toLowerCase()))
-                .toList();
-      
-            return ListView.builder(
-              itemCount: filteredArticles.length,
-              itemBuilder: (context, index) {
-                final article = filteredArticles[index];
-                return ListTile(
-                  title: Text(article.title),
-                  subtitle: Text(
-                    "Published on: ${article.createdAt.toLocal().toString().split(' ')[0]}",
-                  ),
-                trailing: BookmarkButton(articleId: article.id),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ArticleDetailScreen(
-                          articleId: article.id,
-                          title: article.title,
-                          content: article.content,
-                          isPublished: true, 
-                        ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Articles'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {
+              showSearch(
+                context: context,
+                delegate: ArticleSearchDelegate(),
+              );
+            },
+          ),
+        ],
+      ),
+      body: articleList.when(
+        data: (articles) {
+          final filteredArticles = articles
+              .where((article) => article.title
+                  .toLowerCase()
+                  .contains(searchQuery.toLowerCase()))
+              .toList();
+    
+          return ListView.builder(
+            itemCount: filteredArticles.length,
+            itemBuilder: (context, index) {
+              final article = filteredArticles[index];
+              return ListTile(
+                title: Text(article.title),
+                subtitle: Text(
+                  "Published on: ${article.createdAt.toLocal().toString().split(' ')[0]}",
+                ),
+              trailing: BookmarkButton(articleId: article.id),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ArticleDetailScreen(
+                        articleId: article.id,
+                        title: article.title,
+                        content: article.content,
+                        isPublished: true, 
                       ),
-                    );
-                  },
-                );
-              },
-            );
-          },
-          loading: () => Center(child: CircularProgressIndicator()),
-          error: (error, stack) => Center(child: Text('Error: $error')),
-        ),
+                    ),
+                  );
+                },
+              );
+            },
+          );
+        },
+        loading: () => Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(child: Text('Error: $error')),
       ),
     );
   }
