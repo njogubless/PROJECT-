@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SignInButton extends ConsumerWidget {
-  const SignInButton({Key? key}) : super(key: key);
+  const SignInButton({super.key});
 
   void signInWithGoogle(WidgetRef ref, context) {
     ref.read(authControllerProvider.notifier).signInWithGoogle(context);
