@@ -47,7 +47,7 @@ class AuthController extends StateNotifier<bool> {
       (userModel) =>
           _ref.read(userProvider.notifier).update((state) => userModel),
     );
-    Routemaster.of(context).replace('/homeScreen');
+    Routemaster.of(context).push('/homeScreen');
   }
 
   Future<void> signInWithEmailAndPassword(
@@ -62,7 +62,7 @@ class AuthController extends StateNotifier<bool> {
       (l) => showSnackbar(context, l.message),
       (userModel) {
         _ref.read(userProvider.notifier).update((state) => userModel);
-        Routemaster.of(context).replace('/homeScreen');
+        Routemaster.of(context).push('/homeScreen');
       },
     );
   }
