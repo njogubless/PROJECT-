@@ -18,7 +18,7 @@ class AudioTile extends ConsumerWidget {
     
     
     final formattedDate = audioFile.uploadDate != null 
-        ? DateFormat('MMM d, yyyy').format(audioFile.uploadDate!)
+        ? DateFormat('MMM d, yyyy').format(audioFile.uploadDate)
         : 'Unknown date';
 
     return Card(

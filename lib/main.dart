@@ -47,7 +47,7 @@ class MyApp extends ConsumerStatefulWidget {
 
 class _MyAppState extends ConsumerState<MyApp> {
   UserModel? userModel;
-  bool isByPassLogin = true; 
+  bool isByPassLogin = false; 
 
   void fetchDataOnce(User data) async {
     if (userModel == null) {

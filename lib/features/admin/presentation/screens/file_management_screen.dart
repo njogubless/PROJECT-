@@ -99,8 +99,9 @@ class FileManagementScreen extends StatelessWidget {
 
   Future<void> _deleteFile(
       BuildContext context, String docId, String fileUrl) async {
+        final scaffoldMessenger = ScaffoldMessenger.of(context);
     try {
-      final scaffoldMessenger = ScaffoldMessenger.of(context);
+      
       await FirebaseStorage.instance.refFromURL(fileUrl).delete();
 
       await FirebaseFirestore.instance
@@ -112,7 +113,7 @@ class FileManagementScreen extends StatelessWidget {
         const SnackBar(content: Text('File deleted successfully')),
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         SnackBar(content: Text('Error deleting file: $e')),
       );
     }

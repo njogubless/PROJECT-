@@ -56,8 +56,9 @@ class BookCard extends ConsumerWidget {
   const BookCard({super.key, required this.book});
 
   Future<void> _downloadBook(BuildContext context, WidgetRef ref) async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     try {
-      final scaffoldMessenger = ScaffoldMessenger.of(context);
+      
       final storageService = ref.read(storageServiceProvider);
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -74,7 +75,7 @@ class BookCard extends ConsumerWidget {
         SnackBar(content: Text('Book downloaded successfully!')),
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         SnackBar(content: Text('Failed to download book: $e')),
       );
     }

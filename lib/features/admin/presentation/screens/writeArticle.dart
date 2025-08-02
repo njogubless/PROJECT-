@@ -24,6 +24,7 @@ class _WriteArticleScreenState extends State<WriteArticleScreen> {
   Future<void> _submitArticle() async {
     final title = _titleController.text.trim();
     final content = _contentController.text.trim();
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     if (title.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -53,7 +54,7 @@ class _WriteArticleScreenState extends State<WriteArticleScreen> {
         'articleNumber': articleCount + 1,
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         SnackBar(
           content: Text(_publishImmediately 
               ? 'Article published successfully!' 
@@ -65,7 +66,7 @@ class _WriteArticleScreenState extends State<WriteArticleScreen> {
       
       Navigator.pop(context);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         SnackBar(content: Text('Error submitting article: $e')),
       );
     }

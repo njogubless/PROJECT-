@@ -13,6 +13,7 @@ class _QuestionScreenState extends State<QuestionPage> {
   final TextEditingController _questionController = TextEditingController();
 
   Future<void> _submitQuestion() async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     final questionText = _questionController.text.trim();
     if (questionText.isNotEmpty) {
       try {
@@ -23,7 +24,7 @@ class _QuestionScreenState extends State<QuestionPage> {
           'askedAt': FieldValue.serverTimestamp(),
           'isAnswered': false,
         });
-        ScaffoldMessenger.of(context).showSnackBar(
+        scaffoldMessenger.showSnackBar(
           SnackBar(
             content: const Text('Question submitted successfully!'),
             backgroundColor: Colors.green,
@@ -34,7 +35,7 @@ class _QuestionScreenState extends State<QuestionPage> {
         );
         _questionController.clear();
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        scaffoldMessenger.showSnackBar(
           SnackBar(
             content: Text('Error submitting question: $e'),
             backgroundColor: Colors.red,
@@ -45,7 +46,7 @@ class _QuestionScreenState extends State<QuestionPage> {
         );
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         SnackBar(
           content: const Text('Please enter a question'),
           backgroundColor: Colors.orange,
@@ -68,7 +69,7 @@ class _QuestionScreenState extends State<QuestionPage> {
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.blue.withValues(alpha:0.1),
+            color: Colors.blue.withValues(alpha: 0.1),
             shape: BoxShape.circle,
           ),
           child: const Icon(Icons.question_answer, color: Colors.blue),
@@ -139,7 +140,7 @@ class _QuestionScreenState extends State<QuestionPage> {
                       borderRadius: BorderRadius.circular(15),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha:0.05),
+                          color: Colors.black.withValues(alpha: 0.05),
                           blurRadius: 10,
                           offset: const Offset(0, 5),
                         ),
@@ -168,8 +169,7 @@ class _QuestionScreenState extends State<QuestionPage> {
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide:
-                                  BorderSide(color: Colors.grey[200]!),
+                              borderSide: BorderSide(color: Colors.grey[200]!),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -186,8 +186,7 @@ class _QuestionScreenState extends State<QuestionPage> {
                             onPressed: _submitQuestion,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue,
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 15),
+                              padding: const EdgeInsets.symmetric(vertical: 15),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
@@ -270,7 +269,7 @@ class QuestionDetailPage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(15),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha:0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, 5),
                   ),
@@ -306,7 +305,7 @@ class QuestionDetailPage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(15),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha:0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, 5),
                   ),
@@ -331,15 +330,14 @@ class QuestionDetailPage extends StatelessWidget {
                         .get(),
                     builder: (context, snapshot) {
                       if (!snapshot.hasData) {
-                        return const Center(
-                            child: CircularProgressIndicator());
+                        return const Center(child: CircularProgressIndicator());
                       }
                       final answers = snapshot.data!.docs;
                       if (answers.isEmpty) {
                         return Container(
                           padding: const EdgeInsets.all(15),
                           decoration: BoxDecoration(
-                            color: Colors.orange.withValues(alpha:0.1),
+                            color: Colors.orange.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: const Row(
@@ -364,7 +362,7 @@ class QuestionDetailPage extends StatelessWidget {
                           return Container(
                             padding: const EdgeInsets.all(15),
                             decoration: BoxDecoration(
-                              color: Colors.green.withValues(alpha:0.1),
+                              color: Colors.green.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Text(

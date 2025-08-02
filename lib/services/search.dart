@@ -98,7 +98,7 @@ class SearchNotifier extends StateNotifier<SearchState> {
     final titleSnapshot = await _firestore
         .collection(collectionName)
         .where('titleLowercase', isGreaterThanOrEqualTo: lowercaseQuery)
-        .where('titleLowercase', isLessThanOrEqualTo: lowercaseQuery + '\uf8ff')
+        .where('titleLowercase', isLessThanOrEqualTo: '$lowercaseQuery\uf8ff')
         .get();
 
     final tagSnapshot = await _firestore
@@ -109,7 +109,7 @@ class SearchNotifier extends StateNotifier<SearchState> {
     final contentSnapshot = await _firestore
         .collection(collectionName)
         .where('descriptionLowercase', isGreaterThanOrEqualTo: lowercaseQuery)
-        .where('descriptionLowercase', isLessThanOrEqualTo: lowercaseQuery + '\uf8ff')
+        .where('descriptionLowercase', isLessThanOrEqualTo: '$lowercaseQuery\uf8ff')
         .get();
 
     final results = <String, Map<String, dynamic>>{};
@@ -134,7 +134,7 @@ final searchProvider = StateNotifierProvider<SearchNotifier, SearchState>((ref) 
 class SearchResultCard extends StatelessWidget {
   final Map<String, dynamic> result;
   
-  const SearchResultCard({Key? key, required this.result}) : super(key: key);
+  const SearchResultCard({super.key, required this.result});
 
   @override
   Widget build(BuildContext context) {
@@ -182,7 +182,7 @@ class SearchResultCard extends StatelessWidget {
 
 
 class SearchResultsScreen extends ConsumerWidget {
-  const SearchResultsScreen({Key? key}) : super(key: key);
+  const SearchResultsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

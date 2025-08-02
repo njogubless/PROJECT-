@@ -8,11 +8,11 @@ class EditArticleScreen extends StatefulWidget {
   final String content;
 
   const EditArticleScreen({
-    Key? key,
+    super.key,
     required this.articleId,
     required this.title,
     required this.content,
-  }) : super(key: key);
+  });
 
   @override
   State<EditArticleScreen> createState() => _EditArticleScreenState();

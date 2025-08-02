@@ -5,7 +5,7 @@ import 'package:devotion/features/articles/presentation/screens/article_detail_s
 import 'package:flutter/material.dart';
 
 class ArticleManagementScreen extends StatefulWidget {
-  const ArticleManagementScreen({Key? key}) : super(key: key);
+  const ArticleManagementScreen({super.key});
 
   @override
   State<ArticleManagementScreen> createState() =>
@@ -127,8 +127,9 @@ class _ArticleManagementScreenState extends State<ArticleManagementScreen> {
   }
 
   Future<void> _togglePublishStatus(String docId, bool newStatus) async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     try {
-      final scaffoldMessenger = ScaffoldMessenger.of(context);
+      
       await FirebaseFirestore.instance
           .collection(FirebaseConstants.articleCollection)
           .doc(docId)
@@ -143,7 +144,7 @@ class _ArticleManagementScreenState extends State<ArticleManagementScreen> {
         ),
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         SnackBar(
           content: Text('Error: $e'),
           backgroundColor: Colors.red,
@@ -177,8 +178,9 @@ class _ArticleManagementScreenState extends State<ArticleManagementScreen> {
   }
 
   Future<void> _deleteArticle(String docId) async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     try {
-      final scaffoldMessenger = ScaffoldMessenger.of(context);
+      
       await FirebaseFirestore.instance
           .collection(FirebaseConstants.articleCollection)
           .doc(docId)
@@ -190,7 +192,7 @@ class _ArticleManagementScreenState extends State<ArticleManagementScreen> {
         ),
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         SnackBar(
           content: Text('Error deleting article: $e'),
           backgroundColor: Colors.red,
