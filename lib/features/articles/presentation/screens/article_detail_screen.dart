@@ -10,13 +10,13 @@ class ArticleDetailScreen extends StatefulWidget {
   final bool isAdminView;
 
   const ArticleDetailScreen({
-    Key? key,
+    super.key,
     required this.articleId,
     required this.title,
     required this.content,
     required this.isPublished,
     this.isAdminView = true,
-  }) : super(key: key);
+  });
 
   @override
   State<ArticleDetailScreen> createState() => _ArticleDetailScreenState();
@@ -27,6 +27,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
 
   Future<void> _addComment() async {
     final comment = _commentController.text.trim();
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     if (comment.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please enter a comment')),
@@ -41,12 +42,12 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
         'timestamp': FieldValue.serverTimestamp(),
       });
       _commentController.clear();
-      
-      ScaffoldMessenger.of(context).showSnackBar(
+
+      scaffoldMessenger.showSnackBar(
         const SnackBar(content: Text('Comment added successfully')),
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         SnackBar(content: Text('Error adding comment: $e')),
       );
     }
@@ -64,13 +65,13 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              
               Row(
                 children: [
                   Expanded(
                     child: Text(
                       widget.title,
-                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 22, fontWeight: FontWeight.bold),
                     ),
                   ),
                   if (widget.isAdminView)
@@ -78,30 +79,22 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                       label: Text(
                         widget.isPublished ? 'Published' : 'Draft',
                         style: TextStyle(
-                          color: widget.isPublished ? Colors.white : Colors.black,
+                          color:
+                              widget.isPublished ? Colors.white : Colors.black,
                         ),
                       ),
-                      backgroundColor: widget.isPublished ? Colors.green : Colors.grey.shade300,
+                      backgroundColor: widget.isPublished
+                          ? Colors.green
+                          : Colors.grey.shade300,
                     ),
                 ],
               ),
               const SizedBox(height: 16),
-              
-      
-              Text(
-                widget.content, 
-                style: const TextStyle(fontSize: 16)
-              ),
-              
+              Text(widget.content, style: const TextStyle(fontSize: 16)),
               const Divider(height: 32),
-              
-        
-              const Text(
-                "Comments", 
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)
-              ),
+              const Text("Comments",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
-        
               StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection('comments')
@@ -112,27 +105,28 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   }
-                  
+
                   if (snapshot.hasError) {
                     return Text('Error loading comments: ${snapshot.error}');
                   }
-                  
+
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                     return const Padding(
                       padding: EdgeInsets.symmetric(vertical: 16),
                       child: Text("No comments yet."),
                     );
                   }
-                  
+
                   final comments = snapshot.data!.docs;
                   return ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: comments.length,
                     itemBuilder: (context, index) {
-                      final comment = comments[index].data() as Map<String, dynamic>;
+                      final comment =
+                          comments[index].data() as Map<String, dynamic>;
                       final timestamp = comment['timestamp'] as Timestamp?;
-                      
+
                       return Card(
                         margin: const EdgeInsets.symmetric(vertical: 4),
                         child: Padding(
@@ -159,8 +153,10 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     TextButton(
-                                      onPressed: () => _deleteComment(comments[index].id),
-                                      child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                                      onPressed: () =>
+                                          _deleteComment(comments[index].id),
+                                      child: const Text('Delete',
+                                          style: TextStyle(color: Colors.red)),
                                     ),
                                   ],
                                 ),
@@ -172,16 +168,14 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                   );
                 },
               ),
-              
               const SizedBox(height: 16),
-              
-         
               TextField(
                 controller: _commentController,
                 decoration: InputDecoration(
                   labelText: 'Add a comment...',
                   border: const OutlineInputBorder(),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   suffixIcon: IconButton(
                     icon: const Icon(Icons.send),
                     onPressed: _addComment,
@@ -189,7 +183,6 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                 ),
                 maxLines: 3,
               ),
-              
               const SizedBox(height: 24),
             ],
           ),
@@ -219,25 +212,25 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
   }
 
   Future<void> _togglePublishStatus(bool newStatus) async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     try {
       await FirebaseFirestore.instance
           .collection(FirebaseConstants.articleCollection)
           .doc(widget.articleId)
           .update({'isPublished': newStatus});
 
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         SnackBar(
-          content: Text(newStatus 
-              ? 'Article published successfully' 
-              : 'Article unpublished'
-          ),
+          content: Text(newStatus
+              ? 'Article published successfully'
+              : 'Article unpublished'),
           backgroundColor: newStatus ? Colors.green : Colors.orange,
         ),
       );
-      
-      Navigator.pop(context); 
+
+      Navigator.pop(context);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         SnackBar(
           content: Text('Error: $e'),
           backgroundColor: Colors.red,
@@ -247,17 +240,18 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
   }
 
   Future<void> _deleteComment(String commentId) async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     try {
       await FirebaseFirestore.instance
           .collection('comments')
           .doc(commentId)
           .delete();
-          
-      ScaffoldMessenger.of(context).showSnackBar(
+
+      scaffoldMessenger.showSnackBar(
         const SnackBar(content: Text('Comment deleted')),
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         SnackBar(content: Text('Error deleting comment: $e')),
       );
     }
@@ -299,6 +293,7 @@ class _EditArticleScreenState extends State<EditArticleScreen> {
   }
 
   Future<void> _updateArticle() async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     final title = _titleController.text.trim();
     final content = _contentController.text.trim();
 
@@ -319,16 +314,16 @@ class _EditArticleScreenState extends State<EditArticleScreen> {
         'updatedAt': DateTime.now().toLocal().toString(),
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         const SnackBar(
           content: Text('Article updated successfully!'),
           backgroundColor: Colors.green,
         ),
       );
-      
+
       Navigator.pop(context);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         SnackBar(content: Text('Error updating article: $e')),
       );
     }

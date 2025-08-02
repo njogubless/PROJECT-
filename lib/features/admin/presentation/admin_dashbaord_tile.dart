@@ -73,6 +73,7 @@ class DashboardTile extends ConsumerWidget {
   }
 
   Future<void> _startFileUpload(BuildContext context, WidgetRef ref) async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     final uploadService = FileUploadService();
     final notifier = ref.read(uploadProgressProvider.notifier);
 
@@ -101,7 +102,7 @@ class DashboardTile extends ConsumerWidget {
     result ??= await FilePicker.platform.pickFiles(type: fileType);
 
     if (result == null || result.files.single.path == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         const SnackBar(content: Text('No file selected or picker canceled.')),
       );
       notifier.state = 0.0;
@@ -119,7 +120,7 @@ class DashboardTile extends ConsumerWidget {
     );
 
     if (downloadUrl != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         SnackBar(
           content: Text(
               'File uploaded successfully! URL: ${downloadUrl.substring(0, 50)}...'),
@@ -127,7 +128,7 @@ class DashboardTile extends ConsumerWidget {
         ),
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         const SnackBar(
           content: Text(
               'File upload failed! Please check console for errors and Firebase Storage rules.'),

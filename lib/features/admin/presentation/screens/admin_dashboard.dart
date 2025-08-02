@@ -36,7 +36,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
         ),
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         SnackBar(content: Text('Error uploading file: $e')),
       );
     } finally {
