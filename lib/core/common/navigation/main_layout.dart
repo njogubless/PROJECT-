@@ -86,7 +86,7 @@ class _MainLayoutState extends State<MainLayout> with TickerProviderStateMixin {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              const Color.fromARGB(255, 104, 165, 214).withOpacity(0.1),
+              const Color.fromARGB(255, 104, 165, 214).withValues(alpha:0.1),
               Colors.white,
             ],
           ),
@@ -116,7 +116,7 @@ class _MainLayoutState extends State<MainLayout> with TickerProviderStateMixin {
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
+              color: Colors.grey.withValues(alpha: 0.2),
               spreadRadius: 5,
               blurRadius: 10,
             ),

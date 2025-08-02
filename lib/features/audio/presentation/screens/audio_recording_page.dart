@@ -129,7 +129,7 @@ Widget build(BuildContext context) {
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.3),
+            color: color.withValues(alpha:0.3),
             spreadRadius: 2,
             blurRadius: 8,
             offset: const Offset(0, 2),
@@ -158,7 +158,7 @@ Widget build(BuildContext context) {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha:0.1),
             spreadRadius: 1,
             blurRadius: 5,
             offset: const Offset(0, 2),
@@ -197,7 +197,7 @@ Widget build(BuildContext context) {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha:0.1),
             spreadRadius: 1,
             blurRadius: 10,
             offset: const Offset(0, 4),
@@ -265,7 +265,7 @@ Widget build(BuildContext context) {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            Theme.of(context).primaryColor.withOpacity(0.05),
+            Theme.of(context).primaryColor.withValues(alpha:0.05),
             Colors.white,
           ],
         ),

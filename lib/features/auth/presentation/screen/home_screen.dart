@@ -121,7 +121,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             gradient: LinearGradient(
               colors: [
                 Theme.of(context).primaryColor,
-                Theme.of(context).primaryColor.withOpacity(0.8),
+                Theme.of(context).primaryColor.withValues(alpha:0.8),
               ],
             ),
           ),
@@ -299,7 +299,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             Container(
               padding: const EdgeInsets.all(15),
               decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor.withOpacity(0.1),
+                color: Theme.of(context).primaryColor.withValues(alpha:0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -401,7 +401,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.orange.withOpacity(0.1),
+                  color: Colors.orange.withValues(alpha:0.1),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(

@@ -66,7 +66,7 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(
-                    color: Theme.of(context).primaryColor.withOpacity(0.5),
+                    color: Theme.of(context).primaryColor.withValues(alpha:0.5),
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(

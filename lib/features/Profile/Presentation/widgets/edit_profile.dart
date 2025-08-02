@@ -116,7 +116,7 @@ class _EditProfileSheetState extends ConsumerState<EditProfileSheet> {
                   return FilterChip(
                     label: Text(genre),
                     selected: isSelected,
-                    selectedColor: Theme.of(context).primaryColor.withOpacity(0.2),
+                    selectedColor: Theme.of(context).primaryColor.withValues(alpha:0.2),
                     onSelected: (selected) {
                       setState(() {
                         if (selected) {

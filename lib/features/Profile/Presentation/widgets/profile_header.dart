@@ -80,7 +80,7 @@ class ProfileHeader extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor.withOpacity(0.1),
+        color: Theme.of(context).primaryColor.withValues(alpha:0.1),
       ),
       child: Column(
         children: [
@@ -156,7 +156,7 @@ class ProfileHeader extends ConsumerWidget {
               alignment: WrapAlignment.center,
               children: profile.favoriteGenres.map((genre) => Chip(
                 label: Text(genre),
-                backgroundColor: Theme.of(context).primaryColor.withOpacity(0.2),
+                backgroundColor: Theme.of(context).primaryColor.withValues(alpha:0.2),
               )).toList(),
             ),
           ],

@@ -15,15 +15,17 @@ class AdminDashboard extends StatefulWidget {
 
 class _AdminDashboardState extends State<AdminDashboard> {
   bool _isUploading = false;
+ 
 
-   Future<void> uploadFile(String collectionPath, String firebasePath) async {
+  Future<void> uploadFile(String collectionPath, String firebasePath, BuildContext context ) async {
+     final scaffoldMessenger = ScaffoldMessenger.of(context);
     setState(() => _isUploading = true);
     try {
       await UploadFiles.uploadFileToFirebase(collectionPath, firebasePath);
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         const SnackBar(content: Text('File uploaded successfully!')),
       );
-      
+
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -41,10 +43,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
       setState(() => _isUploading = false);
     }
   }
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +93,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.withValues(alpha:0.1),
                             blurRadius: 10,
                             offset: const Offset(0, 5),
                           ),
@@ -148,7 +146,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
+        color: Colors.white.withValues(alpha:0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -188,6 +186,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
           onTap: () => uploadFile(
             FirebaseConstants.sermonCollection,
             'audio',
+            context
           ),
         ),
         _buildDashboardTile(
@@ -198,6 +197,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
           onTap: () => uploadFile(
             FirebaseConstants.testimonyCollection,
             'books',
+            context
           ),
         ),
         _buildDashboardTile(
@@ -245,7 +245,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                color.withOpacity(0.7),
+                color.withValues(alpha:0.7),
                 color,
               ],
             ),
@@ -292,7 +292,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               title: 'Upload Audio',
               onTap: () {
                 Navigator.pop(context);
-                uploadFile(FirebaseConstants.sermonCollection, 'audio');
+                uploadFile(FirebaseConstants.sermonCollection, 'audio', context);
               },
             ),
             const SizedBox(height: 8),
@@ -302,7 +302,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               title: 'Upload Book',
               onTap: () {
                 Navigator.pop(context);
-                uploadFile(FirebaseConstants.testimonyCollection, 'books');
+                uploadFile(FirebaseConstants.testimonyCollection, 'books', context);
               },
             ),
           ],
@@ -321,7 +321,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor.withOpacity(0.1),
+          color: Theme.of(context).primaryColor.withValues(alpha:0.1),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Icon(icon, color: Theme.of(context).primaryColor),
@@ -334,6 +334,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
     );
   }
 }
+
 extension StringExtension on String {
   String capitalize() {
     return "${this[0].toUpperCase()}${substring(1)}";

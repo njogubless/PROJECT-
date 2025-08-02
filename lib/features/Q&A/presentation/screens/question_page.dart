@@ -68,7 +68,7 @@ class _QuestionScreenState extends State<QuestionPage> {
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.blue.withOpacity(0.1),
+            color: Colors.blue.withValues(alpha:0.1),
             shape: BoxShape.circle,
           ),
           child: const Icon(Icons.question_answer, color: Colors.blue),
@@ -139,7 +139,7 @@ class _QuestionScreenState extends State<QuestionPage> {
                       borderRadius: BorderRadius.circular(15),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black.withValues(alpha:0.05),
                           blurRadius: 10,
                           offset: const Offset(0, 5),
                         ),
@@ -270,7 +270,7 @@ class QuestionDetailPage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(15),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha:0.05),
                     blurRadius: 10,
                     offset: const Offset(0, 5),
                   ),
@@ -306,7 +306,7 @@ class QuestionDetailPage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(15),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha:0.05),
                     blurRadius: 10,
                     offset: const Offset(0, 5),
                   ),
@@ -339,7 +339,7 @@ class QuestionDetailPage extends StatelessWidget {
                         return Container(
                           padding: const EdgeInsets.all(15),
                           decoration: BoxDecoration(
-                            color: Colors.orange.withOpacity(0.1),
+                            color: Colors.orange.withValues(alpha:0.1),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: const Row(
@@ -364,7 +364,7 @@ class QuestionDetailPage extends StatelessWidget {
                           return Container(
                             padding: const EdgeInsets.all(15),
                             decoration: BoxDecoration(
-                              color: Colors.green.withOpacity(0.1),
+                              color: Colors.green.withValues(alpha:0.1),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Text(
