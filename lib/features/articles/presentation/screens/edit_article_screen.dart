@@ -37,6 +37,7 @@ class _EditArticleScreenState extends State<EditArticleScreen> {
   }
 
   Future<void> _updateArticle() async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     final title = _titleController.text.trim();
     final content = _contentController.text.trim();
 
@@ -57,7 +58,7 @@ class _EditArticleScreenState extends State<EditArticleScreen> {
         'updatedAt': DateTime.now().toLocal().toString(),
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         const SnackBar(
           content: Text('Article updated successfully!'),
           backgroundColor: Colors.green,
@@ -66,7 +67,7 @@ class _EditArticleScreenState extends State<EditArticleScreen> {
       
       Navigator.pop(context);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         SnackBar(content: Text('Error updating article: $e')),
       );
     }

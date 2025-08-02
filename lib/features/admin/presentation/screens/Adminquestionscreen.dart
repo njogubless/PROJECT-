@@ -36,13 +36,17 @@ class _AdminQuestionScreenState extends State<AdminQuestionScreen> {
               return ListTile(
                 title: Text(
                   questionText,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
+                  style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue),
                 ),
                 trailing: Icon(
                   Icons.arrow_forward_ios,
                   color: isAnswered ? Colors.green : Colors.orange,
                 ),
-                onTap: () => _navigateToAnswerScreen(context, questionId, questionText, isAnswered),
+                onTap: () => _navigateToAnswerScreen(
+                    context, questionId, questionText, isAnswered),
               );
             },
           );
@@ -51,7 +55,8 @@ class _AdminQuestionScreenState extends State<AdminQuestionScreen> {
     );
   }
 
-  void _navigateToAnswerScreen(BuildContext context, String questionId, String questionText, bool isAnswered) {
+  void _navigateToAnswerScreen(BuildContext context, String questionId,
+      String questionText, bool isAnswered) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -71,11 +76,11 @@ class AnswerScreen extends StatefulWidget {
   final bool isAnswered;
 
   const AnswerScreen({
-    Key? key,
+    super.key,
     required this.questionId,
     required this.questionText,
     required this.isAnswered,
-  }) : super(key: key);
+  });
 
   @override
   _AnswerScreenState createState() => _AnswerScreenState();
@@ -85,30 +90,36 @@ class _AnswerScreenState extends State<AnswerScreen> {
   final TextEditingController _answerController = TextEditingController();
 
   Future<void> _submitAnswer() async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     final answerText = _answerController.text.trim();
     if (answerText.isNotEmpty) {
       try {
-        await FirebaseFirestore.instance.collection(FirebaseConstants.answersCollection).add({
+        await FirebaseFirestore.instance
+            .collection(FirebaseConstants.answersCollection)
+            .add({
           'questionId': widget.questionId,
           'answer': answerText,
           'answeredAt': FieldValue.serverTimestamp(),
         });
 
-        await FirebaseFirestore.instance.collection(FirebaseConstants.questionsCollection).doc(widget.questionId).update({
-          'isAnswered': true, 
+        await FirebaseFirestore.instance
+            .collection(FirebaseConstants.questionsCollection)
+            .doc(widget.questionId)
+            .update({
+          'isAnswered': true,
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
+        scaffoldMessenger.showSnackBar(
           const SnackBar(content: Text('Answer submitted successfully!')),
         );
         Navigator.pop(context);
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        scaffoldMessenger.showSnackBar(
           SnackBar(content: Text('Error submitting answer: $e')),
         );
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         const SnackBar(content: Text('Please provide an answer')),
       );
     }
@@ -125,7 +136,10 @@ class _AnswerScreenState extends State<AnswerScreen> {
           children: [
             Text(
               'Question:',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
+              style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue),
             ),
             const SizedBox(height: 5),
             Text(
@@ -140,7 +154,8 @@ class _AnswerScreenState extends State<AnswerScreen> {
                     .where('questionId', isEqualTo: widget.questionId)
                     .get(),
                 builder: (context, answerSnapshot) {
-                  if (!answerSnapshot.hasData || answerSnapshot.data!.docs.isEmpty) {
+                  if (!answerSnapshot.hasData ||
+                      answerSnapshot.data!.docs.isEmpty) {
                     return const Text("No answer found");
                   }
                   final answer = answerSnapshot.data!.docs.first['answer'];
@@ -153,7 +168,8 @@ class _AnswerScreenState extends State<AnswerScreen> {
             if (!widget.isAnswered) ...[
               TextField(
                 controller: _answerController,
-                decoration: const InputDecoration(hintText: 'Enter your answer here...'),
+                decoration: const InputDecoration(
+                    hintText: 'Enter your answer here...'),
                 maxLines: 5,
               ),
               const SizedBox(height: 20),

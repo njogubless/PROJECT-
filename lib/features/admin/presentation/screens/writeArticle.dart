@@ -3,7 +3,7 @@ import 'package:devotion/core/constants/firebase_constants.dart';
 import 'package:flutter/material.dart';
 
 class WriteArticleScreen extends StatefulWidget {
-  const WriteArticleScreen({Key? key}) : super(key: key);
+  const WriteArticleScreen({super.key});
 
   @override
   State<WriteArticleScreen> createState() => _WriteArticleScreenState();

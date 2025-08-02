@@ -13,6 +13,7 @@ class AdminLoginPage extends StatelessWidget {
     final passwordController = TextEditingController();
 
     Future<void> _login(BuildContext context) async {
+      final scaffoldMessenger = ScaffoldMessenger.of(context);
       if (!formKey.currentState!.validate()) return;
 
       final email = emailController.text.trim();
@@ -36,7 +37,7 @@ class AdminLoginPage extends StatelessWidget {
               MaterialPageRoute(builder: (context) => AdminDashboard()),
             );
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(
+            scaffoldMessenger.showSnackBar(
               SnackBar(
                 content: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -48,7 +49,7 @@ class AdminLoginPage extends StatelessWidget {
                             .collection('users')
                             .doc(userId)
                             .update({'isAdmin': true});
-                        ScaffoldMessenger.of(context).showSnackBar(
+                        scaffoldMessenger.showSnackBar(
                           const SnackBar(content: Text('Admin role granted')),
                         );
                       },
@@ -60,12 +61,12 @@ class AdminLoginPage extends StatelessWidget {
             );
           }
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
+          scaffoldMessenger.showSnackBar(
             const SnackBar(content: Text('User not found in Firestore')),
           );
         }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        scaffoldMessenger.showSnackBar(
           SnackBar(content: Text('Login failed: $e')),
         );
       }
@@ -83,7 +84,8 @@ class AdminLoginPage extends StatelessWidget {
         child: Center(
           child: Card(
             elevation: 8,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             margin: const EdgeInsets.all(24),
             child: Padding(
               padding: const EdgeInsets.all(24),
@@ -94,7 +96,8 @@ class AdminLoginPage extends StatelessWidget {
                   children: <Widget>[
                     const Text(
                       'Admin Login',
-                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
@@ -131,7 +134,8 @@ class AdminLoginPage extends StatelessWidget {
                     ElevatedButton(
                       onPressed: () => _login(context),
                       style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 14, horizontal: 24),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),

@@ -19,7 +19,8 @@ class FileManagementScreen extends StatelessWidget {
         title: Text('$title Files'),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection(collectionPath).snapshots(),
+        stream:
+            FirebaseFirestore.instance.collection(collectionPath).snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
@@ -41,7 +42,7 @@ class FileManagementScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               final file = files[index];
               final data = file.data() as Map<String, dynamic>;
-              
+
               return Card(
                 child: ListTile(
                   leading: _getFileIcon(data['fileType'] ?? ''),
@@ -55,7 +56,8 @@ class FileManagementScreen extends StatelessWidget {
                   ),
                   trailing: IconButton(
                     icon: const Icon(Icons.delete),
-                    onPressed: () => _deleteFile(context, file.id, data['fileUrl']),
+                    onPressed: () =>
+                        _deleteFile(context, file.id, data['fileUrl']),
                   ),
                 ),
               );
@@ -95,17 +97,18 @@ class FileManagementScreen extends StatelessWidget {
     return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
   }
 
-  Future<void> _deleteFile(BuildContext context, String docId, String fileUrl) async {
+  Future<void> _deleteFile(
+      BuildContext context, String docId, String fileUrl) async {
     try {
-     
+      final scaffoldMessenger = ScaffoldMessenger.of(context);
       await FirebaseStorage.instance.refFromURL(fileUrl).delete();
-      
+
       await FirebaseFirestore.instance
           .collection(collectionPath)
           .doc(docId)
           .delete();
-      
-      ScaffoldMessenger.of(context).showSnackBar(
+
+      scaffoldMessenger.showSnackBar(
         const SnackBar(content: Text('File deleted successfully')),
       );
     } catch (e) {

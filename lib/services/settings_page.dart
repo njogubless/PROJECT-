@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
-  const SettingsPage({Key? key}) : super(key: key);
+  const SettingsPage({super.key});
 
   @override
   ConsumerState<SettingsPage> createState() => _SettingsPageState();
@@ -66,7 +66,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       });
       await _prefs.setString('language', language);
 
-  
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -86,12 +85,13 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   }
 
   Future<void> _signOut() async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     try {
       await _auth.signOut();
-    
+
       Navigator.of(context).pushReplacementNamed('/login');
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         SnackBar(
           content: Text('Error signing out: ${e.toString()}'),
           backgroundColor: Colors.red,
@@ -138,7 +138,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Column(
               children: [
-                
                 const Divider(),
                 SwitchListTile(
                   title: const Text('Dark Mode'),
@@ -180,7 +179,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Column(
               children: [
-              
                 ListTile(
                   leading: const Icon(Icons.logout, color: Colors.red),
                   title: const Text(
@@ -271,6 +269,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
   }
 
   Future<void> _updateProfile() async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
@@ -282,7 +281,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
 
         if (_emailController.text != user.email) {
           await user.verifyBeforeUpdateEmail(_emailController.text);
-          ScaffoldMessenger.of(context).showSnackBar(
+          scaffoldMessenger.showSnackBar(
             const SnackBar(
               content: Text(
                   'Verification email sent. Please verify to update email.'),
@@ -291,11 +290,11 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
         }
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         const SnackBar(content: Text('Profile updated successfully')),
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         SnackBar(content: Text('Error updating profile: ${e.toString()}')),
       );
     } finally {
@@ -304,8 +303,11 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
   }
 
   Future<void> _updatePassword() async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     if (_currentPasswordController.text.isEmpty ||
-        _newPasswordController.text.isEmpty) return;
+        _newPasswordController.text.isEmpty) {
+      return;
+    }
 
     setState(() => _isLoading = true);
 
@@ -319,14 +321,14 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
       await user?.reauthenticateWithCredential(credential);
       await user?.updatePassword(_newPasswordController.text);
 
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         const SnackBar(content: Text('Password updated successfully')),
       );
 
       _currentPasswordController.clear();
       _newPasswordController.clear();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         SnackBar(content: Text('Error updating password: ${e.toString()}')),
       );
     } finally {
@@ -517,18 +519,19 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
   }
 
   Future<void> _deleteAccount() async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     setState(() => _isLoading = true);
 
     try {
       final user = _auth.currentUser;
       if (user != null) {
         await user.delete();
-    
+
         Navigator.of(context)
             .pushNamedAndRemoveUntil('/login', (route) => false);
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         SnackBar(content: Text('Error deleting account: ${e.toString()}')),
       );
     } finally {

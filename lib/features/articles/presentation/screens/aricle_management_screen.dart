@@ -8,7 +8,8 @@ class ArticleManagementScreen extends StatefulWidget {
   const ArticleManagementScreen({Key? key}) : super(key: key);
 
   @override
-  State<ArticleManagementScreen> createState() => _ArticleManagementScreenState();
+  State<ArticleManagementScreen> createState() =>
+      _ArticleManagementScreenState();
 }
 
 class _ArticleManagementScreenState extends State<ArticleManagementScreen> {
@@ -63,12 +64,13 @@ class _ArticleManagementScreenState extends State<ArticleManagementScreen> {
                 child: ListTile(
                   title: Text(title),
                   subtitle: Text(
-                    content.length > 50 ? '${content.substring(0, 50)}...' : content,
+                    content.length > 50
+                        ? '${content.substring(0, 50)}...'
+                        : content,
                   ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                    
                       IconButton(
                         icon: Icon(
                           isPublished ? Icons.visibility : Icons.visibility_off,
@@ -79,7 +81,6 @@ class _ArticleManagementScreenState extends State<ArticleManagementScreen> {
                         },
                         tooltip: isPublished ? 'Unpublish' : 'Publish',
                       ),
-              
                       IconButton(
                         icon: const Icon(Icons.edit, color: Colors.blue),
                         onPressed: () {
@@ -95,7 +96,6 @@ class _ArticleManagementScreenState extends State<ArticleManagementScreen> {
                           );
                         },
                       ),
-                   
                       IconButton(
                         icon: const Icon(Icons.delete, color: Colors.red),
                         onPressed: () {
@@ -128,17 +128,17 @@ class _ArticleManagementScreenState extends State<ArticleManagementScreen> {
 
   Future<void> _togglePublishStatus(String docId, bool newStatus) async {
     try {
+      final scaffoldMessenger = ScaffoldMessenger.of(context);
       await FirebaseFirestore.instance
           .collection(FirebaseConstants.articleCollection)
           .doc(docId)
           .update({'isPublished': newStatus});
 
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         SnackBar(
-          content: Text(newStatus 
-              ? 'Article published successfully' 
-              : 'Article unpublished'
-          ),
+          content: Text(newStatus
+              ? 'Article published successfully'
+              : 'Article unpublished'),
           backgroundColor: newStatus ? Colors.green : Colors.orange,
         ),
       );
@@ -157,7 +157,8 @@ class _ArticleManagementScreenState extends State<ArticleManagementScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Article'),
-        content: const Text('Are you sure you want to delete this article? This action cannot be undone.'),
+        content: const Text(
+            'Are you sure you want to delete this article? This action cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -177,12 +178,13 @@ class _ArticleManagementScreenState extends State<ArticleManagementScreen> {
 
   Future<void> _deleteArticle(String docId) async {
     try {
+      final scaffoldMessenger = ScaffoldMessenger.of(context);
       await FirebaseFirestore.instance
           .collection(FirebaseConstants.articleCollection)
           .doc(docId)
           .delete();
 
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         const SnackBar(
           content: Text('Article deleted successfully'),
         ),

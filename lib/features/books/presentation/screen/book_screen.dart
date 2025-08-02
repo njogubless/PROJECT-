@@ -33,7 +33,9 @@ class BookScreen extends ConsumerWidget {
           itemCount: books.length,
           itemBuilder: (context, index) {
             final book = books[index];
-            return BookCard(book: book,);
+            return BookCard(
+              book: book,
+            );
           },
         ),
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -55,21 +57,20 @@ class BookCard extends ConsumerWidget {
 
   Future<void> _downloadBook(BuildContext context, WidgetRef ref) async {
     try {
+      final scaffoldMessenger = ScaffoldMessenger.of(context);
       final storageService = ref.read(storageServiceProvider);
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Downloading book...')),
       );
-      
+
       final file = await storageService.downloadFile(
-        book.storagePath, 
-        '${book.title}.pdf'
-      );
+          book.storagePath, '${book.title}.pdf');
 
       final downloadedBooks = ref.read(downloadedBooksProvider.notifier);
       downloadedBooks.update((state) => {...state, book.id});
-      
-      ScaffoldMessenger.of(context).showSnackBar(
+
+      scaffoldMessenger.showSnackBar(
         SnackBar(content: Text('Book downloaded successfully!')),
       );
     } catch (e) {
@@ -82,13 +83,12 @@ class BookCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDownloaded = ref.watch(downloadedBooksProvider).contains(book.id);
-    
+
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: () {
-         
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -100,9 +100,10 @@ class BookCard extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(12)),
               child: AspectRatio(
-                aspectRatio: 3/4,
+                aspectRatio: 3 / 4,
                 child: CachedNetworkImage(
                   imageUrl: book.coverUrl,
                   fit: BoxFit.cover,
@@ -137,11 +138,11 @@ class BookCard extends ConsumerWidget {
                     children: [
                       TextButton.icon(
                         onPressed: () {
-                      
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => BookReaderScreen(book: book),
+                              builder: (context) =>
+                                  BookReaderScreen(book: book),
                             ),
                           );
                         },
@@ -166,4 +167,3 @@ class BookCard extends ConsumerWidget {
     );
   }
 }
-
