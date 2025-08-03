@@ -176,7 +176,7 @@ class AudioTile extends ConsumerWidget {
         return IconButton(
           icon: const Icon(Icons.download),
           onPressed: () {
-            ref.read(downloadProvider(audioFile.id).notifier).download(audioFile.id);
+            ref.read(downloadProvider(audioFile.id).notifier).download();
           },
         );
       case DownloadStatus.downloading:
