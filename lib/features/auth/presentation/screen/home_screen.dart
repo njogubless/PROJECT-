@@ -76,22 +76,33 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             snapshot.docs.map((doc) => {'id': doc.id, ...doc.data()}).toList());
   }
 
-  Future<Map<String, dynamic>> _fetchUserData() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      return {'name': 'Guest', 'email': 'guest@example.com', 'avatarUrl': ''};
-    }
+Future<Map<String, dynamic>> _fetchUserData() async {
+  final user = FirebaseAuth.instance.currentUser;
+  if (user == null) {
+    return {'name': 'Guest', 'email': 'guest@example.com', 'avatarUrl': ''};
+  }
 
-    final userDoc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .get();
+  final userDoc = await FirebaseFirestore.instance
+      .collection('users')
+      .doc(user.uid)
+      .get();
+
+  if (!userDoc.exists || userDoc.data() == null) {
     return {
-      'name': userDoc['name'] ?? 'User',
-      'email': userDoc['email'] ?? user.email,
-      'avatarUrl': userDoc['avatarUrl'] ?? '',
+      'name': user.displayName ?? 'User',
+      'email': user.email ?? 'guest@example.com',
+      'avatarUrl': '',
     };
   }
+
+  final data = userDoc.data()!;
+  return {
+    'name': data['name'] as String? ?? user.displayName ?? 'User',
+    'email': data['email'] as String? ?? user.email ?? 'guest@example.com',
+    'avatarUrl': data['avatarUrl'] as String? ?? '',
+  };
+}
+
 
   @override
   Widget build(BuildContext context) {
