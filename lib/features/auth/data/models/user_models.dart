@@ -5,15 +5,13 @@ class UserModel {
   final bool isAuthenticated;
   final String userName;
   final String userEmail;
+  final bool isAdmin;
 
-  bool isAdmin = false;
-
-  UserModel({
+  const UserModel({
     required this.uid,
     required this.isAuthenticated,
     required this.userEmail,
     required this.userName,
-  
     this.isAdmin = false,
   });
 
@@ -22,16 +20,14 @@ class UserModel {
     bool? isAuthenticated,
     String? userName,
     String? userEmail,
-  
-    String? role,
+    bool? isAdmin,
   }) {
     return UserModel(
       uid: uid ?? this.uid,
       isAuthenticated: isAuthenticated ?? this.isAuthenticated,
       userName: userName ?? this.userName,
       userEmail: userEmail ?? this.userEmail,
-   
-      isAdmin: isAdmin,
+      isAdmin: isAdmin ?? this.isAdmin,
     );
   }
 
@@ -41,31 +37,31 @@ class UserModel {
       'isAuthenticated': isAuthenticated,
       'userName': userName,
       'userEmail': userEmail,
-     
       'isAdmin': isAdmin,
     };
   }
 
+  // Fixed fromMap method with null safety
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
-      uid: map['uid'] as String,
-      isAuthenticated: map['isAuthenticated'] as bool,
-      userName: map['userName'] as String,
-      userEmail: map['userEmail'] as String,
-     
-      isAdmin: map['isAdmin'] as bool,
+      uid: (map['uid'] as String?) ?? '',
+      isAuthenticated: (map['isAuthenticated'] as bool?) ?? false,
+      userName: (map['userName'] as String?) ?? 'No name',
+      userEmail: (map['userEmail'] as String?) ?? 'No email',
+      isAdmin: (map['isAdmin'] as bool?) ?? false,
     );
   }
 
   @override
   String toString() {
-    return 'UserModel(uid: $uid, isAuthenticated: $isAuthenticated, userName: $userName, userEmail: $userEmail,)';
+    return 'UserModel(uid: $uid, isAuthenticated: $isAuthenticated, userName: $userName, userEmail: $userEmail, isAdmin: $isAdmin)';
   }
 
   String toJson() => json.encode(toMap());
 
+  // Fixed fromJson method
   factory UserModel.fromJson(String source) =>
-      UserModel.fromMap(json.encode(source) as Map<String, dynamic>);
+      UserModel.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   bool operator ==(covariant UserModel other) {
@@ -73,11 +69,17 @@ class UserModel {
 
     return other.uid == uid &&
         other.isAuthenticated == isAuthenticated &&
-        other.userName == userName;
+        other.userName == userName &&
+        other.userEmail == userEmail &&
+        other.isAdmin == isAdmin;
   }
 
   @override
   int get hashCode {
-    return uid.hashCode ^ isAuthenticated.hashCode ^ userName.hashCode;
+    return uid.hashCode ^
+        isAuthenticated.hashCode ^
+        userName.hashCode ^
+        userEmail.hashCode ^
+        isAdmin.hashCode;
   }
 }
