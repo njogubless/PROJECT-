@@ -26,9 +26,9 @@ class _RecordAudioPageState extends ConsumerState<RecordAudioPage> {
 
   Future<void> _submitRecording() async {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
-    final navigator = Navigator.of(context);
 
     final recordingState = ref.read(audioRecorderProvider);
+  
 
     if (recordingState.recordedFilePath == null) {
       ScaffoldMessenger.of(context).showSnackBar(
