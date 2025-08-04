@@ -1,4 +1,4 @@
-import 'package:devotion/core/util/utils.dart';
+import 'package:devotion/core/type_defs.dart';
 import 'package:devotion/features/auth/data/models/user_models.dart';
 import 'package:devotion/features/auth/Repository/auth_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -28,8 +28,8 @@ final getUserDataProvider = StreamProvider.family((ref, String uid) {
 class AuthController extends StateNotifier<bool> {
   final AuthRepository _authRepository;
   final Ref _ref;
-  final Map<String, DateTime> _lastEmailSent = {};
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final Map<String, DateTime> _lastEmailSent = {};
 
   AuthController({required AuthRepository authRepository, required Ref ref})
       : _authRepository = authRepository,
@@ -38,33 +38,31 @@ class AuthController extends StateNotifier<bool> {
 
   Stream<User?> get authStateChange => _authRepository.authStateChange;
 
-  Future<void> signInWithGoogle(BuildContext context) async {
+  Future<void> _handleAuthResult(
+      BuildContext context, FutureEither<UserModel> result) async {
     state = true;
-    final user = await _authRepository.signInWithGoogle();
+    final outcome = await result;
     state = false;
-    user.fold(
-      (l) => showSnackbar(context, l.message),
-      (userModel) =>
-          _ref.read(userProvider.notifier).update((state) => userModel),
+
+    outcome.fold(
+      (l) => _showSnackBar(context, l.message),
+      (userModel) async {
+        if (context.mounted) {
+          _ref.read(userProvider.notifier).update((state) => userModel);
+          Routemaster.of(context).push('/homeScreen');
+        }
+      },
     );
-    Routemaster.of(context).push('/homeScreen');
+  }
+
+  Future<void> signInWithGoogle(BuildContext context) async {
+    await _handleAuthResult(context, _authRepository.signInWithGoogle());
   }
 
   Future<void> signInWithEmailAndPassword(
       BuildContext context, String email, String password) async {
-    state = true;
-    final user = await _authRepository.signInWithEmailAndPassword(
-      email,
-      password,
-    );
-    state = false;
-    user.fold(
-      (l) => showSnackbar(context, l.message),
-      (userModel) {
-        _ref.read(userProvider.notifier).update((state) => userModel);
-        Routemaster.of(context).push('/homeScreen');
-      },
-    );
+    await _handleAuthResult(
+        context, _authRepository.signInWithEmailAndPassword(email, password));
   }
 
   Stream<UserModel> getUserData(String uid) {
@@ -72,54 +70,25 @@ class AuthController extends StateNotifier<bool> {
   }
 
   Future<void> resetPassword(BuildContext context, String email) async {
+    if (email.isEmpty) {
+      _showSnackBar(context, 'Please enter an email address.');
+      return;
+    }
     try {
       state = true;
-      if (email.isEmpty) {
-        throw 'please enter an email adress';
-      }
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-
+      await _auth.sendPasswordResetEmail(email: email);
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Password reset link sent to your email'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        _showSnackBar(context, 'Password reset link sent to your email.',
+            isError: false);
       }
     } on FirebaseAuthException catch (e) {
-      String errorMessage;
-
-      switch (e.code) {
-        case 'Invalid-email':
-          errorMessage = ' The email adress is invalid';
-          break;
-        case 'user-not-found':
-          errorMessage = 'No User found with email adress';
-          break;
-        case ' too-many-requests ':
-          errorMessage = 'Too many requests. Try again later';
-          break;
-        default:
-          errorMessage = e.message ?? 'An error occured';
-      }
-
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(errorMessage),
-            backgroundColor: Colors.red,
-          ),
-        );
+        final error = _mapFirebaseError(e.code);
+        _showSnackBar(context, error);
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString()),
-            backgroundColor: Colors.red,
-          ),
-        );
+        _showSnackBar(context, e.toString());
       }
     } finally {
       state = false;
@@ -128,41 +97,32 @@ class AuthController extends StateNotifier<bool> {
 
   Future<void> resendVerificationEmail(BuildContext context) async {
     try {
-      User? user = _auth.currentUser;
+      final user = _auth.currentUser;
       if (user != null && !user.emailVerified) {
         final lastSent = _lastEmailSent[user.email];
-        if (lastSent != null) {
-          final difference = DateTime.now().difference(lastSent);
-          if (difference.inSeconds < 60) {
-            throw 'Please wait ${60 - difference.inSeconds} seconds before requesting another email';
-          }
+        final now = DateTime.now();
+        if (lastSent != null && now.difference(lastSent).inSeconds < 60) {
+          throw 'Please wait ${60 - now.difference(lastSent).inSeconds} seconds before requesting another email.';
         }
 
         await user.sendEmailVerification();
-        _lastEmailSent[user.email!] = DateTime.now();
+        _lastEmailSent[user.email!] = now;
 
         if (context.mounted) {
-          showSnackBar(
-            context,
-            'Verification email resent successfully',
-            isError: false,
-          );
+          _showSnackBar(context, 'Verification email resent successfully.',
+              isError: false);
         }
       } else {
-        throw 'User not found or already verified';
-      }
-    } on FirebaseAuthException catch (e) {
-      if (context.mounted) {
-        showSnackBar(context, e.message ?? 'An error occurred', isError: true);
+        throw 'User not found or already verified.';
       }
     } catch (e) {
       if (context.mounted) {
-        showSnackBar(context, e.toString(), isError: true);
+        _showSnackBar(context, e.toString());
       }
     }
   }
 
-  void showSnackBar(BuildContext context, String message,
+  void _showSnackBar(BuildContext context, String message,
       {bool isError = true}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -170,15 +130,29 @@ class AuthController extends StateNotifier<bool> {
         backgroundColor: isError ? Colors.red : Colors.green,
         behavior: SnackBarBehavior.floating,
         margin: EdgeInsets.all(16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
   }
 
-  void signOut(BuildContext context) async {
+  Future<void> signOut(BuildContext context) async {
     await _authRepository.signOutUser();
-    Navigator.pushReplacementNamed(context, '/login');
+    _ref.read(userProvider.notifier).update((state) => null);
+    if (context.mounted) {
+      Navigator.pushReplacementNamed(context, '/login');
+    }
+  }
+
+  String _mapFirebaseError(String code) {
+    switch (code) {
+      case 'invalid-email':
+        return 'The email address is invalid.';
+      case 'user-not-found':
+        return 'No user found with that email address.';
+      case 'too-many-requests':
+        return 'Too many requests. Try again later.';
+      default:
+        return 'An unexpected error occurred.';
+    }
   }
 }
