@@ -10,6 +10,8 @@ class UserProfile {
   final int playlistCount;
   final int followersCount;
   final int followingCount;
+  final String? firstName;
+  final String? lastName;
 
   UserProfile({
     required this.uid,
@@ -21,13 +23,40 @@ class UserProfile {
     this.playlistCount = 0,
     this.followersCount = 0,
     this.followingCount = 0,
+    this.firstName,
+    this.lastName,
   });
 
   factory UserProfile.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+    
+ 
+    final firstName = data['firstName'] as String?;
+    final lastName = data['lastName'] as String?;
+    
+
+    String displayName;
+    if (firstName != null && firstName.isNotEmpty) {
+      if (lastName != null && lastName.isNotEmpty) {
+        displayName = '$firstName $lastName';
+      } else {
+        displayName = firstName;
+      }
+    } else if (lastName != null && lastName.isNotEmpty) {
+      displayName = lastName;
+    } else {
+
+      final email = data['email'] as String?;
+      if (email != null && email.contains('@')) {
+        displayName = email.split('@')[0];
+      } else {
+        displayName = 'User';
+      }
+    }
+    
     return UserProfile(
       uid: doc.id,
-      displayName: data['displayName'] ?? 'User',
+      displayName: displayName,
       email: data['email'] ?? '',
       avatarUrl: data['avatarUrl'],
       bio: data['bio'],
@@ -35,12 +64,15 @@ class UserProfile {
       playlistCount: data['playlistCount'] ?? 0,
       followersCount: data['followersCount'] ?? 0,
       followingCount: data['followingCount'] ?? 0,
+      firstName: firstName,
+      lastName: lastName,
     );
   }
 
   Map<String, dynamic> toFirestore() {
     return {
-      'displayName': displayName,
+      'firstName': firstName,
+      'lastName': lastName,
       'email': email,
       'avatarUrl': avatarUrl,
       'bio': bio,
@@ -60,6 +92,8 @@ class UserProfile {
     int? playlistCount,
     int? followersCount,
     int? followingCount,
+    String? firstName,
+    String? lastName,
   }) {
     return UserProfile(
       uid: uid,
@@ -71,6 +105,8 @@ class UserProfile {
       playlistCount: playlistCount ?? this.playlistCount,
       followersCount: followersCount ?? this.followersCount,
       followingCount: followingCount ?? this.followingCount,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
     );
   }
 }
