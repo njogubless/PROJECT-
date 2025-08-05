@@ -34,7 +34,7 @@ class AuthRepository {
 
   Stream<User?> get authStateChange => _auth.authStateChanges();
 
-  /// Check if user exists in Firestore
+
   Future<bool> _userExistsInFirestore(String uid) async {
     try {
       final doc = await _users.doc(uid).get();
@@ -44,7 +44,6 @@ class AuthRepository {
     }
   }
 
-  /// Create new user in Firestore
   Future<UserModel> _createUserInFirestore(User user) async {
     final newUser = UserModel(
       uid: user.uid,
