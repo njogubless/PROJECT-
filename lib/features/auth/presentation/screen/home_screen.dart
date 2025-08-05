@@ -96,10 +96,38 @@ Future<Map<String, dynamic>> _fetchUserData() async {
   }
 
   final data = userDoc.data()!;
+  
+
+  String displayName = 'User';
+  final firstName = data['firstName'] as String?;
+  final lastName = data['lastName'] as String?;
+  
+  if (firstName != null && firstName.isNotEmpty) {
+    if (lastName != null && lastName.isNotEmpty) {
+      displayName = '$firstName $lastName';
+    } else {
+      displayName = firstName;
+    }
+  } else if (lastName != null && lastName.isNotEmpty) {
+    displayName = lastName;
+  } else if (data['name'] != null) {
+
+    displayName = data['name'] as String;
+  } else if (user.displayName != null && user.displayName!.isNotEmpty) {
+
+    displayName = user.displayName!;
+  } else if (user.email != null && user.email!.contains('@')) {
+
+    displayName = user.email!.split('@')[0];
+  }
+  
   return {
-    'name': data['name'] as String? ?? user.displayName ?? 'User',
+    'name': displayName,
     'email': data['email'] as String? ?? user.email ?? 'guest@example.com',
     'avatarUrl': data['avatarUrl'] as String? ?? '',
+    'firstName': firstName,
+    'lastName': lastName,
+    'phoneNumber': data['phoneNumber'] as String?,
   };
 }
 
