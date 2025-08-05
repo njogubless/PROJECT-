@@ -1,6 +1,8 @@
 import 'package:devotion/core/type_defs.dart';
 import 'package:devotion/features/auth/data/models/user_models.dart';
 import 'package:devotion/features/auth/Repository/auth_repository.dart';
+import 'package:devotion/features/auth/presentation/screen/home_screen.dart';
+import 'package:devotion/features/auth/presentation/screen/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
@@ -49,7 +51,8 @@ class AuthController extends StateNotifier<bool> {
       (userModel) async {
         if (context.mounted) {
           _ref.read(userProvider.notifier).update((state) => userModel);
-          Routemaster.of(context).push('/homeScreen');
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => HomeScreen()),);
         }
       },
     );
@@ -139,7 +142,7 @@ class AuthController extends StateNotifier<bool> {
     await _authRepository.signOutUser();
     _ref.read(userProvider.notifier).update((state) => null);
     if (context.mounted) {
-      Navigator.pushReplacementNamed(context, '/login');
+      Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()),);
     }
   }
 
