@@ -155,7 +155,7 @@ class SignUpScreen extends ConsumerWidget {
                   const Text("Already have an Account?"),
                   TextButton(
                     onPressed: () =>
-                        Routemaster.of(context).push('/login'),
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen())),
                     child: const Text(
                       'Log In',
                       style: TextStyle(fontWeight: FontWeight.bold),
