@@ -24,6 +24,63 @@ class AppDrawer extends ConsumerStatefulWidget {
 class _AppDrawerState extends ConsumerState<AppDrawer> {
   bool _isLoading = false;
 
+  // Method to fetch user data from Firestore
+  Future<Map<String, dynamic>> _fetchUserData() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      return {'name': 'Guest User', 'email': 'Sign in to access all features', 'avatarUrl': null};
+    }
+
+    try {
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+
+      if (!userDoc.exists || userDoc.data() == null) {
+        return {
+          'name': user.displayName ?? 'User',
+          'email': user.email ?? 'No email',
+          'avatarUrl': user.photoURL,
+        };
+      }
+
+      final data = userDoc.data()!;
+      
+      // Construct name from firstName and lastName
+      String displayName = 'User';
+      final firstName = data['firstName'] as String?;
+      final lastName = data['lastName'] as String?;
+      
+      if (firstName != null && firstName.isNotEmpty) {
+        if (lastName != null && lastName.isNotEmpty) {
+          displayName = '$firstName $lastName';
+        } else {
+          displayName = firstName;
+        }
+      } else if (lastName != null && lastName.isNotEmpty) {
+        displayName = lastName;
+      } else if (user.displayName != null && user.displayName!.isNotEmpty) {
+        displayName = user.displayName!;
+      } else if (user.email != null && user.email!.contains('@')) {
+        displayName = user.email!.split('@')[0];
+      }
+      
+      return {
+        'name': displayName,
+        'email': data['email'] as String? ?? user.email ?? 'No email',
+        'avatarUrl': data['avatarUrl'] as String? ?? user.photoURL,
+      };
+    } catch (e) {
+      debugPrint('Error fetching user data for drawer: $e');
+      return {
+        'name': user.displayName ?? 'User',
+        'email': user.email ?? 'No email',
+        'avatarUrl': user.photoURL,
+      };
+    }
+  }
+
   Future<void> launchLink(String link) async {
     try {
       if (!await launchUrl(Uri.parse(link),
@@ -103,6 +160,8 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
               const SnackBar(
                   content: Text('Profile picture updated successfully')),
             );
+           
+            setState(() {});
           }
         }
       }
@@ -134,66 +193,78 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
     return Drawer(
       child: Column(
         children: [
-          UserAccountsDrawerHeader(
-            decoration: BoxDecoration(
-              color: theme.primaryColor,
-              image: const DecorationImage(
-                image: AssetImage('assets/images/ROF.webp'),
-                fit: BoxFit.cover,
-                opacity: 0.7,
-              ),
-            ),
-            accountName: Text(
-              user?.displayName ?? 'Guest User',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
-            accountEmail: Text(
-              user?.email ?? 'Sign in to access all features',
-              style: const TextStyle(fontSize: 14),
-            ),
-            currentAccountPicture: GestureDetector(
-              onTap: _uploadProfilePicture,
-              child: Stack(
-                alignment: Alignment.bottomRight,
-                children: [
-                  CircleAvatar(
-                    backgroundColor: Colors.white,
-                    radius: 32,
-                    child: _isLoading
-                        ? const CircularProgressIndicator()
-                        : ClipOval(
-                            child: user?.photoURL != null
-                                ? CachedNetworkImage(
-                                    imageUrl: user!.photoURL!,
-                                    placeholder: (context, url) =>
-                                        const CircularProgressIndicator(),
-                                    errorWidget: (context, url, error) =>
-                                        const Icon(Icons.person, size: 40),
-                                    fit: BoxFit.cover,
-                                    width: 60,
-                                    height: 60,
-                                  )
-                                : const Icon(Icons.person, size: 40),
+          FutureBuilder<Map<String, dynamic>>(
+            future: _fetchUserData(),
+            builder: (context, snapshot) {
+              final userData = snapshot.data ?? {
+                'name': 'Loading...',
+                'email': 'Loading...',
+                'avatarUrl': null
+              };
+              
+              return UserAccountsDrawerHeader(
+                decoration: BoxDecoration(
+                  color: theme.primaryColor,
+                  image: const DecorationImage(
+                    image: AssetImage('assets/images/ROF.webp'),
+                    fit: BoxFit.cover,
+                    opacity: 0.7,
+                  ),
+                ),
+                accountName: Text(
+                  userData['name'] as String,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                accountEmail: Text(
+                  userData['email'] as String,
+                  style: const TextStyle(fontSize: 14),
+                ),
+                currentAccountPicture: GestureDetector(
+                  onTap: user != null ? _uploadProfilePicture : null,
+                  child: Stack(
+                    alignment: Alignment.bottomRight,
+                    children: [
+                      CircleAvatar(
+                        backgroundColor: Colors.white,
+                        radius: 32,
+                        child: _isLoading
+                            ? const CircularProgressIndicator()
+                            : ClipOval(
+                                child: userData['avatarUrl'] != null
+                                    ? CachedNetworkImage(
+                                        imageUrl: userData['avatarUrl'] as String,
+                                        placeholder: (context, url) =>
+                                            const CircularProgressIndicator(),
+                                        errorWidget: (context, url, error) =>
+                                            _buildFallbackAvatar(userData['name'] as String, theme),
+                                        fit: BoxFit.cover,
+                                        width: 60,
+                                        height: 60,
+                                      )
+                                    : _buildFallbackAvatar(userData['name'] as String, theme),
+                              ),
+                      ),
+                      if (user != null)
+                        Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: theme.primaryColor,
+                            shape: BoxShape.circle,
                           ),
+                          child: const Icon(
+                            Icons.edit,
+                            color: Colors.white,
+                            size: 16,
+                          ),
+                        ),
+                    ],
                   ),
-                  Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: theme.primaryColor,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.edit,
-                      color: Colors.white,
-                      size: 16,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+                ),
+              );
+            },
           ),
           Expanded(
             child: ListView(
@@ -307,6 +378,27 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildFallbackAvatar(String name, ThemeData theme) {
+    return Container(
+      width: 60,
+      height: 60,
+      decoration: BoxDecoration(
+        color: theme.primaryColor.withOpacity(0.1),
+        shape: BoxShape.circle,
+      ),
+      child: Center(
+        child: Text(
+          name.isNotEmpty ? name[0].toUpperCase() : 'U',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: theme.primaryColor,
+          ),
+        ),
       ),
     );
   }
