@@ -9,11 +9,11 @@ class FileUploadService {
     required String folderName,
     required Function(double progress) onProgress,
   }) async {
-    try {
+        try {
       final fileName =
           '${DateTime.now().millisecondsSinceEpoch}_${p.basename(file.path)}';
       final storageRef =
-          FirebaseStorage.instance.ref().child(folderName).child(fileName);
+          FirebaseStorage.instance.ref().child('Audios').child(fileName);
 
       final uploadTask = storageRef.putFile(file);
 
