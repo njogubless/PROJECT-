@@ -1,4 +1,3 @@
-
 import 'package:devotion/features/audio/presentation/providers/audio_player_provider.dart';
 import 'package:devotion/features/audio/presentation/providers/audio_repository_provider.dart';
 import 'package:devotion/features/audio/presentation/widgets/audio_tile.dart';
@@ -30,25 +29,41 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Audio Library'),
+        backgroundColor: Theme.of(context).primaryColor,
+        foregroundColor: Colors.white,
+        elevation: 2,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () => ref.read(audioProvider.notifier).refresh(),
+            tooltip: 'Refresh audio files',
           ),
         ],
       ),
       body: Column(
         children: [
-          Padding(
+          // Search Bar
+          Container(
             padding: const EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              color: Theme.of(context).scaffoldBackgroundColor,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: 'Search audio files...',
-                prefixIcon: const Icon(Icons.search),
+                hintText: 'Search by title or scripture...',
+                hintStyle: TextStyle(color: Colors.grey[500]),
+                prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
                 suffixIcon: _searchQuery.isNotEmpty
                     ? IconButton(
-                        icon: const Icon(Icons.clear),
+                        icon: Icon(Icons.clear, color: Colors.grey[600]),
                         onPressed: () {
                           _searchController.clear();
                           setState(() {
@@ -57,16 +72,17 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                         },
                       )
                     : null,
+                filled: true,
+                fillColor: Colors.grey[100],
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                    color: Theme.of(context).primaryColor,
-                  ),
+                  borderSide: BorderSide.none,
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(
-                    color: Theme.of(context).primaryColor.withValues(alpha:0.5),
+                    color: Colors.grey[300]!,
+                    width: 1,
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
@@ -79,162 +95,282 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
               ),
               onChanged: (value) {
                 setState(() {
-                  _searchQuery = value.toLowerCase();
+                  _searchQuery = value.trim().toLowerCase();
                 });
               },
             ),
           ),
+
+          // Audio List
           Expanded(
             child: audioState.when(
               data: (audioFiles) {
+                if (audioFiles.isEmpty) {
+                  return _buildEmptyState(
+                    icon: Icons.audio_file,
+                    title: 'No Audio Files',
+                    subtitle: 'Audio files will appear here once uploaded',
+                    showRefresh: true,
+                  );
+                }
+
+                // Improved search filtering
                 final filteredAudioFiles = _searchQuery.isEmpty
                     ? audioFiles
-                    : audioFiles
-                        .where((audio) =>
-                            audio.title
+                    : audioFiles.where((audio) {
+                        final titleMatch = audio.title
+                            .toLowerCase()
+                            .contains(_searchQuery);
+                        final scriptureMatch = audio.scripture != null &&
+                            audio.scripture!
                                 .toLowerCase()
-                                .contains(_searchQuery) ||
-                            (audio.scripture
-                                .toLowerCase()
-                                .contains(_searchQuery)))
-                        .toList();
-    
-                if (filteredAudioFiles.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.audio_file,
-                          size: 80,
-                          color: Colors.grey[400],
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          _searchQuery.isEmpty
-                              ? 'No audio files found'
-                              : 'No matching audio files found',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        if (_searchQuery.isEmpty)
-                          ElevatedButton.icon(
-                            icon: const Icon(Icons.refresh),
-                            label: const Text('Refresh'),
-                            onPressed: () =>
-                                ref.read(audioProvider.notifier).refresh(),
-                          ),
-                      ],
+                                .contains(_searchQuery);
+                        
+                        return titleMatch || scriptureMatch;
+                      }).toList();
+
+                if (filteredAudioFiles.isEmpty && _searchQuery.isNotEmpty) {
+                  return _buildEmptyState(
+                    icon: Icons.search_off,
+                    title: 'No Results Found',
+                    subtitle: 'No audio files match "${_searchQuery}"',
+                    showRefresh: false,
+                    extraWidget: TextButton(
+                      onPressed: () {
+                        _searchController.clear();
+                        setState(() {
+                          _searchQuery = '';
+                        });
+                      },
+                      child: const Text('Clear Search'),
                     ),
                   );
                 }
-    
+
                 return RefreshIndicator(
                   onRefresh: () => ref.read(audioProvider.notifier).refresh(),
-                  child: ListView.builder(
-                    padding: const EdgeInsets.only(bottom: 100),
+                  child: ListView.separated(
+                    padding: EdgeInsets.only(
+                      top: 8,
+                      left: 16,
+                      right: 16,
+                      bottom: currentPlayingState.currentAudioId.isNotEmpty 
+                          ? 90 // Space for mini player
+                          : 16,
+                    ),
                     itemCount: filteredAudioFiles.length,
+                    separatorBuilder: (context, index) => const SizedBox(height: 8),
                     itemBuilder: (context, index) {
                       final audioFile = filteredAudioFiles[index];
-                      return AudioTile(audioFile: audioFile);
+                      return Card(
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: AudioTile(audioFile: audioFile),
+                      );
                     },
                   ),
                 );
               },
-              loading: () => const Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(),
-                    SizedBox(height: 16),
-                    Text('Loading audio files...'),
-                  ],
-                ),
-              ),
-              error: (error, stack) => Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.error_outline,
-                      size: 60,
-                      color: Colors.red[300],
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Failed to load audio files',
-                      style: TextStyle(fontSize: 18, color: Colors.grey[800]),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      error.toString(),
-                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton.icon(
-                      icon: const Icon(Icons.refresh),
-                      label: const Text('Try Again'),
-                      onPressed: () =>
-                          ref.read(audioProvider.notifier).refresh(),
-                    ),
-                  ],
-                ),
-              ),
+              loading: () => _buildLoadingState(),
+              error: (error, stack) => _buildErrorState(error),
             ),
           ),
         ],
       ),
+      
+      // Mini Player
       bottomSheet: currentPlayingState.currentAudioId.isNotEmpty
           ? _buildMiniPlayer(context, currentPlayingState)
           : null,
     );
   }
 
+  Widget _buildEmptyState({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required bool showRefresh,
+    Widget? extraWidget,
+  }) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 80,
+              color: Colors.grey[400],
+            ),
+            const SizedBox(height: 24),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              subtitle,
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey[600],
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            if (showRefresh)
+              ElevatedButton.icon(
+                icon: const Icon(Icons.refresh),
+                label: const Text('Refresh'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).primaryColor,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                onPressed: () => ref.read(audioProvider.notifier).refresh(),
+              ),
+            if (extraWidget != null) ...[
+              const SizedBox(height: 12),
+              extraWidget,
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoadingState() {
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(),
+          SizedBox(height: 16),
+          Text(
+            'Loading audio files...',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorState(Object error) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.error_outline,
+              size: 80,
+              color: Colors.red[300],
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              'Failed to Load Audio Files',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Error: ${error.toString()}',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[600],
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.refresh),
+              label: const Text('Try Again'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).primaryColor,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              onPressed: () => ref.read(audioProvider.notifier).refresh(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildMiniPlayer(BuildContext context, AudioPlayerState playerState) {
     return Container(
-      height: 70,
-      width: double.infinity,
       decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor.withValues(alpha: 0.5),
+        color: Theme.of(context).cardColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.5),
+            color: Colors.black.withOpacity(0.1),
             blurRadius: 8,
             offset: const Offset(0, -2),
           ),
         ],
         border: Border(
           top: BorderSide(
-            color: Theme.of(context).primaryColor.withValues(alpha: 0.5),
+            color: Colors.grey[300]!,
             width: 1,
           ),
         ),
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
+          // Progress Bar
           LinearProgressIndicator(
             value: playerState.duration.inSeconds > 0
-                ? playerState.position.inSeconds /
-                    playerState.duration.inSeconds
+                ? (playerState.position.inSeconds / playerState.duration.inSeconds).clamp(0.0, 1.0)
                 : 0,
             backgroundColor: Colors.grey[300],
             valueColor: AlwaysStoppedAnimation<Color>(
               Theme.of(context).primaryColor,
             ),
-            minHeight: 2,
+            minHeight: 3,
           ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                children: [
-                  IconButton(
+          
+          // Mini Player Content
+          Container(
+            height: 70,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              children: [
+                // Play/Pause Button
+                Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: IconButton(
                     icon: Icon(
                       playerState.isPlaying
                           ? Icons.pause_circle_filled
@@ -254,40 +390,47 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                       }
                     },
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          playerState.currentTitle,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                ),
+                
+                const SizedBox(width: 12),
+                
+                // Song Info
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        playerState.currentTitle.isNotEmpty 
+                            ? playerState.currentTitle 
+                            : 'Unknown Title',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '${_formatDuration(playerState.position)} / ${_formatDuration(playerState.duration)}',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
-                          ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${_formatDuration(playerState.position)} / ${_formatDuration(playerState.duration)}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[600],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () {
-                      ref.read(audioPlayerProvider.notifier).stopAudio();
-                    },
-                  ),
-                ],
-              ),
+                ),
+                
+                // Close Button
+                IconButton(
+                  icon: const Icon(Icons.close, size: 20),
+                  onPressed: () {
+                    ref.read(audioPlayerProvider.notifier).stopAudio();
+                  },
+                ),
+              ],
             ),
           ),
         ],
@@ -296,9 +439,18 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
   }
 
   String _formatDuration(Duration duration) {
+    if (duration.inSeconds == 0) return '0:00';
+    
     String twoDigits(int n) => n.toString().padLeft(2, '0');
+    
+    final hours = duration.inHours;
     final minutes = twoDigits(duration.inMinutes.remainder(60));
     final seconds = twoDigits(duration.inSeconds.remainder(60));
-    return '$minutes:$seconds';
+    
+    if (hours > 0) {
+      return '$hours:$minutes:$seconds';
+    } else {
+      return '$minutes:$seconds';
+    }
   }
 }
