@@ -13,15 +13,21 @@ class AudioRepositoryImpl implements AudioRepository {
   @override
   Future<void> uploadAudioFile(AudioFile audioFile, String filePath) async {
     try {
-      final ref = _storage.ref().child('audios/${audioFile.id}.mp3');
+      // Use consistent path - 'audio' instead of 'audios'
+      final ref = _storage.ref().child('audio/${audioFile.id}.mp3');
       final uploadTask = await ref.putFile(File(filePath));
 
       final downloadUrl = await uploadTask.ref.getDownloadURL();
 
-      await _firestore.collection('audioFiles').doc(audioFile.id).set({
+      // Use 'Sermons' collection to match your Firebase structure
+      await _firestore.collection('Sermons').doc(audioFile.id).set({
         'id': audioFile.id,
         'title': audioFile.title,
         'url': downloadUrl,
+        'fileName': audioFile.title,
+        'fileType': 'audio',
+        'downloadUrl': downloadUrl,
+        'uploadedAt': FieldValue.serverTimestamp(),
       });
     } catch (e) {
       throw Exception('Failed to upload audio file: $e');
@@ -31,15 +37,56 @@ class AudioRepositoryImpl implements AudioRepository {
   @override
   Future<List<AudioFile>> fetchAudioFiles() async {
     try {
-      final firestoreSnapshot = await _firestore.collection('audioFiles').get();
+      // First try to get from Sermons collection
+      final sermonsSnapshot = await _firestore.collection('Sermons').get();
 
       debugPrint(
-          " fetching audio file successfully ---------------- ${firestoreSnapshot.docs.length}");
+          "Fetching from Sermons collection - ${sermonsSnapshot.docs.length} documents found");
 
-      if (firestoreSnapshot.docs.isNotEmpty) {
-        return firestoreSnapshot.docs.map((doc) {
+      if (sermonsSnapshot.docs.isNotEmpty) {
+        return sermonsSnapshot.docs.map((doc) {
           final data = doc.data();
-          debugPrint("Audio data ------------------: $data");
+          debugPrint("Sermon data: $data");
+
+            String audioFileName = data['id'] ?? doc.id;
+          if (data['downloadUrl'] != null) {
+            final uri = Uri.parse(data['downloadUrl']);
+            final pathSegments = uri.pathSegments;
+            if (pathSegments.isNotEmpty) {
+              // Get the last segment which should be the filename
+              audioFileName = pathSegments.last;
+              // Remove any query parameters
+              audioFileName = audioFileName.split('?')[0];
+            }
+          }
+
+          return AudioFile(
+            id: audioFileName,
+            title: data['fileName'] ?? data['title'] ?? 'Untitled Audio',
+            url: data['downloadUrl'] ?? data['url'] ?? '',
+            uploaderId: data['uploaderId'] ?? '',
+            uploadDate: data['uploadedAt'] != null
+                ? (data['uploadedAt'] as Timestamp).toDate()
+                : DateTime.now(),
+            coverUrl: data['coverUrl'] ?? '',
+            setUrl: data['setUrl'] ?? '',
+            duration: data['duration'] ?? Duration.zero,
+            scripture: data['scripture'] ?? '',
+          );
+        }).toList();
+      }
+
+      // Fallback to audioFiles collection
+      final audioFilesSnapshot =
+          await _firestore.collection('audioFiles').get();
+
+      debugPrint(
+          "Fetching from audioFiles collection - ${audioFilesSnapshot.docs.length} documents found");
+
+      if (audioFilesSnapshot.docs.isNotEmpty) {
+        return audioFilesSnapshot.docs.map((doc) {
+          final data = doc.data();
+          debugPrint("AudioFile data: $data");
           return AudioFile(
             id: data['id'] ?? doc.id,
             title: data['title'] ?? 'Untitled Audio',
@@ -54,32 +101,40 @@ class AudioRepositoryImpl implements AudioRepository {
             scripture: data['scripture'] ?? '',
           );
         }).toList();
-      } else {
-        final storageRef = _storage.ref().child('Audios');
-        final listResult = await storageRef.listAll();
+      }
 
-        List<AudioFile> audioFiles = [];
-        for (var item in listResult.items) {
+      // Last resort: get directly from Firebase Storage
+      debugPrint("Fetching directly from Storage");
+      final storageRef = _storage.ref().child('audio');
+      final listResult = await storageRef.listAll();
+
+      List<AudioFile> audioFiles = [];
+      for (var item in listResult.items) {
+        try {
           final url = await item.getDownloadURL();
-
           final fileName = item.name;
           final title = fileName.replaceAll('.mp3', '').replaceAll('_', ' ');
+
+          // Get metadata if available
+          final metadata = await item.getMetadata();
 
           audioFiles.add(AudioFile(
             id: item.name,
             title: title,
             url: url,
             uploaderId: '',
-            uploadDate: DateTime.now(),
+            uploadDate: metadata.timeCreated ?? DateTime.now(),
             coverUrl: '',
             setUrl: '',
             duration: Duration.zero,
             scripture: '',
           ));
+        } catch (e) {
+          debugPrint('Error processing item ${item.name}: $e');
         }
-
-        return audioFiles;
       }
+
+      return audioFiles;
     } catch (e) {
       debugPrint('Error fetching audio files: $e');
       throw Exception('Failed to fetch audio files: $e');
@@ -89,9 +144,12 @@ class AudioRepositoryImpl implements AudioRepository {
   @override
   Future<void> deleteAudioFile(String audioId) async {
     try {
-      final ref = _storage.ref().child('audios/$audioId.mp3');
+      // Delete from storage
+      final ref = _storage.ref().child('audio/$audioId');
       await ref.delete();
 
+      // Delete from both possible collections
+      await _firestore.collection('Sermons').doc(audioId).delete();
       await _firestore.collection('audioFiles').doc(audioId).delete();
     } catch (e) {
       throw Exception('Failed to delete audio file: $e');
@@ -101,14 +159,23 @@ class AudioRepositoryImpl implements AudioRepository {
   @override
   Future<String> downloadAudio(String audioId) async {
     try {
-      final doc = await _firestore.collection('audioFiles').doc(audioId).get();
-      final data = doc.data();
+      // Try Sermons collection first
+      var doc = await _firestore.collection('Sermons').doc(audioId).get();
+      var data = doc.data();
+
+      if (data != null && data['downloadUrl'] != null) {
+        return data['downloadUrl'];
+      }
+
+      // Try audioFiles collection
+      doc = await _firestore.collection('audioFiles').doc(audioId).get();
+      data = doc.data();
 
       if (data != null && data['url'] != null) {
         return data['url'];
-      } else {
-        throw Exception('Audio file not found');
       }
+
+      throw Exception('Audio file not found');
     } catch (e) {
       throw Exception('Failed to download audio file: $e');
     }
