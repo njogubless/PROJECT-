@@ -85,7 +85,7 @@ class DashboardTile extends ConsumerWidget {
 
     if (title == "Upload Audio") {
       fileType = FileType.audio;
-      folderName = 'Audios';
+      folderName = 'audio';
     } else if (title == "Upload Book") {
       fileType = FileType.custom;
       folderName = 'Books';
