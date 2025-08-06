@@ -184,7 +184,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
           icon: Icons.audiotrack,
           color: Colors.blue,
           onTap: () =>
-              uploadFile(FirebaseConstants.sermonCollection, 'Audios', context),
+              uploadFile(FirebaseConstants.sermonCollection, 'audio', context),
         ),
         _buildDashboardTile(
           context,
@@ -302,7 +302,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               onTap: () {
                 Navigator.pop(context);
                 uploadFile(
-                    FirebaseConstants.sermonCollection, 'AudioS', context);
+                    FirebaseConstants.sermonCollection, 'audio', context);
               },
             ),
             const SizedBox(height: 8),
