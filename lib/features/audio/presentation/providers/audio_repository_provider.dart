@@ -21,6 +21,25 @@ final audioProvider = StateNotifierProvider<AudioNotifier, AsyncValue<List<Audio
 });
 
 
+
+final fetchAudioFilesProvider = Provider<FetchAudioFiles>((ref) {
+  final audioRepository = ref.watch(audioRepositoryProvider);
+  return FetchAudioFiles(audioRepository);
+});
+
+
+final audioFilesProvider = FutureProvider<List<AudioFile>>((ref) async {
+  final fetchAudioFiles = ref.watch(fetchAudioFilesProvider);
+  return await fetchAudioFiles.call();
+});
+
+
+final currentAudioProvider = StateProvider<AudioFile?>((ref) => null);
+
+
+final audioPlaybackStateProvider = StateProvider<bool>((ref) => false);
+
+
 class AudioNotifier extends StateNotifier<AsyncValue<List<AudioFile>>> {
   final FetchAudioFiles fetchAudioFiles;
 
