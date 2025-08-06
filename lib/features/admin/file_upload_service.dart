@@ -13,7 +13,7 @@ class FileUploadService {
       final fileName =
           '${DateTime.now().millisecondsSinceEpoch}_${p.basename(file.path)}';
       final storageRef =
-          FirebaseStorage.instance.ref().child('Audios').child(fileName);
+          FirebaseStorage.instance.ref().child('audio').child(fileName);
 
       final uploadTask = storageRef.putFile(file);
 
