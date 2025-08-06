@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class AudioFile {
   final String id;
   final String title;
@@ -34,23 +36,28 @@ class AudioFile {
       'setUrl': setUrl,
       'isPlaying': isPlaying,
       'uploaderId': uploaderId,
-      'uploadDate': uploadDate.toIso8601String(),
+      'uploadDate': Timestamp.fromDate(uploadDate),
       'scripture': scripture,  
       
     };
   }
 
-  factory AudioFile.fromJson(Map<String, dynamic> json) {
-    return AudioFile(
-      id: json['id'] as String,
-      title: json['title'] as String,
-      url: json['url'] as String,
-      coverUrl: json['coverUrl'] as String,
-      duration: Duration(seconds: json['duration'] as int),
-      setUrl: json['setUrl'] as String,
-      uploaderId: json['uploaderId'] as String,
-      uploadDate: DateTime.parse(json['uploadDate'] as String),
-      scripture: json['scripture'] as String,
-    );
-  }
+factory AudioFile.fromJson(Map<String, dynamic> json) {
+  final timestamp = json['uploadedAt'];
+
+  return AudioFile(
+    id: json['id'] as String,
+    title: json['title'] as String,
+    url: json['url'] as String,
+    coverUrl: json['coverUrl'] as String? ?? '',
+    duration: Duration(seconds: json['duration'] as int? ?? 0),
+    setUrl: json['setUrl'] as String? ?? '',
+    uploaderId: json['uploaderId'] as String? ?? '',
+    uploadDate: timestamp is Timestamp
+        ? timestamp.toDate()
+        : DateTime.tryParse(timestamp.toString()) ?? DateTime.now(),
+    scripture: json['scripture'] as String? ?? '',
+  );
+}
+
 }
