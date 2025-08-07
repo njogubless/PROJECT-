@@ -49,7 +49,6 @@ class BookScreen extends ConsumerWidget {
     );
   }
 }
-
 class BookCard extends ConsumerWidget {
   final BookModel book;
 
@@ -58,21 +57,28 @@ class BookCard extends ConsumerWidget {
   Future<void> _downloadBook(BuildContext context, WidgetRef ref) async {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     try {
-      
       final storageService = ref.read(storageServiceProvider);
 
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         const SnackBar(content: Text('Downloading book...')),
       );
 
-      final file = await storageService.downloadFile(
-          book.storagePath, '${book.title}.pdf');
+      String downloadPath = book.downloadUrl.isNotEmpty 
+          ? book.downloadUrl 
+          : book.fileUrl;
+          
+      if (downloadPath.isEmpty) {
+        throw 'No download URL available for this book';
+      }
+
+      final fileName = book.fileName ?? '${book.title}.pdf';
+      final file = await storageService.downloadFile(book.storagePath, fileName);
 
       final downloadedBooks = ref.read(downloadedBooksProvider.notifier);
       downloadedBooks.update((state) => {...state, book.id});
 
       scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text('Book downloaded successfully!')),
+        const SnackBar(content: Text('Book downloaded successfully!')),
       );
     } catch (e) {
       scaffoldMessenger.showSnackBar(
@@ -100,22 +106,23 @@ class BookCard extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(12)),
-              child: AspectRatio(
-                aspectRatio: 3 / 4,
-                child: CachedNetworkImage(
-                  imageUrl: book.coverUrl,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => Container(
-                    color: Colors.grey[200],
-                    child: const Center(child: CircularProgressIndicator()),
-                  ),
-                  errorWidget: (context, url, error) => Container(
-                    color: Colors.grey[200],
-                    child: const Icon(Icons.book),
-                  ),
+            Expanded(
+              child: ClipRRect(
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(12)),
+                child: AspectRatio(
+                  aspectRatio: 3 / 4,
+                  child: book.coverUrl.isNotEmpty
+                      ? CachedNetworkImage(
+                          imageUrl: book.coverUrl,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => Container(
+                            color: Colors.grey[200],
+                            child: const Center(child: CircularProgressIndicator()),
+                          ),
+                          errorWidget: (context, url, error) => _buildFallbackCover(),
+                        )
+                      : _buildFallbackCover(),
                 ),
               ),
             ),
@@ -125,7 +132,7 @@ class BookCard extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    book.title,
+                    book.title.isNotEmpty ? book.title : 'Unknown Title',
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -133,22 +140,36 @@ class BookCard extends ConsumerWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 4),
+                  if (book.author.isNotEmpty && book.author != 'Unknown Author')
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Text(
+                        book.author,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[600],
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  const SizedBox(height: 8),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      TextButton.icon(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  BookReaderScreen(book: book),
-                            ),
-                          );
-                        },
-                        icon: const Icon(Icons.read_more),
-                        label: const Text('Read'),
+                      Expanded(
+                        child: TextButton.icon(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => BookReaderScreen(book: book),
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.read_more, size: 18),
+                          label: const Text('Read', style: TextStyle(fontSize: 12)),
+                        ),
                       ),
                       IconButton(
                         icon: Icon(
@@ -164,6 +185,34 @@ class BookCard extends ConsumerWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildFallbackCover() {
+    return Container(
+      color: Colors.grey[200],
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.book,
+            size: 48,
+            color: Colors.grey[400],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            book.title.isNotEmpty ? book.title : 'Book',
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey[600],
+              fontWeight: FontWeight.w500,
+            ),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
       ),
     );
   }
