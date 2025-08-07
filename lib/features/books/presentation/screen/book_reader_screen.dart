@@ -38,20 +38,17 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
       final file = File(filePath);
 
       if (await file.exists()) {
-      
         setState(() {
           _pdfFile = file;
           _isLoading = false;
         });
       } else {
-       
         final storageService = ref.read(storageServiceProvider);
         final downloadedFile = await storageService.downloadFile(
           widget.book.storagePath,
           '${widget.book.title}.pdf',
         );
 
-       
         final downloadedBooks = ref.read(downloadedBooksProvider.notifier);
         downloadedBooks.update((state) => {...state, widget.book.id});
 
@@ -113,9 +110,7 @@ class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
                         });
                       },
                       onRender: (_pages) {
-                        setState(() {
-                   
-                        });
+                        setState(() {});
                       },
                     )
                   : const Center(child: Text('PDF file not found')),
