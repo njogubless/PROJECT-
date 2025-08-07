@@ -88,7 +88,7 @@ class DashboardTile extends ConsumerWidget {
       folderName = 'audio';
     } else if (title == "Upload Book") {
       fileType = FileType.custom;
-      folderName = 'Books';
+      folderName = 'books';
 
       result = await FilePicker.platform.pickFiles(
         type: fileType,
@@ -96,7 +96,7 @@ class DashboardTile extends ConsumerWidget {
       );
     } else {
       fileType = FileType.any;
-      folderName = 'Others';
+      folderName = 'others';
     }
 
     result ??= await FilePicker.platform.pickFiles(type: fileType);
