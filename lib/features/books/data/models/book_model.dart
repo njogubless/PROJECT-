@@ -1,3 +1,4 @@
+// book_model.dart
 class BookModel {
   final String id;
   final String title;
@@ -7,6 +8,9 @@ class BookModel {
   final String coverUrl;
   final String downloadUrl;
   final String storagePath;
+  final String? fileName;
+  final int? fileSize;
+  final String? fileType;
 
   BookModel({
     required this.id,
@@ -17,45 +21,47 @@ class BookModel {
     required this.coverUrl,
     required this.downloadUrl,
     required this.storagePath,
+    this.fileName,
+    this.fileSize,
+    this.fileType,
   });
 
-  factory BookModel.fromMap(Map<String, dynamic> map) {
-    return BookModel(
-      id: map['id'] as String,
-      title: map['title'] as String,
-      author: map['author'] as String,
-      description: map['description'] as String,
-      fileUrl: map['fileUrl'] as String,
-      coverUrl: map['coverUrl'] as String,
-      downloadUrl: map['downloadUrl'] as String,
-      storagePath: map['storagePath'] as String,
-    );
-  }
-
   factory BookModel.fromJson(Map<String, dynamic> json) {
-    return BookModel(
-      id: json['id'] as String? ?? '',
-      title: json['title'] as String? ?? '',
-      author: json['author'] as String? ?? '',
-      description: json['description'] as String? ?? '',
-      fileUrl: json['fileUrl'] as String? ?? '',
-      coverUrl: json['coverUrl'] as String? ?? '',
-      downloadUrl: json['downloadUrl'] as String? ?? '',
-      storagePath: json['storagePath'] as String? ?? '',
-    );
+    try {
+      String actualTitle = json['title'] as String? ?? '';
+      String fileName = json['fileName'] as String? ?? '';
+
+      if (actualTitle.isEmpty && fileName.isNotEmpty) {
+        actualTitle = fileName
+            .replaceAll('.pdf', '')
+            .replaceAll('(Z-Library)', '')
+            .trim();
+      }
+
+      return BookModel(
+        id: json['id'] as String? ?? '',
+        title: actualTitle,
+        author: json['author'] as String? ?? 'Unknown Author',
+        description: json['description'] as String? ?? '',
+        fileUrl:
+            json['downloadUrl'] as String? ?? json['fileUrl'] as String? ?? '',
+        coverUrl: json['coverUrl'] as String? ??
+            _generatePlaceholderCover(actualTitle),
+        downloadUrl: json['downloadUrl'] as String? ?? '',
+        storagePath: json['storagePath'] as String? ?? '',
+        fileName: fileName,
+        fileSize: json['fileSize'] as int?,
+        fileType: json['fileType'] as String?,
+      );
+    } catch (e) {
+      print("Error parsing book: $e\nData: $json");
+      rethrow;
+    }
   }
 
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'title': title,
-      'author': author,
-      'description': description,
-      'fileUrl': fileUrl,
-      'downloadUrl': downloadUrl,
-      'coverUrl': coverUrl,
-      'storagePath': storagePath,
-    };
+  static String _generatePlaceholderCover(String title) {
+    final encodedTitle = Uri.encodeComponent(title.isNotEmpty ? title : 'Book');
+    return 'https://ui-avatars.com/api/?name=$encodedTitle&size=300&background=6366f1&color=white&format=png';
   }
 
   Map<String, dynamic> toJson() => {
@@ -67,5 +73,8 @@ class BookModel {
         'coverUrl': coverUrl,
         'downloadUrl': downloadUrl,
         'storagePath': storagePath,
+        'fileName': fileName,
+        'fileSize': fileSize,
+        'fileType': fileType,
       };
 }
