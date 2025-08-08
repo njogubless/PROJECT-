@@ -2,6 +2,7 @@ import 'package:devotion/features/admin/presentation/screens/Adminquestionscreen
 import 'package:devotion/features/admin/presentation/screens/file_management_screen.dart';
 import 'package:devotion/features/admin/presentation/screens/upload_files.dart';
 import 'package:devotion/features/articles/presentation/screens/aricle_management_screen.dart';
+import 'package:devotion/features/audio/presentation/screens/recording_approval.dart';
 import 'package:devotion/features/auth/presentation/screen/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:devotion/core/constants/firebase_constants.dart';
@@ -226,6 +227,18 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 collectionPath: '',
                 title: '',
               ),
+            ),
+          ),
+        ),
+           _buildDashboardTile(
+          context,
+          title: ' Recording Approval ',
+          icon: Icons.approval_rounded,
+          color: Colors.indigoAccent,
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => RecordingApprovalPage(),
             ),
           ),
         ),
