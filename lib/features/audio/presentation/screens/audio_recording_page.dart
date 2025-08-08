@@ -26,12 +26,11 @@ class _RecordAudioPageState extends ConsumerState<RecordAudioPage> {
 
   Future<void> _submitRecording() async {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
-
+    final navigator = Navigator.of(context);
     final recordingState = ref.read(audioRecorderProvider);
-  
 
     if (recordingState.recordedFilePath == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         const SnackBar(content: Text('No recording available')),
       );
       return;
@@ -40,7 +39,7 @@ class _RecordAudioPageState extends ConsumerState<RecordAudioPage> {
     if (_titleController.text.isEmpty ||
         _scriptureController.text.isEmpty ||
         _ministerController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         const SnackBar(content: Text('Please fill all fields')),
       );
       return;
@@ -79,7 +78,7 @@ class _RecordAudioPageState extends ConsumerState<RecordAudioPage> {
           .doc(devotionDoc.id)
           .set(devotionDoc.toJson());
 
-      Navigator.pop;
+      navigator.pop();
 
       scaffoldMessenger.showSnackBar(
         const SnackBar(
@@ -88,15 +87,14 @@ class _RecordAudioPageState extends ConsumerState<RecordAudioPage> {
         ),
       );
 
-      Navigator.pop;
+      navigator.pop();
     } catch (e) {
-      Navigator.pop;
+      navigator.pop();
 
       scaffoldMessenger.showSnackBar(
         SnackBar(
           content: Text('Error uploading recording: $e'),
           backgroundColor: Colors.red,
-          
         ),
       );
     }
