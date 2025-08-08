@@ -17,6 +17,10 @@ class AdminDashboard extends StatefulWidget {
 class _AdminDashboardState extends State<AdminDashboard> {
   bool _isUploading = false;
 
+
+  static const String audioCollectionPath = 'audio_files'; 
+  static const String bookCollectionPath = 'book_files';   
+
   Future<void> uploadFile(
       String collectionPath, String firebasePath, BuildContext context) async {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
@@ -27,12 +31,13 @@ class _AdminDashboardState extends State<AdminDashboard> {
         const SnackBar(content: Text('File uploaded successfully!')),
       );
 
+      
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => FileManagementScreen(
-            collectionPath: collectionPath,
-            title: firebasePath.capitalize(),
+          builder: (context) => SplitFileManagementScreen(
+            audioCollectionPath: audioCollectionPath,
+            bookCollectionPath: bookCollectionPath,
           ),
         ),
       );
@@ -217,22 +222,22 @@ class _AdminDashboardState extends State<AdminDashboard> {
         ),
         _buildDashboardTile(
           context,
-          title: ' File Management',
+          title: 'File Management',
           icon: Icons.file_open_rounded,
           color: Colors.teal,
           onTap: () => Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => FileManagementScreen(
-                collectionPath: '',
-                title: '',
+              builder: (context) => SplitFileManagementScreen(
+                audioCollectionPath: audioCollectionPath,
+                bookCollectionPath: bookCollectionPath,
               ),
             ),
           ),
         ),
-           _buildDashboardTile(
+        _buildDashboardTile(
           context,
-          title: ' Recording Approval ',
+          title: 'Recording Approval',
           icon: Icons.approval_rounded,
           color: Colors.indigoAccent,
           onTap: () => Navigator.push(
