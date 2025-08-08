@@ -24,7 +24,6 @@ class AppDrawer extends ConsumerStatefulWidget {
 class _AppDrawerState extends ConsumerState<AppDrawer> {
   bool _isLoading = false;
 
-  // Method to fetch user data from Firestore
   Future<Map<String, dynamic>> _fetchUserData() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
@@ -46,8 +45,7 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
       }
 
       final data = userDoc.data()!;
-      
-      // Construct name from firstName and lastName
+
       String displayName = 'User';
       final firstName = data['firstName'] as String?;
       final lastName = data['lastName'] as String?;
