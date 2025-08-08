@@ -27,7 +27,11 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
   Future<Map<String, dynamic>> _fetchUserData() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      return {'name': 'Guest User', 'email': 'Sign in to access all features', 'avatarUrl': null};
+      return {
+        'name': 'Guest User',
+        'email': 'Sign in to access all features',
+        'avatarUrl': null
+      };
     }
 
     try {
@@ -49,7 +53,7 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
       String displayName = 'User';
       final firstName = data['firstName'] as String?;
       final lastName = data['lastName'] as String?;
-      
+
       if (firstName != null && firstName.isNotEmpty) {
         if (lastName != null && lastName.isNotEmpty) {
           displayName = '$firstName $lastName';
@@ -63,7 +67,7 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
       } else if (user.email != null && user.email!.contains('@')) {
         displayName = user.email!.split('@')[0];
       }
-      
+
       return {
         'name': displayName,
         'email': data['email'] as String? ?? user.email ?? 'No email',
@@ -77,6 +81,29 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
         'avatarUrl': user.photoURL,
       };
     }
+  }
+
+  Future<bool> _isUserAdmin() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return false;
+
+    try {
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+
+      if (userDoc.exists && userDoc.data() != null) {
+        final userData = userDoc.data() as Map<String, dynamic>;
+
+        return userData['isAdmin'] == true ||
+            userData['role'] == 'admin' ||
+            userData['role'] == 'administrator';
+      }
+    } catch (e) {
+      debugPrint('Error checking admin status: $e');
+    }
+    return false;
   }
 
   Future<void> launchLink(String link) async {
@@ -158,7 +185,7 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
               const SnackBar(
                   content: Text('Profile picture updated successfully')),
             );
-           
+
             setState(() {});
           }
         }
@@ -194,12 +221,13 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
           FutureBuilder<Map<String, dynamic>>(
             future: _fetchUserData(),
             builder: (context, snapshot) {
-              final userData = snapshot.data ?? {
-                'name': 'Loading...',
-                'email': 'Loading...',
-                'avatarUrl': null
-              };
-              
+              final userData = snapshot.data ??
+                  {
+                    'name': 'Loading...',
+                    'email': 'Loading...',
+                    'avatarUrl': null
+                  };
+
               return UserAccountsDrawerHeader(
                 decoration: BoxDecoration(
                   color: theme.primaryColor,
@@ -233,16 +261,20 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
                             : ClipOval(
                                 child: userData['avatarUrl'] != null
                                     ? CachedNetworkImage(
-                                        imageUrl: userData['avatarUrl'] as String,
+                                        imageUrl:
+                                            userData['avatarUrl'] as String,
                                         placeholder: (context, url) =>
                                             const CircularProgressIndicator(),
                                         errorWidget: (context, url, error) =>
-                                            _buildFallbackAvatar(userData['name'] as String, theme),
+                                            _buildFallbackAvatar(
+                                                userData['name'] as String,
+                                                theme),
                                         fit: BoxFit.cover,
                                         width: 60,
                                         height: 60,
                                       )
-                                    : _buildFallbackAvatar(userData['name'] as String, theme),
+                                    : _buildFallbackAvatar(
+                                        userData['name'] as String, theme),
                               ),
                       ),
                       if (user != null)
@@ -275,15 +307,28 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
                     onTap: () {},
                   ),
                 ],
-                ListTile(
-                  leading: const Icon(Icons.lock),
-                  title: const Text("Admin Login"),
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => AdminLoginPage()));
+                // Admin Login - Only visible to admin users
+                FutureBuilder<bool>(
+                  future: _isUserAdmin(),
+                  builder: (context, snapshot) {
+                    final isAdmin = snapshot.data ?? false;
+
+                    // Hide the ListTile if user is not admin
+                    if (!isAdmin) {
+                      return const SizedBox.shrink();
+                    }
+
+                    return ListTile(
+                      leading: const Icon(Icons.lock),
+                      title: const Text("Admin Login"),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AdminLoginPage()));
+                      },
+                    );
                   },
                 ),
                 ListTile(
@@ -340,8 +385,8 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
                         context: context,
                         builder: (context) => AlertDialog(
                           title: const Text('Sign Out'),
-                          content: const Text(
-                              'Are you sure you want to sign out?'),
+                          content:
+                              const Text('Are you sure you want to sign out?'),
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(context, false),
@@ -354,10 +399,9 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
                           ],
                         ),
                       );
-    
+
                       if (shouldLogout == true) {
-                        final authRepository =
-                            ref.read(authRepositoryProvider);
+                        final authRepository = ref.read(authRepositoryProvider);
                         await authRepository.signOutUser();
                         if (mounted) {
                           Navigator.pushReplacementNamed(context, '/');
