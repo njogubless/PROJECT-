@@ -28,7 +28,7 @@ class DownloadNotifier extends StateNotifier<DownloadState> {
     state = DownloadState.downloading();
 
     try {
-      final dir = await getApplicationDocumentsDirectory(); // You can use getExternalStorageDirectory() for Android public
+      final dir = await getApplicationDocumentsDirectory(); 
       final filePath = '${dir.path}/$fileName';
 
       final dio = Dio();

@@ -13,13 +13,11 @@ class AudioRepositoryImpl implements AudioRepository {
   @override
   Future<void> uploadAudioFile(AudioFile audioFile, String filePath) async {
     try {
-      // Use consistent path - 'audio' instead of 'audios'
       final ref = _storage.ref().child('audio/${audioFile.id}.mp3');
       final uploadTask = await ref.putFile(File(filePath));
 
       final downloadUrl = await uploadTask.ref.getDownloadURL();
 
-      // Use 'Sermons' collection to match your Firebase structure
       await _firestore.collection('Sermons').doc(audioFile.id).set({
         'id': audioFile.id,
         'title': audioFile.title,
@@ -37,7 +35,6 @@ class AudioRepositoryImpl implements AudioRepository {
   @override
   Future<List<AudioFile>> fetchAudioFiles() async {
     try {
-      // First try to get from Sermons collection
       final sermonsSnapshot = await _firestore.collection('Sermons').get();
 
       debugPrint(
@@ -48,14 +45,13 @@ class AudioRepositoryImpl implements AudioRepository {
           final data = doc.data();
           debugPrint("Sermon data: $data");
 
-            String audioFileName = data['id'] ?? doc.id;
+          String audioFileName = data['id'] ?? doc.id;
           if (data['downloadUrl'] != null) {
             final uri = Uri.parse(data['downloadUrl']);
             final pathSegments = uri.pathSegments;
             if (pathSegments.isNotEmpty) {
-              // Get the last segment which should be the filename
               audioFileName = pathSegments.last;
-              // Remove any query parameters
+
               audioFileName = audioFileName.split('?')[0];
             }
           }
@@ -76,7 +72,6 @@ class AudioRepositoryImpl implements AudioRepository {
         }).toList();
       }
 
-      // Fallback to audioFiles collection
       final audioFilesSnapshot =
           await _firestore.collection('audioFiles').get();
 
@@ -103,7 +98,6 @@ class AudioRepositoryImpl implements AudioRepository {
         }).toList();
       }
 
-      // Last resort: get directly from Firebase Storage
       debugPrint("Fetching directly from Storage");
       final storageRef = _storage.ref().child('audio');
       final listResult = await storageRef.listAll();
@@ -115,7 +109,6 @@ class AudioRepositoryImpl implements AudioRepository {
           final fileName = item.name;
           final title = fileName.replaceAll('.mp3', '').replaceAll('_', ' ');
 
-          // Get metadata if available
           final metadata = await item.getMetadata();
 
           audioFiles.add(AudioFile(
@@ -144,11 +137,9 @@ class AudioRepositoryImpl implements AudioRepository {
   @override
   Future<void> deleteAudioFile(String audioId) async {
     try {
-      // Delete from storage
       final ref = _storage.ref().child('audio/$audioId');
       await ref.delete();
 
-      // Delete from both possible collections
       await _firestore.collection('Sermons').doc(audioId).delete();
       await _firestore.collection('audioFiles').doc(audioId).delete();
     } catch (e) {
@@ -159,7 +150,6 @@ class AudioRepositoryImpl implements AudioRepository {
   @override
   Future<String> downloadAudio(String audioId) async {
     try {
-      // Try Sermons collection first
       var doc = await _firestore.collection('Sermons').doc(audioId).get();
       var data = doc.data();
 
@@ -167,7 +157,6 @@ class AudioRepositoryImpl implements AudioRepository {
         return data['downloadUrl'];
       }
 
-      // Try audioFiles collection
       doc = await _firestore.collection('audioFiles').doc(audioId).get();
       data = doc.data();
 
