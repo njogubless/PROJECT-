@@ -22,7 +22,7 @@ final loggedOutRoute = RouteMap(
   }
 );
 
-// loggedIn route
+
 final loggedInRoute = RouteMap(
   routes: {
     '/': (_) => MaterialPage(child: MainLayout()),
@@ -35,5 +35,4 @@ final loggedInRoute = RouteMap(
   },
 );
 
-// final loggedInRoute =
-//     RouteMap(routes: {'/': (_) => MaterialPage(child: MainLayout())}); 
+ 
