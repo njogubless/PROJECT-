@@ -30,7 +30,7 @@ class FirestoreMigration {
           'storagePath': data['storagePath'] ?? 'books/$fileName',
         };
 
-        // Update the document
+      
         await doc.reference.update(updatedData);
         print('Updated document: ${doc.id}');
       }

@@ -28,7 +28,7 @@ final booksProvider = FutureProvider<List<BookModel>>((ref) async {
             });
           } catch (e) {
             print('Error parsing document ${doc.id}: $e');
-            // Return null for failed parsing, filter out later
+           
             return null;
           }
         })

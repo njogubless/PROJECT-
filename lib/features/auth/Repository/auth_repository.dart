@@ -34,7 +34,6 @@ class AuthRepository {
 
   Stream<User?> get authStateChange => _auth.authStateChanges();
 
-
   Future<bool> _userExistsInFirestore(String uid) async {
     try {
       final doc = await _users.doc(uid).get();
@@ -56,7 +55,6 @@ class AuthRepository {
     return newUser;
   }
 
-  /// Get user from Firestore
   Future<UserModel> _getUserFromFirestore(String uid) async {
     final doc = await _users.doc(uid).get();
     final data = doc.data() as Map<String, dynamic>?;
@@ -64,7 +62,6 @@ class AuthRepository {
     return UserModel.fromMap(data);
   }
 
-  /// Sign in with Google
   FutureEither<UserModel> signInWithGoogle() async {
     try {
       final googleUser = await _googleSignIn.signIn();
@@ -79,14 +76,12 @@ class AuthRepository {
       final userCredential = await _auth.signInWithCredential(credential);
       final user = userCredential.user!;
 
-      // Check if user exists in Firestore
       final userExists = await _userExistsInFirestore(user.uid);
-      
+
       UserModel userModel;
       if (userExists) {
         userModel = await _getUserFromFirestore(user.uid);
       } else {
-        // Create new user in Firestore
         userModel = await _createUserInFirestore(user);
       }
 
@@ -98,7 +93,6 @@ class AuthRepository {
     }
   }
 
-  /// Sign in with Email and Password
   FutureEither<UserModel> signInWithEmailAndPassword(
       String email, String password) async {
     try {
@@ -108,12 +102,9 @@ class AuthRepository {
       );
       final user = userCredential.user!;
 
-      // For email/password login, user MUST exist in Firestore
-      // We don't auto-create users for email/password login
       final userExists = await _userExistsInFirestore(user.uid);
-      
+
       if (!userExists) {
-        // Sign out the user from Firebase Auth since they don't exist in our system
         await _auth.signOut();
         return left(Failure('Account not found. Please sign up first.'));
       }
@@ -127,7 +118,6 @@ class AuthRepository {
     }
   }
 
-  /// Sign up with Email and Password (create new account)
   FutureEither<UserModel> signUpWithEmailAndPassword(
       String email, String password, String userName) async {
     try {
@@ -137,13 +127,10 @@ class AuthRepository {
       );
       final user = userCredential.user!;
 
-      // Update display name
       await user.updateDisplayName(userName);
-      
-      // Create user in Firestore
+
       final userModel = await _createUserInFirestore(user);
-      
-      // Send email verification
+
       await user.sendEmailVerification();
 
       return right(userModel);
@@ -154,7 +141,6 @@ class AuthRepository {
     }
   }
 
-  /// Get user data stream from Firestore
   Stream<UserModel> getUserData(String uid) {
     return _users.doc(uid).snapshots().map((doc) {
       final data = doc.data() as Map<String, dynamic>?;
@@ -163,13 +149,11 @@ class AuthRepository {
     });
   }
 
-  /// Sign out from Firebase and Google
   Future<void> signOutUser() async {
     await _googleSignIn.signOut();
     await _auth.signOut();
   }
 
-  /// Map Firebase Auth error codes to user-friendly messages
   String _mapFirebaseAuthError(String code) {
     switch (code) {
       case 'invalid-email':

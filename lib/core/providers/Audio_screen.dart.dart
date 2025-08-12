@@ -42,7 +42,7 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
       ),
       body: Column(
         children: [
-          // Search Bar
+        
           Container(
             padding: const EdgeInsets.all(16.0),
             decoration: BoxDecoration(
@@ -101,7 +101,6 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
             ),
           ),
 
-          // Audio List
           Expanded(
             child: audioState.when(
               data: (audioFiles) {
@@ -155,7 +154,7 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                       left: 16,
                       right: 16,
                       bottom: currentPlayingState.currentAudioId.isNotEmpty 
-                          ? 90 // Space for mini player
+                          ? 90 
                           : 16,
                     ),
                     itemCount: filteredAudioFiles.length,
@@ -180,7 +179,7 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
         ],
       ),
       
-      // Mini Player
+      
       bottomSheet: currentPlayingState.currentAudioId.isNotEmpty
           ? _buildMiniPlayer(context, currentPlayingState)
           : null,
@@ -346,7 +345,7 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Progress Bar
+        
           LinearProgressIndicator(
             value: playerState.duration.inSeconds > 0
                 ? (playerState.position.inSeconds / playerState.duration.inSeconds).clamp(0.0, 1.0)
@@ -358,13 +357,13 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
             minHeight: 3,
           ),
           
-          // Mini Player Content
+
           Container(
             height: 70,
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
-                // Play/Pause Button
+            
                 Container(
                   decoration: BoxDecoration(
                     color: Theme.of(context).primaryColor.withOpacity(0.1),
@@ -393,8 +392,7 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                 ),
                 
                 const SizedBox(width: 12),
-                
-                // Song Info
+           
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -423,7 +421,7 @@ class _AudioScreenState extends ConsumerState<AudioScreen> {
                   ),
                 ),
                 
-                // Close Button
+            
                 IconButton(
                   icon: const Icon(Icons.close, size: 20),
                   onPressed: () {

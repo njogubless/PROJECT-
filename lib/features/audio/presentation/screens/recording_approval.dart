@@ -262,7 +262,7 @@ class _RecordingApprovalPageState extends State<RecordingApprovalPage>
                 ],
               ),
               const SizedBox(height: 16),
-             // _buildDetailRow(Icons.book, 'Scripture', audioFile.scripture),
+            
               _buildDetailRow(Icons.access_time, 'Duration', _formatDuration(audioFile.duration)),
               _buildDetailRow(Icons.calendar_today, 'Uploaded', _formatDate(audioFile.uploadDate)),
               if (audioFile.approvalStatus != 'pending') ...[

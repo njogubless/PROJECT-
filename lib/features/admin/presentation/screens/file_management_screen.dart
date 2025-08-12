@@ -20,7 +20,7 @@ class SplitFileManagementScreen extends StatelessWidget {
       ),
       body: Row(
         children: [
-          // Left section - Audio Files
+         
           Expanded(
             child: Column(
               children: [
@@ -58,12 +58,12 @@ class SplitFileManagementScreen extends StatelessWidget {
               ],
             ),
           ),
-          // Vertical divider
+     
           Container(
             width: 1,
             color: Colors.grey.shade300,
           ),
-          // Right section - Book Files
+     
           Expanded(
             child: Column(
               children: [
@@ -280,10 +280,10 @@ class SplitFileManagementScreen extends StatelessWidget {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     try {
-      // Delete from Storage
+ 
       await FirebaseStorage.instance.refFromURL(fileUrl).delete();
 
-      // Delete from Firestore
+
       await FirebaseFirestore.instance
           .collection(collectionPath)
           .doc(docId)

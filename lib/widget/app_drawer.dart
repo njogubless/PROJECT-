@@ -307,13 +307,13 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
                     onTap: () {},
                   ),
                 ],
-                // Admin Login - Only visible to admin users
+         
                 FutureBuilder<bool>(
                   future: _isUserAdmin(),
                   builder: (context, snapshot) {
                     final isAdmin = snapshot.data ?? false;
 
-                    // Hide the ListTile if user is not admin
+                   
                     if (!isAdmin) {
                       return const SizedBox.shrink();
                     }
