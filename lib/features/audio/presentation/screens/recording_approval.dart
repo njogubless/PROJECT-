@@ -156,11 +156,20 @@ class _RecordingApprovalPageState extends State<RecordingApprovalPage>
 
   Widget _buildRecordingsList() {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('Devotion')
-          .where('approvalStatus', isEqualTo: _selectedFilter)
-          .orderBy('uploadDate', descending: true)
-          .snapshots(),
+       stream: _selectedFilter == 'pending'
+        ? FirebaseFirestore.instance
+            .collection('Devotion')
+            .where('approvalStatus', isEqualTo: 'pending')
+            .snapshots()
+        : _selectedFilter == 'approved'
+            ? FirebaseFirestore.instance
+                .collection('Devotion')
+                .where('approvalStatus', isEqualTo: 'approved')
+                .snapshots()
+            : FirebaseFirestore.instance
+                .collection('Devotion')
+                .where('approvalStatus', isEqualTo: 'rejected')
+                .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return _buildErrorState(snapshot.error.toString());
