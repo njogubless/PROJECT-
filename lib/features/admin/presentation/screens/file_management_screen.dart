@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:devotion/core/constants/firebase_constants.dart';
 
 class SplitFileManagementScreen extends StatelessWidget {
   final String audioCollectionPath;
@@ -8,8 +9,8 @@ class SplitFileManagementScreen extends StatelessWidget {
 
   const SplitFileManagementScreen({
     super.key,
-    required this.audioCollectionPath,
-    required this.bookCollectionPath,
+    this.audioCollectionPath = FirebaseConstants.sermonCollection,
+    this.bookCollectionPath = FirebaseConstants.testimonyCollection,
   });
 
   @override
@@ -20,7 +21,6 @@ class SplitFileManagementScreen extends StatelessWidget {
       ),
       body: Row(
         children: [
-         
           Expanded(
             child: Column(
               children: [
@@ -58,12 +58,10 @@ class SplitFileManagementScreen extends StatelessWidget {
               ],
             ),
           ),
-     
           Container(
             width: 1,
             color: Colors.grey.shade300,
           ),
-     
           Expanded(
             child: Column(
               children: [
@@ -139,7 +137,9 @@ class SplitFileManagementScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
-                  fileType == 'audio' ? Icons.audiotrack_outlined : Icons.book_outlined,
+                  fileType == 'audio'
+                      ? Icons.audiotrack_outlined
+                      : Icons.book_outlined,
                   size: 48,
                   color: Colors.grey.shade400,
                 ),
@@ -178,7 +178,7 @@ class SplitFileManagementScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Uploaded: ${_formatDate(data['uploadDate'])}',
+                      'Uploaded: ${_formatDate(data['uploadDate'] ?? data['uploadedAt'])}',
                       style: const TextStyle(fontSize: 12),
                     ),
                     Text(
@@ -192,7 +192,7 @@ class SplitFileManagementScreen extends StatelessWidget {
                   onPressed: () => _showDeleteConfirmation(
                     context,
                     file.id,
-                    data['fileUrl'],
+                    data['fileUrl'] ?? data['downloadUrl'],
                     collectionPath,
                     data['fileName'] ?? 'this file',
                   ),
@@ -237,14 +237,15 @@ class SplitFileManagementScreen extends StatelessWidget {
   String _formatFileSize(int bytes) {
     if (bytes < 1024) return '$bytes B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
-    if (bytes < 1024 * 1024 * 1024) return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    if (bytes < 1024 * 1024 * 1024)
+      return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
     return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
   }
 
   void _showDeleteConfirmation(
     BuildContext context,
     String docId,
-    String fileUrl,
+    String? fileUrl,
     String collectionPath,
     String fileName,
   ) {
@@ -261,7 +262,9 @@ class SplitFileManagementScreen extends StatelessWidget {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              _deleteFile(context, docId, fileUrl, collectionPath);
+              if (fileUrl != null) {
+                _deleteFile(context, docId, fileUrl, collectionPath);
+              }
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
             child: const Text('Delete'),
@@ -280,9 +283,7 @@ class SplitFileManagementScreen extends StatelessWidget {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     try {
- 
       await FirebaseStorage.instance.refFromURL(fileUrl).delete();
-
 
       await FirebaseFirestore.instance
           .collection(collectionPath)
