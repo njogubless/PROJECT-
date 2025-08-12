@@ -17,10 +17,6 @@ class AdminDashboard extends StatefulWidget {
 class _AdminDashboardState extends State<AdminDashboard> {
   bool _isUploading = false;
 
-
-  static const String audioCollectionPath = 'audio_files'; 
-  static const String bookCollectionPath = 'book_files';   
-
   Future<void> uploadFile(
       String collectionPath, String firebasePath, BuildContext context) async {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
@@ -31,14 +27,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
         const SnackBar(content: Text('File uploaded successfully!')),
       );
 
-      
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => SplitFileManagementScreen(
-            audioCollectionPath: audioCollectionPath,
-            bookCollectionPath: bookCollectionPath,
-          ),
+          builder: (context) => SplitFileManagementScreen(),
         ),
       );
     } catch (e) {
@@ -228,10 +220,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
           onTap: () => Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => SplitFileManagementScreen(
-                audioCollectionPath: audioCollectionPath,
-                bookCollectionPath: bookCollectionPath,
-              ),
+              builder: (context) => SplitFileManagementScreen(),
             ),
           ),
         ),
@@ -298,67 +287,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  void _showUploadOptions(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        title: const Text('Choose file type to upload'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildUploadOption(
-              context,
-              icon: Icons.audiotrack,
-              title: 'Upload Audio',
-              onTap: () {
-                Navigator.pop(context);
-                uploadFile(
-                    FirebaseConstants.sermonCollection, 'audio', context);
-              },
-            ),
-            const SizedBox(height: 8),
-            _buildUploadOption(
-              context,
-              icon: Icons.book,
-              title: 'Upload Book',
-              onTap: () {
-                Navigator.pop(context);
-                uploadFile(
-                    FirebaseConstants.testimonyCollection, 'Books', context);
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildUploadOption(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    required VoidCallback onTap,
-  }) {
-    return ListTile(
-      leading: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Icon(icon, color: Theme.of(context).primaryColor),
-      ),
-      title: Text(title),
-      onTap: onTap,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
       ),
     );
   }
