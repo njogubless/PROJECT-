@@ -50,7 +50,6 @@ dependencies:
   record: ^5.2.0
   provider: ^6.1.2
   flutter_pdfview: ^1.4.0+1
-  #awesome_notifications: ^0.10.0
 
 dev_dependencies:
   flutter_test:
