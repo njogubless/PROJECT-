@@ -56,7 +56,7 @@ dev_dependencies:
   flutter_lints: ^5.0.0
   flutter_native_splash: ^2.3.2
 
-# App icon configuration
+
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
@@ -65,7 +65,7 @@ flutter_launcher_icons:
   adaptive_icon_foreground: "assets/images/ROF.webp"
   remove_alpha_ios: true
 
-# Splash screen configuration
+
 flutter_native_splash:
   color: "#ffffff"
   android_12:
