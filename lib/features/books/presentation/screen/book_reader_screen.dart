@@ -1,119 +1,117 @@
-import 'dart:io';
+// lib/features/books/presentation/screens/book_reader_screen.dart
+import 'package:devotion/features/books/data/controllers/book_reader_controller.dart';
 import 'package:devotion/features/books/data/models/book_model.dart';
-import 'package:devotion/features/books/data/repository/firebase_storage.dart';
-import 'package:devotion/features/books/presentation/providers/book_providers.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_pdfview/flutter_pdfview.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:devotion/features/books/data/models/book_reader_state.dart';
 
-class BookReaderScreen extends ConsumerStatefulWidget {
+import 'package:devotion/features/books/presentation/widget/book_not_found.dart';
+import 'package:devotion/features/books/presentation/widget/common.dart';
+import 'package:devotion/features/books/presentation/widget/pdf_view.dart';
+
+import 'package:flutter/material.dart' hide ErrorWidget;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+class BookReaderScreen extends ConsumerWidget {
   final BookModel book;
 
   const BookReaderScreen({super.key, required this.book});
 
   @override
-  ConsumerState<BookReaderScreen> createState() => _BookReaderScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final controller = ref.read(bookReaderControllerProvider(book).notifier);
+    final state = ref.watch(bookReaderControllerProvider(book));
 
-class _BookReaderScreenState extends ConsumerState<BookReaderScreen> {
-  File? _pdfFile;
-  bool _isLoading = true;
-  String _errorMessage = '';
-
-  @override
-  void initState() {
-    super.initState();
-    _loadFile();
+    return Scaffold(
+      appBar: _buildAppBar(context, controller),
+      body: _buildBody(context, state, controller),
+    );
   }
 
-  Future<void> _loadFile() async {
-    setState(() {
-      _isLoading = true;
-    });
+  PreferredSizeWidget _buildAppBar(BuildContext context, BookReaderController controller) {
+    return AppBar(
+      title: Text(
+        book.title.isNotEmpty ? book.title : 'Book Reader',
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.refresh),
+          onPressed: controller.retry,
+          tooltip: 'Refresh',
+        ),
+      ],
+    );
+  }
 
-    try {
-      final directory = await getApplicationDocumentsDirectory();
-      final filePath = '${directory.path}/${widget.book.title}.pdf';
-      final file = File(filePath);
-
-      if (await file.exists()) {
-        setState(() {
-          _pdfFile = file;
-          _isLoading = false;
-        });
-      } else {
-        final storageService = ref.read(storageServiceProvider);
-        final downloadedFile = await storageService.downloadFile(
-          widget.book.storagePath,
-          '${widget.book.title}.pdf',
+  Widget _buildBody(BuildContext context, BookReaderState state, BookReaderController controller) {
+    switch (state.status) {
+      case BookReaderStatus.loading:
+        return const LoadingWidget(message: 'Loading PDF...');
+      
+      case BookReaderStatus.downloading:
+        return const LoadingWidget(message: 'Downloading PDF...');
+      
+      case BookReaderStatus.fileNotFound:
+        return BookNotFoundWidget(
+          errorMessage: state.errorMessage,
+          onDownload: () => _handleDownload(context, controller),
+          onStream: () => _handleStream(context, controller),
+          onGoBack: () => Navigator.pop(context),
         );
-
-        final downloadedBooks = ref.read(downloadedBooksProvider.notifier);
-        downloadedBooks.update((state) => {...state, widget.book.id});
-
-        setState(() {
-          _pdfFile = downloadedFile;
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-        _errorMessage = 'Failed to load PDF: $e';
-      });
+      
+      case BookReaderStatus.error:
+        return ErrorWidget(
+          title: 'Failed to load PDF',
+          message: state.errorMessage,
+          onRetry: controller.retry,
+          onGoBack: () => Navigator.pop(context),
+        );
+      
+      case BookReaderStatus.loaded:
+        if (state.hasFile) {
+          return PdfViewerWidget(
+            pdfFile: state.pdfFile!,
+            currentPage: state.currentPage,
+            totalPages: state.totalPages,
+            onPageChanged: controller.updatePageInfo,
+            onRender: controller.updateTotalPages,
+            onError: controller.handlePdfError,
+            onPageError: (page, error) => controller.handlePageError(page ?? 0, error),
+            onViewCreated: controller.handleViewCreated,
+          );
+        } else {
+          return const EmptyStateWidget(
+            title: 'PDF file not found',
+            message: 'The PDF file could not be loaded.',
+            icon: Icons.picture_as_pdf,
+          );
+        }
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.book.title),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _loadFile,
-          ),
-        ],
-      ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _errorMessage.isNotEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        _errorMessage,
-                        style: const TextStyle(color: Colors.red),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: _loadFile,
-                        child: const Text('Try Again'),
-                      ),
-                    ],
-                  ),
-                )
-              : _pdfFile != null
-                  ? PDFView(
-                      filePath: _pdfFile!.path,
-                      enableSwipe: true,
-                      swipeHorizontal: true,
-                      autoSpacing: false,
-                      pageFling: false,
-                      onError: (error) {
-                        setState(() {
-                          _errorMessage = error.toString();
-                        });
-                      },
-                      onRender: (_pages) {
-                        setState(() {});
-                      },
-                    )
-                  : const Center(child: Text('PDF file not found')),
-    );
+  void _handleDownload(BuildContext context, BookReaderController controller) {
+    controller.downloadAndOpenFile().then((_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Book downloaded successfully!')),
+        );
+      }
+    }).catchError((error) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Download failed: $error')),
+        );
+      }
+    });
+  }
+
+  void _handleStream(BuildContext context, BookReaderController controller) {
+    controller.streamFile().catchError((error) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Stream failed: $error')),
+        );
+      }
+    });
   }
 }
