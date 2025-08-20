@@ -53,8 +53,10 @@
 			<true/>
 		</dict>
 		<key>NSMicrophoneUsageDescription</key>
-		<String>Need microphone access for audio playback</String>
-		<true/>
+		<string>Need microphone access for audio playback</string>
+		<!-- Document folder access for PDF files -->
+		<key>NSDocumentsFolderUsageDescription</key>
+		<string>This app needs access to documents folder to save PDF files</string>
 		<key>CFBundleURLTypes</key>
 		<array>
 			<dict>
