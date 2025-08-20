@@ -19,9 +19,11 @@ class SplitFileManagementScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('File Management'),
       ),
-      body: Row(
+      body: Column(
         children: [
+          // Audio Files Section
           Expanded(
+            flex: 1,
             child: Column(
               children: [
                 Container(
@@ -58,11 +60,14 @@ class SplitFileManagementScreen extends StatelessWidget {
               ],
             ),
           ),
+          // Horizontal divider
           Container(
-            width: 1,
+            height: 1,
             color: Colors.grey.shade300,
           ),
+          // Book Files Section
           Expanded(
+            flex: 1,
             child: Column(
               children: [
                 Container(
@@ -153,53 +158,106 @@ class SplitFileManagementScreen extends StatelessWidget {
           );
         }
 
-        return ListView.builder(
-          padding: const EdgeInsets.all(8),
-          itemCount: files.length,
-          itemBuilder: (context, index) {
-            final file = files[index];
-            final data = file.data() as Map<String, dynamic>;
-
-            return Card(
-              margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-              child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 4,
-                ),
-                leading: _getFileIcon(fileType),
-                title: Text(
-                  data['fileName'] ?? 'Unnamed File',
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 14),
-                ),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Uploaded: ${_formatDate(data['uploadDate'] ?? data['uploadedAt'])}',
-                      style: const TextStyle(fontSize: 12),
-                    ),
-                    Text(
-                      'Size: ${_formatFileSize(data['fileSize'] ?? 0)}',
-                      style: const TextStyle(fontSize: 12),
-                    ),
-                  ],
-                ),
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete, size: 20),
-                  onPressed: () => _showDeleteConfirmation(
-                    context,
-                    file.id,
-                    data['fileUrl'] ?? data['downloadUrl'],
-                    collectionPath,
-                    data['fileName'] ?? 'this file',
+        return Column(
+          children: [
+            // File count indicator
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: fileType == 'audio' 
+                    ? Colors.blue.shade50 
+                    : Colors.green.shade50,
+                border: Border(
+                  bottom: BorderSide(
+                    color: fileType == 'audio' 
+                        ? Colors.blue.shade100 
+                        : Colors.green.shade100,
                   ),
                 ),
               ),
-            );
-          },
+              child: Text(
+                '${files.length} ${files.length == 1 ? 'file' : 'files'}',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: fileType == 'audio' 
+                      ? Colors.blue.shade600 
+                      : Colors.green.shade600,
+                ),
+              ),
+            ),
+            // Scrollable file list
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.all(8),
+                itemCount: files.length,
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  final file = files[index];
+                  final data = file.data() as Map<String, dynamic>;
+
+                  return Card(
+                    margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      leading: _getFileIcon(fileType),
+                      title: Text(
+                        data['fileName'] ?? 'Unnamed File',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      subtitle: Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Uploaded: ${_formatDate(data['uploadDate'] ?? data['uploadedAt'])}',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey.shade600,
+                                ),
+                              ),
+                            ),
+                            Text(
+                              '${_formatFileSize(data['fileSize'] ?? 0)}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey.shade600,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      trailing: IconButton(
+                        icon: Icon(
+                          Icons.delete_outline,
+                          color: Colors.red.shade400,
+                          size: 22,
+                        ),
+                        onPressed: () => _showDeleteConfirmation(
+                          context,
+                          file.id,
+                          data['fileUrl'] ?? data['downloadUrl'],
+                          collectionPath,
+                          data['fileName'] ?? 'this file',
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
         );
       },
     );
@@ -215,14 +273,21 @@ class SplitFileManagementScreen extends StatelessWidget {
         color = Colors.blue;
         break;
       case 'book':
-        iconData = Icons.book;
+        iconData = Icons.menu_book;
         color = Colors.green;
         break;
       default:
         iconData = Icons.insert_drive_file;
         color = Colors.grey;
     }
-    return Icon(iconData, color: color, size: 20);
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Icon(iconData, color: color, size: 24),
+    );
   }
 
   String _formatDate(dynamic date) {
