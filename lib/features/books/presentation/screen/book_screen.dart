@@ -49,6 +49,7 @@ class BookScreen extends ConsumerWidget {
     );
   }
 }
+
 class BookCard extends ConsumerWidget {
   final BookModel book;
 
@@ -63,16 +64,16 @@ class BookCard extends ConsumerWidget {
         const SnackBar(content: Text('Downloading book...')),
       );
 
-      String downloadPath = book.downloadUrl.isNotEmpty 
-          ? book.downloadUrl 
-          : book.fileUrl;
-          
+      String downloadPath =
+          book.downloadUrl.isNotEmpty ? book.downloadUrl : book.fileUrl;
+
       if (downloadPath.isEmpty) {
         throw 'No download URL available for this book';
       }
 
       final fileName = book.fileName ?? '${book.title}.pdf';
-      final file = await storageService.downloadFile(book.storagePath, fileName);
+      final file =
+          await storageService.downloadFile(book.storagePath, fileName);
 
       final downloadedBooks = ref.read(downloadedBooksProvider.notifier);
       downloadedBooks.update((state) => {...state, book.id});
@@ -106,81 +107,119 @@ class BookCard extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Cover Image Container - Fixed height to prevent overflow
             Expanded(
+              flex: 3, // Takes 3/4 of the available space
               child: ClipRRect(
                 borderRadius:
                     const BorderRadius.vertical(top: Radius.circular(12)),
-                child: AspectRatio(
-                  aspectRatio: 3 / 4,
+                child: Container(
+                  width: double.infinity,
                   child: book.coverUrl.isNotEmpty
                       ? CachedNetworkImage(
                           imageUrl: book.coverUrl,
                           fit: BoxFit.cover,
+                          width: double.infinity,
                           placeholder: (context, url) => Container(
                             color: Colors.grey[200],
-                            child: const Center(child: CircularProgressIndicator()),
+                            child: const Center(
+                                child: CircularProgressIndicator()),
                           ),
-                          errorWidget: (context, url, error) => _buildFallbackCover(),
+                          errorWidget: (context, url, error) =>
+                              _buildFallbackCover(),
                         )
                       : _buildFallbackCover(),
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    book.title.isNotEmpty ? book.title : 'Unknown Title',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  if (book.author.isNotEmpty && book.author != 'Unknown Author')
-                    Padding(
-                      padding: const EdgeInsets.only(top: 2),
+            // Content Container - Fixed height to prevent overflow
+            Expanded(
+              flex: 1, // Takes 1/4 of the available space
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Title - Flexible but constrained
+                    Flexible(
                       child: Text(
-                        book.author,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
+                        book.title.isNotEmpty ? book.title : 'Unknown Title',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14, // Reduced font size
                         ),
-                        maxLines: 1,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: TextButton.icon(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => BookReaderScreen(book: book),
+                    // Author - Only show if space allows
+                    if (book.author.isNotEmpty &&
+                        book.author != 'Unknown Author')
+                      Flexible(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 2),
+                          child: Text(
+                            book.author,
+                            style: TextStyle(
+                              fontSize: 11, // Reduced font size
+                              color: Colors.grey[600],
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+                    const Spacer(), // Push buttons to bottom
+                    // Buttons Row - Fixed at bottom
+                    SizedBox(
+                      height: 32, // Fixed height for button row
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: TextButton.icon(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        BookReaderScreen(book: book),
+                                  ),
+                                );
+                              },
+                              icon: const Icon(Icons.read_more, size: 16),
+                              label: const Text('Read',
+                                  style: TextStyle(fontSize: 11)),
+                              style: TextButton.styleFrom(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8),
+                                minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               ),
-                            );
-                          },
-                          icon: const Icon(Icons.read_more, size: 18),
-                          label: const Text('Read', style: TextStyle(fontSize: 12)),
-                        ),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 32, // Fixed width for download button
+                            height: 32,
+                            child: IconButton(
+                              icon: Icon(
+                                isDownloaded
+                                    ? Icons.check_circle
+                                    : Icons.download,
+                                color: isDownloaded ? Colors.green : null,
+                                size: 18,
+                              ),
+                              onPressed: () => _downloadBook(context, ref),
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                            ),
+                          ),
+                        ],
                       ),
-                      IconButton(
-                        icon: Icon(
-                          isDownloaded ? Icons.check_circle : Icons.download,
-                          color: isDownloaded ? Colors.green : null,
-                        ),
-                        onPressed: () => _downloadBook(context, ref),
-                      ),
-                    ],
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -191,26 +230,30 @@ class BookCard extends ConsumerWidget {
 
   Widget _buildFallbackCover() {
     return Container(
+      width: double.infinity,
       color: Colors.grey[200],
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
             Icons.book,
-            size: 48,
+            size: 32, // Reduced icon size
             color: Colors.grey[400],
           ),
-          const SizedBox(height: 8),
-          Text(
-            book.title.isNotEmpty ? book.title : 'Book',
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey[600],
-              fontWeight: FontWeight.w500,
+          const SizedBox(height: 4),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Text(
+              book.title.isNotEmpty ? book.title : 'Book',
+              style: TextStyle(
+                fontSize: 10, // Reduced font size
+                color: Colors.grey[600],
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
