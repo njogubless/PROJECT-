@@ -4,7 +4,6 @@ import 'package:devotion/features/audio/data/models/audio_model.dart';
 import 'package:devotion/features/audio/domain/repository/audio_repository.dart';
 import 'package:devotion/features/audio/domain/repository/audio_repository_impl.dart';
 import 'package:devotion/features/audio/domain/usecases/fetch_audio_file.dart';
-import 'package:devotion/features/audio/presentation/providers/fetch_audio_file_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 

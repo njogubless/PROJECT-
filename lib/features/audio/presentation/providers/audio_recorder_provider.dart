@@ -75,7 +75,7 @@ class AudioRecorderNotifier extends StateNotifier<AudioRecordingState> {
           waveformData: [...state.waveformData, normalized],
         );
       } catch (e) {
-        print('Error getting amplitude: $e');
+        debugPrint('Error getting amplitude: $e');
       }
     });
   }
