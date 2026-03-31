@@ -14,7 +14,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:routemaster/routemaster.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// ✅ StateProvider is still valid in modern Riverpod — no legacy import needed
 final sharedPreferencesProvider =
     StateProvider<SharedPreferences?>((ref) => null);
 
@@ -69,7 +68,7 @@ class _MyAppState extends ConsumerState<MyApp> {
 
     return ref.watch(authStateChangeProvider).when(
           data: (data) {
-            // ✅ User is logged in and data is loaded
+          
             if (data != null) {
               fetchDataOnce(data);
 

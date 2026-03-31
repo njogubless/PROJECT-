@@ -45,7 +45,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.devotion"
-        minSdkVersion 23
+        minSdkVersion flutter.minSdkVersion
         targetSdkVersion 34  // Changed to match compileSdk
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
