@@ -2,6 +2,7 @@
 import 'package:devotion/features/audio/presentation/screens/audio_recoding_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:record/record.dart';
 import 'dart:async';
 import 'package:path_provider/path_provider.dart';

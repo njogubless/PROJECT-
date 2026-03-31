@@ -5,6 +5,7 @@ import 'package:devotion/features/audio/domain/repository/audio_repository.dart'
 import 'package:devotion/features/audio/domain/repository/audio_repository_impl.dart';
 import 'package:devotion/features/audio/domain/usecases/fetch_audio_file.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 
 
 
