@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:devotion/features/books/data/models/book_model.dart';
 import 'package:devotion/core/constants/firebase_constants.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/legacy.dart';
 
 // Provider for books from Firestore
 final booksProvider = StreamProvider<List<BookModel>>((ref) {

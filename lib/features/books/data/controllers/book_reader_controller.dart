@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:devotion/features/books/data/models/book_model.dart';
 
 import 'package:devotion/features/books/presentation/providers/book_providers.dart';
+import 'package:flutter_riverpod/legacy.dart';
 
 class BookReaderController extends StateNotifier<BookReaderState> {
   final BookModel book;
