@@ -64,14 +64,15 @@ class AuthRepository {
 
   FutureEither<UserModel> signInWithGoogle() async {
     try {
-      final googleUser = await _googleSignIn.signIn();
+      final googleUser = await GoogleSignIn.instance.authenticate();
       if (googleUser == null) return left(Failure('Google sign-in cancelled.'));
 
       final googleAuth = await googleUser.authentication;
       final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
+        accessToken: googleUser.authenticationTokens.accessToken,
+        idToken: googleUser.authenticationTokens.idToken,
       );
+      return await _auth.signInWithCredential(credential);
 
       final userCredential = await _auth.signInWithCredential(credential);
       final user = userCredential.user!;
