@@ -10,25 +10,28 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:routemaster/routemaster.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+// ✅ StateProvider is still valid in modern Riverpod — no legacy import needed
 final sharedPreferencesProvider =
     StateProvider<SharedPreferences?>((ref) => null);
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-
   if (Firebase.apps.isEmpty) {
     await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
   }
 
-  
+
+
 
   final sharedPreferences = await SharedPreferences.getInstance();
+
   runApp(
     ProviderScope(
       overrides: [
@@ -48,7 +51,6 @@ class MyApp extends ConsumerStatefulWidget {
 
 class _MyAppState extends ConsumerState<MyApp> {
   UserModel? userModel;
-  bool isByPassLogin = false; 
 
   void fetchDataOnce(User data) async {
     if (userModel == null) {
@@ -67,40 +69,31 @@ class _MyAppState extends ConsumerState<MyApp> {
 
     return ref.watch(authStateChangeProvider).when(
           data: (data) {
-            if (isByPassLogin) {
-            
-              return MaterialApp.router(
-                debugShowCheckedModeBanner: false,
-                title: 'Reflection On Faith',
-                theme: themeState.theme,
-                routerDelegate: 
-                    RoutemasterDelegate(routesBuilder: (_) => loggedInRoute),
-                routeInformationParser: const RoutemasterParser(),
-              );
-            } else {
-              if (data != null) {
-                fetchDataOnce(data);
-                if (userModel != null) {
-                  return MaterialApp.router(
-                    debugShowCheckedModeBanner: false,
-                    title: 'Reflection On Faith',
-                    theme: themeState.theme,
-                    routerDelegate: RoutemasterDelegate(
-                        routesBuilder: (_) => loggedInRoute),
-                    routeInformationParser: const RoutemasterParser(),
-                  );
-                }
-              }
+            // ✅ User is logged in and data is loaded
+            if (data != null) {
+              fetchDataOnce(data);
 
-              return MaterialApp.router(
-                debugShowCheckedModeBanner: false,
-                title: 'Reflection On Faith',
-                theme: themeState.theme,
-                routerDelegate:
-                    RoutemasterDelegate(routesBuilder: (_) => loggedOutRoute),
-                routeInformationParser: const RoutemasterParser(),
-              );
+              if (userModel != null) {
+                return MaterialApp.router(
+                  debugShowCheckedModeBanner: false,
+                  title: 'Reflection On Faith',
+                  theme: themeState.theme,
+                  routerDelegate:
+                      RoutemasterDelegate(routesBuilder: (_) => loggedInRoute),
+                  routeInformationParser: const RoutemasterParser(),
+                );
+              }
             }
+
+            // ✅ User is not logged in or userModel not yet loaded
+            return MaterialApp.router(
+              debugShowCheckedModeBanner: false,
+              title: 'Reflection On Faith',
+              theme: themeState.theme,
+              routerDelegate:
+                  RoutemasterDelegate(routesBuilder: (_) => loggedOutRoute),
+              routeInformationParser: const RoutemasterParser(),
+            );
           },
           error: (error, stackTrace) => ErrorText(error: error.toString()),
           loading: () => const Loader(),
