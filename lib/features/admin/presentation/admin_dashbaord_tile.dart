@@ -3,6 +3,7 @@ import 'package:devotion/features/admin/file_upload_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter_riverpod/legacy.dart';
 
 final uploadProgressProvider = StateProvider<double>((ref) => 0.0);
 
