@@ -5,6 +5,7 @@ import 'package:devotion/features/Q&A/domain/usecases/answer_questions.dart';
 import 'package:devotion/features/Q&A/domain/usecases/get_questions.dart';
 import 'package:devotion/features/Q&A/domain/usecases/submit_question.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 
 class QuestionNotifier extends StateNotifier<List<Question>> {
   final SubmitQuestionUseCase submitQuestionUseCase;
