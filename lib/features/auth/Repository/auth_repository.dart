@@ -8,26 +8,23 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+// ✅ No longer needs GoogleSignIn instance — v7 uses a singleton
 final authRepositoryProvider = Provider(
   (ref) => AuthRepository(
     auth: FirebaseAuth.instance,
     firestore: FirebaseFirestore.instance,
-    googleSignIn: GoogleSignIn(),
   ),
 );
 
 class AuthRepository {
   final FirebaseAuth _auth;
   final FirebaseFirestore _firestore;
-  final GoogleSignIn _googleSignIn;
 
   AuthRepository({
     required FirebaseAuth auth,
     required FirebaseFirestore firestore,
-    required GoogleSignIn googleSignIn,
   })  : _auth = auth,
-        _firestore = firestore,
-        _googleSignIn = googleSignIn;
+        _firestore = firestore;
 
   CollectionReference get _users =>
       _firestore.collection(FirebaseConstants.usersCollection);
@@ -64,16 +61,19 @@ class AuthRepository {
 
   FutureEither<UserModel> signInWithGoogle() async {
     try {
-      final googleUser = await GoogleSignIn.instance.authenticate();
+      // Use GoogleSignIn().signIn() to initiate Google sign-in
+      final googleUser = await GoogleSignIn().signIn();
       if (googleUser == null) return left(Failure('Google sign-in cancelled.'));
 
+      // Obtain authentication tokens asynchronously
       final googleAuth = await googleUser.authentication;
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleUser.authenticationTokens.accessToken,
-        idToken: googleUser.authenticationTokens.idToken,
-      );
-      return await _auth.signInWithCredential(credential);
 
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      // ✅ Fixed: was returning here before, cutting off all the code below
       final userCredential = await _auth.signInWithCredential(credential);
       final user = userCredential.user!;
 
@@ -151,7 +151,8 @@ class AuthRepository {
   }
 
   Future<void> signOutUser() async {
-    await _googleSignIn.signOut();
+    // ✅ v7: signOut via singleton
+    await GoogleSignIn().signOut();
     await _auth.signOut();
   }
 
