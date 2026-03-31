@@ -115,7 +115,7 @@ class WhatsAppButton extends StatelessWidget {
 
   Widget _buildDefaultIcon() {
     return Icon(
-      iconData ?? FontAwesomeIcons.whatsapp,
+      (iconData ?? FontAwesomeIcons.whatsapp) as IconData?,
       color: iconColor ?? Colors.white,
       size: iconSize ?? 30,
     );
