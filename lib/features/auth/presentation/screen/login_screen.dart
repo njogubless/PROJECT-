@@ -1,16 +1,15 @@
 import 'package:devotion/core/common/navigation/main_layout.dart';
+import 'package:devotion/core/common/styles/login_Signup_widgets/form_divider.dart';
 import 'package:devotion/core/common/styles/image_strings.dart';
 import 'package:devotion/core/common/styles/spacing_styles.dart';
 import 'package:devotion/core/common/styles/text_strings.dart';
 import 'package:devotion/core/constants/sizes.dart';
 import 'package:devotion/features/auth/controller/auth_controller.dart';
 import 'package:devotion/features/auth/controller/auth_preferences.dart';
-import 'package:devotion/features/auth/presentation/screen/home_screen.dart';
 import 'package:devotion/features/auth/presentation/screen/sign_up.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:icons_plus/icons_plus.dart';
-
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -24,6 +23,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final passwordController = TextEditingController();
   final formKey = GlobalKey<FormState>();
   bool rememberMe = false;
+  bool _obscurePassword = true; // ✅ Added password visibility state
 
   @override
   void initState() {
@@ -50,6 +50,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   void _showForgotPasswordDialog() {
+    final resetEmailController = TextEditingController(); // ✅ Separate controller for dialog
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -60,7 +61,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             const Text('Enter your email to receive a password reset link'),
             const SizedBox(height: TSizes.spaceBtwinputFields),
             TextFormField(
-              controller: emailController,
+              controller: resetEmailController,
+              keyboardType: TextInputType.emailAddress,
               decoration: const InputDecoration(
                 labelText: TTexts.email,
                 prefixIcon: Icon(Iconsax.direct_right_bold),
@@ -77,7 +79,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             onPressed: () {
               ref
                   .read(authControllerProvider.notifier)
-                  .resetPassword(context, emailController.text.trim());
+                  .resetPassword(context, resetEmailController.text.trim());
               Navigator.pop(context);
             },
             child: const Text('Reset Password'),
@@ -97,6 +99,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           padding: TSpacingStyle.paddingWithAppBarHeight,
           child: Column(
             children: [
+              // Header
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -112,11 +115,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     TTexts.logInSubTitle,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           fontStyle: FontStyle.italic,
-                          color: Colors.grey[600],
+                          color: Colors.grey,
                         ),
                   ),
                 ],
               ),
+
+              // Form
               Form(
                 key: formKey,
                 child: Padding(
@@ -124,11 +129,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       vertical: TSizes.spaceBtwSections),
                   child: Column(
                     children: [
+                      // Email
                       TextFormField(
                         controller: emailController,
+                        keyboardType: TextInputType.emailAddress,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'please enter a valid email';
+                            return 'Please enter a valid email';
                           }
                           if (!value.contains('@')) {
                             return 'Please enter a valid email';
@@ -141,25 +148,38 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                       ),
                       const SizedBox(height: TSizes.spaceBtwinputFields),
+
+                      // ✅ Password with functional visibility toggle
                       TextFormField(
                         controller: passwordController,
-                        obscureText: true,
+                        obscureText: _obscurePassword,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'please enter your password';
+                            return 'Please enter your password';
                           }
                           if (value.length < 8) {
                             return 'Password must be at least 8 characters';
                           }
                           return null;
                         },
-                        decoration: const InputDecoration(
-                          prefixIcon: Icon(Iconsax.password_check_bold),
+                        decoration: InputDecoration(
+                          prefixIcon:
+                              const Icon(Iconsax.password_check_bold),
                           labelText: TTexts.password,
-                          suffixIcon: Icon(Iconsax.eye_slash_bold),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscurePassword
+                                  ? Iconsax.eye_slash_bold
+                                  : Iconsax.eye_bold,
+                            ),
+                            onPressed: () => setState(
+                                () => _obscurePassword = !_obscurePassword),
+                          ),
                         ),
                       ),
                       const SizedBox(height: TSizes.spaceBtwinputFields / 2),
+
+                      // Remember me + Forgot password
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -182,6 +202,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ),
                         ],
                       ),
+
+                      // Login button
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
@@ -193,28 +215,29 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               await AuthPreferences.saveLoginCredentials(
                                   email, password, rememberMe);
 
-                              ref
+                              // ✅ signInWithEmailAndPassword now returns bool
+                              // ✅ Navigation happens here only, not also inside the controller
+                              final success = await ref
                                   .read(authControllerProvider.notifier)
                                   .signInWithEmailAndPassword(
-                                      context, email, password)
-                                  .then((_) {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => MainLayout()));
-                              }).catchError((error) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                      content: Text(
-                                          _getErrorMessage(error.toString()))),
+                                      context, email, password);
+
+                              if (success && context.mounted) {
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const MainLayout()),
+                                  (route) => false,
                                 );
-                              });
+                              }
                             }
                           },
                           child: const Text(TTexts.logInTitle),
                         ),
                       ),
                       const SizedBox(height: TSizes.spaceBtwItems),
+
+                      // Sign up link
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -222,10 +245,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           TextButton(
                             onPressed: () {
                               Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => SignUpScreen(),
-                                  ));
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const SignUpScreen(),
+                                ),
+                              );
                             },
                             child: const Text(
                               TTexts.createAccount,
@@ -238,29 +262,38 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.greenAccent),
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                    child: IconButton(
-                      onPressed: () {
-                        ref
-                            .read(authControllerProvider.notifier)
-                            .signInWithGoogle(context);
-                      },
-                      icon: const Image(
-                        width: TSizes.iconMd,
-                        height: TSizes.iconMd,
-                        image: AssetImage(TImages.google),
-                      ),
-                    ),
+
+              // ✅ Added form divider before social login (was missing, inconsistent with SignUpScreen)
+              const TFormDivider(dividerText: TTexts.orSignInWith),
+              const SizedBox(height: TSizes.spaceBtwSections),
+
+              // ✅ Removed dangling SizedBox — just the Google button now
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.greenAccent),
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                child: IconButton(
+                  onPressed: () async {
+                    final success = await ref
+                        .read(authControllerProvider.notifier)
+                        .signInWithGoogle(context);
+
+                    if (success && context.mounted) {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const MainLayout()),
+                        (route) => false,
+                      );
+                    }
+                  },
+                  icon: const Image(
+                    width: TSizes.iconMd,
+                    height: TSizes.iconMd,
+                    image: AssetImage(TImages.google),
                   ),
-                  const SizedBox(width: TSizes.spaceBtwItems),
-                ],
+                ),
               ),
               const SizedBox(height: TSizes.spaceBtwSections),
             ],
@@ -269,15 +302,4 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       ),
     );
   }
-}
-
-String _getErrorMessage(String error) {
-  if (error.contains('user-not-found')) {
-    return 'No user found with this email';
-  } else if (error.contains('wrong-password')) {
-    return 'Wrong password provided';
-  } else if (error.contains('invalid-email')) {
-    return 'Invalid email address';
-  }
-  return 'An error occurred during sign in';
 }
