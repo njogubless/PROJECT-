@@ -22,25 +22,52 @@ class _MainLayoutState extends State<MainLayout> with TickerProviderStateMixin {
   late List<Animation<double>> _animations;
 
 
-  final List<Widget> _screens = [
-    const HomeScreen(),
-    AudioScreen(),
-    const DevotionPage(),
-    ArticlePage(),
-    BookScreen(),
-    const QuestionPage(),
+  late List<Widget> _screens;
+
+
+  int _unreadArticlesCount = 1;
+
+  
+  final List<String> _titles = [
+    'Home',
+    'Audio',
+    'Devotion',
+    'Articles',
+    'Books',
+    'Q&A',
+  ];
+
+  final List<IconData> _icons = [
+    Icons.home_rounded,
+    Icons.audiotrack_rounded,
+    Icons.mic_rounded,
+    Icons.article_rounded,
+    Icons.book_rounded,
+    Icons.question_answer_rounded,
   ];
 
   @override
   void initState() {
     super.initState();
+
+
+    _screens = [
+      const HomeScreen(),
+      AudioScreen(),
+      const DevotionPage(),
+      ArticlePage(),
+      BookScreen(),
+      const QuestionPage(),
+    ];
+
     _controller = AnimationController(
       duration: const Duration(milliseconds: 500),
       vsync: this,
     );
 
+
     _animations = List.generate(
-      6,
+      _screens.length,
       (index) => Tween<double>(
         begin: 1.0,
         end: 1.2,
@@ -48,8 +75,8 @@ class _MainLayoutState extends State<MainLayout> with TickerProviderStateMixin {
         CurvedAnimation(
           parent: _controller,
           curve: Interval(
-            index * 0.1,
-            (index + 1) * 0.1,
+            index / _screens.length,
+            (index + 1) / _screens.length,
             curve: Curves.easeInOut,
           ),
         ),
@@ -60,8 +87,15 @@ class _MainLayoutState extends State<MainLayout> with TickerProviderStateMixin {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
-      _controller.reset();
-      _controller.forward();
+
+
+      if (index == 3) {
+        _unreadArticlesCount = 0;
+      }
+
+      _controller
+        ..reset()
+        ..forward();
     });
   }
 
@@ -76,9 +110,10 @@ class _MainLayoutState extends State<MainLayout> with TickerProviderStateMixin {
     return Scaffold(
       drawer: AppDrawer(),
       appBar: CustomAppBar(
-        title:"Welcome Home",
-        screens:_screens,
-        selectedIndex:_selectedIndex,
+        // FIX #7: Title reflects the active tab.
+        title: _titles[_selectedIndex],
+        screens: _screens,
+        selectedIndex: _selectedIndex,
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -86,30 +121,22 @@ class _MainLayoutState extends State<MainLayout> with TickerProviderStateMixin {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              const Color.fromARGB(255, 104, 165, 214).withValues(alpha:0.1),
+              const Color.fromARGB(255, 104, 165, 214).withValues(alpha: 0.1),
               Colors.white,
             ],
           ),
         ),
-        child: Builder(
-          builder: (context) {
-            try {
-              return AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                child: _screens[_selectedIndex],
-                transitionBuilder: (child, animation) {
-                  return FadeTransition(
-                    opacity: animation,
-                    child: child,
-                  );
-                },
-              );
-            } catch (e) {
-              return const Center(
-                child: Text('Error loading page'),
-              );
-            }
-          },
+    
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          transitionBuilder: (child, animation) => FadeTransition(
+            opacity: animation,
+            child: child,
+          ),
+          child: KeyedSubtree(
+            key: ValueKey(_selectedIndex),
+            child: _screens[_selectedIndex],
+          ),
         ),
       ),
       bottomNavigationBar: Container(
@@ -130,11 +157,9 @@ class _MainLayoutState extends State<MainLayout> with TickerProviderStateMixin {
             type: BottomNavigationBarType.fixed,
             backgroundColor: Colors.white,
             elevation: 0,
-            items: List.generate(
-              6,
-              (index) => _buildNavItem(index),
-            ),
-            selectedItemColor: Theme.of(context).primaryColor,
+            items: List.generate(_screens.length, _buildNavItem),
+         
+            selectedItemColor: const Color.fromARGB(255, 82, 169, 240),
             unselectedItemColor: Colors.grey,
             showUnselectedLabels: true,
             selectedLabelStyle: GoogleFonts.poppins(
@@ -152,36 +177,22 @@ class _MainLayoutState extends State<MainLayout> with TickerProviderStateMixin {
   }
 
   BottomNavigationBarItem _buildNavItem(int index) {
-    final List<IconData> icons = [
-      Icons.home_rounded,
-      Icons.audiotrack_rounded,
-      Icons.mic_rounded,
-      Icons.article_rounded,
-      Icons.book_rounded,
-      Icons.question_answer_rounded,
-    ];
-
-    final List<String> labels = [
-      'Home',
-      'Audio',
-      'Devotion',
-      'Articles',
-      'Books',
-      'Q&A',
-    ];
+    // FIX #1: Badge driven by _unreadArticlesCount state, not a hardcoded '1'.
+    final bool showBadge = index == 3 && _unreadArticlesCount > 0;
 
     return BottomNavigationBarItem(
       icon: ScaleTransition(
         scale: _animations[index],
         child: Stack(
+          clipBehavior: Clip.none,
           children: [
-            Icon(icons[index]),
-            if (index == 3) 
+            Icon(_icons[index]),
+            if (showBadge)
               Positioned(
-                right: -2,
-                top: -2,
+                right: -4,
+                top: -4,
                 child: Container(
-                  padding: const EdgeInsets.all(4),
+                  padding: const EdgeInsets.all(3),
                   decoration: BoxDecoration(
                     color: Colors.red,
                     borderRadius: BorderRadius.circular(10),
@@ -190,9 +201,11 @@ class _MainLayoutState extends State<MainLayout> with TickerProviderStateMixin {
                     minWidth: 16,
                     minHeight: 16,
                   ),
-                  child: const Text(
-                    '1',
-                    style: TextStyle(
+                  child: Text(
+                    _unreadArticlesCount > 99
+                        ? '99+'
+                        : '$_unreadArticlesCount',
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
@@ -204,19 +217,8 @@ class _MainLayoutState extends State<MainLayout> with TickerProviderStateMixin {
           ],
         ),
       ),
-      label: labels[index],
+      label: _titles[index],
     );
   }
 }
 
-ThemeData appTheme() {
-  return ThemeData(
-    primaryColor: const Color.fromARGB(255, 82, 169, 240),
-    fontFamily: GoogleFonts.poppins().fontFamily,
-    textTheme: GoogleFonts.poppinsTextTheme(),
-    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      selectedItemColor: Color.fromARGB(255, 149, 151, 245),
-      unselectedItemColor: Colors.grey,
-    ),
-  );
-}
