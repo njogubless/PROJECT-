@@ -1,13 +1,11 @@
 import 'package:devotion/core/type_defs.dart';
 import 'package:devotion/features/auth/data/models/user_models.dart';
 import 'package:devotion/features/auth/Repository/auth_repository.dart';
-import 'package:devotion/features/auth/presentation/screen/home_screen.dart';
 import 'package:devotion/features/auth/presentation/screen/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/legacy.dart';
-import 'package:routemaster/routemaster.dart';
 
 final userProvider = StateProvider<UserModel?>((ref) => null);
 
@@ -41,31 +39,32 @@ class AuthController extends StateNotifier<bool> {
 
   Stream<User?> get authStateChange => _authRepository.authStateChange;
 
-  Future<void> _handleAuthResult(
+  // ✅ _handleAuthResult no longer navigates — caller (LoginScreen) owns navigation
+  Future<bool> _handleAuthResult(
       BuildContext context, FutureEither<UserModel> result) async {
     state = true;
     final outcome = await result;
     state = false;
 
-    outcome.fold(
-      (l) => _showSnackBar(context, l.message),
-      (userModel) async {
-        if (context.mounted) {
-          _ref.read(userProvider.notifier).update((state) => userModel);
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => HomeScreen()),);
-        }
+    return outcome.fold(
+      (l) {
+        _showSnackBar(context, l.message);
+        return false; // ✅ Returns false on failure
+      },
+      (userModel) {
+        _ref.read(userProvider.notifier).update((state) => userModel);
+        return true; // ✅ Returns true on success, let caller navigate
       },
     );
   }
 
-  Future<void> signInWithGoogle(BuildContext context) async {
-    await _handleAuthResult(context, _authRepository.signInWithGoogle());
+  Future<bool> signInWithGoogle(BuildContext context) async {
+    return _handleAuthResult(context, _authRepository.signInWithGoogle());
   }
 
-  Future<void> signInWithEmailAndPassword(
+  Future<bool> signInWithEmailAndPassword(
       BuildContext context, String email, String password) async {
-    await _handleAuthResult(
+    return _handleAuthResult(
         context, _authRepository.signInWithEmailAndPassword(email, password));
   }
 
@@ -133,8 +132,9 @@ class AuthController extends StateNotifier<bool> {
         content: Text(message),
         backgroundColor: isError ? Colors.red : Colors.green,
         behavior: SnackBarBehavior.floating,
-        margin: EdgeInsets.all(16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: const EdgeInsets.all(16),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
   }
@@ -143,7 +143,12 @@ class AuthController extends StateNotifier<bool> {
     await _authRepository.signOutUser();
     _ref.read(userProvider.notifier).update((state) => null);
     if (context.mounted) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()),);
+      // ✅ Use pushAndRemoveUntil to clear the entire back stack on sign out
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+        (route) => false,
+      );
     }
   }
 
