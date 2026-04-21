@@ -49,6 +49,7 @@ dependencies:
   shimmer: ^3.0.0
   record: ^6.2.0
   flutter_pdfview: ^1.4.0+1
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:
