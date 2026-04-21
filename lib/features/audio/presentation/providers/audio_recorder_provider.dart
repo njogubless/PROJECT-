@@ -1,27 +1,30 @@
 
 import 'package:devotion/features/audio/presentation/screens/audio_recoding_state.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart';
 import 'package:record/record.dart';
 import 'dart:async';
 import 'package:path_provider/path_provider.dart';
 
-final audioRecorderProvider = StateNotifierProvider<AudioRecorderNotifier, AudioRecordingState>((ref) {
-  return AudioRecorderNotifier();
-});
 
-class AudioRecorderNotifier extends StateNotifier<AudioRecordingState> {
-  AudioRecorderNotifier() : super(AudioRecordingState()) {
-    _initializeRecorder();
-  }
-  
+
+class AudioRecorderNotifier extends Notifier<AudioRecordingState> {
   late final AudioRecorder _audioRecorder;
   Timer? _timer;
-  StreamSubscription? _amplitudeSubscription;
+  Timer? _amplitudeTimer;
 
-  void _initializeRecorder() {
+  @override
+  AudioRecordingState build() {
+
     _audioRecorder = AudioRecorder();
+
+    ref.onDispose(() {
+      _timer?.cancel();
+      _amplitudeTimer?.cancel();
+      _audioRecorder.dispose();
+    });
+
+    return AudioRecordingState();
   }
 
   Future<String> _getRecordingPath() async {
@@ -31,23 +34,23 @@ class AudioRecorderNotifier extends StateNotifier<AudioRecordingState> {
 
   Future<void> startRecording() async {
     try {
-  
       final hasPermission = await _audioRecorder.hasPermission();
-      if (!hasPermission) return;
-
+      if (!hasPermission) {
+        debugPrint('Microphone permission denied');
+        return;
+      }
 
       final path = await _getRecordingPath();
 
-   
       await _audioRecorder.start(
-        RecordConfig(
+        const RecordConfig(
           encoder: AudioEncoder.aacLc,
           bitRate: 128000,
           sampleRate: 44100,
         ),
         path: path,
       );
-      
+
       _startTimer();
       _startAmplitudeListener();
       state = state.copyWith(isRecording: true, isPaused: false);
@@ -58,22 +61,28 @@ class AudioRecorderNotifier extends StateNotifier<AudioRecordingState> {
 
   void _startTimer() {
     _timer?.cancel();
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       state = state.copyWith(
-        recordingDuration: state.recordingDuration + const Duration(seconds: 1),
+        recordingDuration:
+            state.recordingDuration + const Duration(seconds: 1),
       );
     });
   }
 
   void _startAmplitudeListener() {
-    _amplitudeSubscription?.cancel();
-    _timer = Timer.periodic(const Duration(milliseconds: 100), (_) async {
+    _amplitudeTimer?.cancel();
+    _amplitudeTimer =
+        Timer.periodic(const Duration(milliseconds: 100), (_) async {
       try {
         final amplitude = await _audioRecorder.getAmplitude();
+        final normalized = ((amplitude.current + 160) / 160).clamp(0.0, 1.0);
 
-        final normalized = (amplitude.current + 160) / 160;
+        final updated = [...state.waveformData, normalized];
+        const maxSamples = 300;
         state = state.copyWith(
-          waveformData: [...state.waveformData, normalized],
+          waveformData: updated.length > maxSamples
+              ? updated.sublist(updated.length - maxSamples)
+              : updated,
         );
       } catch (e) {
         debugPrint('Error getting amplitude: $e');
@@ -84,7 +93,7 @@ class AudioRecorderNotifier extends StateNotifier<AudioRecordingState> {
   Future<void> pauseRecording() async {
     await _audioRecorder.pause();
     _timer?.cancel();
-    _amplitudeSubscription?.cancel();
+    _amplitudeTimer?.cancel();
     state = state.copyWith(isPaused: true);
   }
 
@@ -98,7 +107,7 @@ class AudioRecorderNotifier extends StateNotifier<AudioRecordingState> {
   Future<void> stopRecording() async {
     final path = await _audioRecorder.stop();
     _timer?.cancel();
-    _amplitudeSubscription?.cancel();
+    _amplitudeTimer?.cancel();
     if (path != null) {
       state = state.copyWith(
         isRecording: false,
@@ -108,11 +117,15 @@ class AudioRecorderNotifier extends StateNotifier<AudioRecordingState> {
     }
   }
 
-  @override
-  void dispose() {
+  Future<void> reset() async {
     _timer?.cancel();
-    _amplitudeSubscription?.cancel();
-    _audioRecorder.dispose();
-    super.dispose();
+    _amplitudeTimer?.cancel();
+    state = AudioRecordingState();
   }
 }
+
+
+final audioRecorderProvider =
+    NotifierProvider<AudioRecorderNotifier, AudioRecordingState>(
+  AudioRecorderNotifier.new,
+);
