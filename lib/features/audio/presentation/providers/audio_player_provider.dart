@@ -1,8 +1,11 @@
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart';
 import 'package:just_audio/just_audio.dart';
+
+// ============================================================
+// STATE — plain immutable data class, no Riverpod dependency
+// ============================================================
 
 class AudioPlayerState {
   final bool isPlaying;
@@ -11,14 +14,16 @@ class AudioPlayerState {
   final Duration position;
   final Duration duration;
   final ProcessingState processingState;
+  final String? error;
 
-  AudioPlayerState({
+  const AudioPlayerState({
     this.isPlaying = false,
     this.currentAudioId = '',
     this.currentTitle = '',
     this.position = Duration.zero,
     this.duration = Duration.zero,
     this.processingState = ProcessingState.idle,
+    this.error,
   });
 
   AudioPlayerState copyWith({
@@ -28,6 +33,7 @@ class AudioPlayerState {
     Duration? position,
     Duration? duration,
     ProcessingState? processingState,
+    Object? error = _sentinel,
   }) {
     return AudioPlayerState(
       isPlaying: isPlaying ?? this.isPlaying,
@@ -36,14 +42,26 @@ class AudioPlayerState {
       position: position ?? this.position,
       duration: duration ?? this.duration,
       processingState: processingState ?? this.processingState,
+      error: error == _sentinel ? this.error : error as String?,
     );
   }
 }
 
-class AudioPlayerNotifier extends StateNotifier<AudioPlayerState> {
-  final AudioPlayer _player = AudioPlayer();
+const Object _sentinel = Object();
 
-  AudioPlayerNotifier() : super(AudioPlayerState()) {
+// ============================================================
+// NOTIFIER — Riverpod 2.x Notifier (replaces StateNotifier)
+// ============================================================
+
+class AudioPlayerNotifier extends Notifier<AudioPlayerState> {
+  late final AudioPlayer _player;
+
+  @override
+  AudioPlayerState build() {
+    // build() replaces the constructor. Set up the player and
+    // register a disposal callback via ref.onDispose.
+    _player = AudioPlayer();
+
     _player.playerStateStream.listen((playerState) {
       state = state.copyWith(
         isPlaying: playerState.playing,
@@ -60,32 +78,29 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState> {
         state = state.copyWith(duration: duration);
       }
     });
+
+    ref.onDispose(() => _player.dispose());
+
+    return const AudioPlayerState();
   }
 
   Future<void> playAudio(String audioId, String url, String title) async {
     try {
+      state = state.copyWith(error: null);
+
       String downloadUrl;
-      
+
       if (state.currentAudioId != audioId) {
-        debugPrint("Audio ID: $audioId");
-        debugPrint("Provided URL: $url");
-        
-
-        if (url.isNotEmpty && url.startsWith('https://firebasestorage.googleapis.com')) {
+        if (url.isNotEmpty &&
+            url.startsWith('https://firebasestorage.googleapis.com')) {
           downloadUrl = url;
-          debugPrint("Using provided download URL: $downloadUrl");
         } else {
-
           String fileName = audioId;
-          if (!fileName.endsWith('.mp3')) {
-            fileName = '$fileName.mp3';
-          }
-          
-          debugPrint("Constructing Firebase Storage path: audio/$fileName");
-          
-          final audioRef = FirebaseStorage.instance.ref().child("audio").child(fileName);
+          if (!fileName.endsWith('.mp3')) fileName = '$fileName.mp3';
+
+          final audioRef =
+              FirebaseStorage.instance.ref().child('audio').child(fileName);
           downloadUrl = await audioRef.getDownloadURL();
-          debugPrint("Fetched Download URL from Firebase: $downloadUrl");
         }
 
         await _player.stop();
@@ -96,65 +111,56 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState> {
           position: Duration.zero,
         );
       }
+
       await _player.play();
     } catch (e, stackTrace) {
-      debugPrint('Error playing audio: $e');
-      debugPrint('Stack trace: $stackTrace');
-      
+      debugPrint('Error playing audio: $e\n$stackTrace');
 
-      if (!e.toString().contains('object-not-found')) {
-        rethrow;
+      if (e.toString().contains('object-not-found')) {
+        try {
+          final audioRef =
+              FirebaseStorage.instance.ref().child('audio').child(audioId);
+          final fallbackUrl = await audioRef.getDownloadURL();
+          await _player.stop();
+          await _player.setUrl(fallbackUrl);
+          state = state.copyWith(
+            currentAudioId: audioId,
+            currentTitle: title,
+            position: Duration.zero,
+          );
+          await _player.play();
+          return;
+        } catch (e2) {
+          debugPrint('Fallback also failed: $e2');
+        }
       }
-      
-      try {
-        debugPrint("Trying alternative path approach...");
-   
-        final audioRef = FirebaseStorage.instance.ref().child("audio").child(audioId);
-        final downloadUrl = await audioRef.getDownloadURL();
-        debugPrint("Alternative approach succeeded: $downloadUrl");
-        
-        await _player.stop();
-        await _player.setUrl(downloadUrl);
-        state = state.copyWith(
-          currentAudioId: audioId,
-          currentTitle: title,
-          position: Duration.zero,
-        );
-        await _player.play();
-      } catch (e2) {
-        debugPrint('Alternative approach also failed: $e2');
-  
-      }
+
+      state = state.copyWith(
+        isPlaying: false,
+        error: 'Failed to play audio. Please try again.',
+      );
     }
   }
 
-  Future<void> pauseAudio() async {
-    await _player.pause();
-  }
+  Future<void> pauseAudio() async => _player.pause();
 
   Future<void> stopAudio() async {
     await _player.stop();
-    state = state.copyWith(
-      isPlaying: false,
-      currentAudioId: '',
-      currentTitle: '',
-      position: Duration.zero,
-      duration: Duration.zero,
-    );
+    state = const AudioPlayerState();
   }
 
   Future<void> seekTo(Duration position) async {
-    await _player.seek(position);
-  }
-
-  @override
-  void dispose() {
-    _player.dispose();
-    super.dispose();
+    if (state.currentAudioId.isEmpty) return;
+    final clamped = position.isNegative ? Duration.zero : position;
+    await _player.seek(clamped);
   }
 }
 
+// ============================================================
+// PROVIDER
+// ============================================================
+
 final audioPlayerProvider =
-    StateNotifierProvider<AudioPlayerNotifier, AudioPlayerState>((ref) {
-  return AudioPlayerNotifier();
-});
+    NotifierProvider<AudioPlayerNotifier, AudioPlayerState>(
+  AudioPlayerNotifier.new,
+);
