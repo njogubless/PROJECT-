@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 
 class WaveformPainter extends CustomPainter {
@@ -8,25 +6,27 @@ class WaveformPainter extends CustomPainter {
 
   WaveformPainter({
     required this.waveformData,
-    this.color = Colors.purple,
+    this.color = const Color.fromARGB(255, 82, 169, 240),
   });
 
   @override
   void paint(Canvas canvas, Size size) {
+    if (waveformData.isEmpty) return;
+
     final paint = Paint()
       ..color = color
       ..strokeWidth = 2
       ..strokeCap = StrokeCap.round;
 
-    if (waveformData.isEmpty) return;
-
-    final width = size.width / waveformData.length;
+    final barWidth = size.width / waveformData.length;
     final middle = size.height / 2;
 
     for (var i = 0; i < waveformData.length; i++) {
-      final x = i * width;
-      final amplitude = waveformData[i] * size.height / 2;
-      
+      final x =
+          i * barWidth + barWidth / 2; // FIX: Centre each bar in its slot.
+
+      final amplitude = waveformData[i].clamp(0.0, 1.0) * middle;
+
       canvas.drawLine(
         Offset(x, middle - amplitude),
         Offset(x, middle + amplitude),
@@ -36,5 +36,8 @@ class WaveformPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(WaveformPainter oldDelegate) => true;
+  bool shouldRepaint(WaveformPainter oldDelegate) {
+    return oldDelegate.waveformData != waveformData ||
+        oldDelegate.color != color;
+  }
 }
