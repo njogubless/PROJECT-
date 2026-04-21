@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:devotion/features/audio/data/models/audio_model.dart';
 import 'package:devotion/features/audio/presentation/providers/audio_provider.dart';
+import 'package:devotion/features/audio/presentation/providers/audio_recorder_provider.dart';
 import 'package:devotion/features/audio/presentation/widgets/wave_form_painter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
