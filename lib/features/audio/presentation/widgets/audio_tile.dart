@@ -1,5 +1,6 @@
 import 'package:devotion/features/audio/data/models/audio_model.dart';
 import 'package:devotion/features/audio/presentation/providers/audio_player_provider.dart';
+import 'package:devotion/features/audio/presentation/providers/audio_provider.dart';
 import 'package:devotion/features/audio/presentation/providers/download_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,11 +14,12 @@ class AudioTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final audioPlayer = ref.watch(audioPlayerProvider);
-    final isCurrentlyPlaying = audioPlayer.currentAudioId == audioFile.id && audioPlayer.isPlaying;
+    final isCurrentlyPlaying =
+        audioPlayer.currentAudioId == audioFile.id && audioPlayer.isPlaying;
     final downloadState = ref.watch(downloadProvider(audioFile.id));
-    
-    
-    final formattedDate = DateFormat('MMM d, yyyy').format(audioFile.uploadDate);
+
+    final formattedDate =
+        DateFormat('MMM d, yyyy').format(audioFile.uploadDate);
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -34,7 +36,7 @@ class AudioTile extends ConsumerWidget {
                 width: 50,
                 height: 50,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor.withValues(alpha:0.2),
+                  color: Theme.of(context).primaryColor.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: audioFile.coverUrl.isNotEmpty
@@ -91,7 +93,6 @@ class AudioTile extends ConsumerWidget {
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-               
                   IconButton(
                     icon: Icon(
                       isCurrentlyPlaying ? Icons.pause : Icons.play_arrow,
@@ -117,21 +118,19 @@ class AudioTile extends ConsumerWidget {
                       }
                     },
                   ),
-                  
                   _buildDownloadButton(context, ref, downloadState),
                 ],
               ),
             ),
-            
-            
             if (isCurrentlyPlaying)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 child: Consumer(
                   builder: (context, ref, _) {
                     final position = ref.watch(audioPlayerProvider).position;
                     final duration = ref.watch(audioPlayerProvider).duration;
-                    
+
                     return Column(
                       children: [
                         LinearProgressIndicator(
@@ -149,11 +148,13 @@ class AudioTile extends ConsumerWidget {
                           children: [
                             Text(
                               _formatDuration(position),
-                              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                              style: TextStyle(
+                                  fontSize: 12, color: Colors.grey[600]),
                             ),
                             Text(
                               _formatDuration(duration),
-                              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                              style: TextStyle(
+                                  fontSize: 12, color: Colors.grey[600]),
                             ),
                           ],
                         ),
@@ -168,13 +169,17 @@ class AudioTile extends ConsumerWidget {
     );
   }
 
-  Widget _buildDownloadButton(BuildContext context, WidgetRef ref, DownloadState downloadState) {
+  Widget _buildDownloadButton(
+      BuildContext context, WidgetRef ref, DownloadState downloadState) {
     switch (downloadState.status) {
       case DownloadStatus.initial:
         return IconButton(
           icon: const Icon(Icons.download),
           onPressed: () {
-            ref.read(downloadProvider(audioFile.id).notifier).download();
+            final audioList = ref.read(audioProvider).asData?.value ?? [];
+            ref
+                .read(downloadProvider(audioFile.id).notifier)
+                .download(audioList);
           },
         );
       case DownloadStatus.downloading:
@@ -183,7 +188,8 @@ class AudioTile extends ConsumerWidget {
           height: 24,
           child: CircularProgressIndicator(
             strokeWidth: 2,
-            valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor),
+            valueColor:
+                AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor),
           ),
         );
       case DownloadStatus.success:
@@ -193,7 +199,8 @@ class AudioTile extends ConsumerWidget {
           icon: const Icon(Icons.error, color: Colors.red),
           onPressed: () {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Download failed: ${downloadState.error}')),
+              SnackBar(
+                  content: Text('Download failed: ${downloadState.error}')),
             );
           },
         );
