@@ -17,9 +17,7 @@ class AudioTile extends ConsumerWidget {
     final downloadState = ref.watch(downloadProvider(audioFile.id));
     
     
-    final formattedDate = audioFile.uploadDate != null 
-        ? DateFormat('MMM d, yyyy').format(audioFile.uploadDate)
-        : 'Unknown date';
+    final formattedDate = DateFormat('MMM d, yyyy').format(audioFile.uploadDate);
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
